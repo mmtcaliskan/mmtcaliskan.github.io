@@ -134,7 +134,7 @@ h2 { border-bottom: 2px solid var(--banu-cyan); }
   display: inline-block; font-size: .75rem; font-weight: 600; letter-spacing: .03em; color: var(--accent);
   background: var(--accent-soft); padding: .1rem .5rem; border-radius: 4px; margin-bottom: .4rem;
 }
-.lead { font-size: 1.08rem; max-width: 70ch; }
+.lead { font-size: 1.08rem; text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
 .muted { color: var(--muted); }
 
 /* ---------- Zaman çizelgesi (özgeçmiş) ---------- */
