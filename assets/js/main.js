@@ -49,6 +49,20 @@ const EPOSTA = { kullanici: "mcaliskan", alan: "bandirma.edu.tr" };
     el.textContent = addr;
   });
 
+  // ---------- 3b) Dış bağlantılar yeni sekmede ----------
+  // Başka alan adına giden tüm http(s) bağlantıları yeni sekmede açılır;
+  // sitenin kendi sayfaları aynı sekmede kalır. Sonradan eklenen
+  // bağlantılar için de HTML'de ayrıca bir şey yapmaya gerek yoktur.
+  document.querySelectorAll("a[href]").forEach(a => {
+    let url;
+    try { url = new URL(a.getAttribute("href"), location.href); } catch (e) { return; }
+    if (!/^https?:$/.test(url.protocol) || url.hostname === location.hostname) return;
+    a.target = "_blank";
+    const rel = new Set((a.getAttribute("rel") || "").split(/\s+/).filter(Boolean));
+    rel.add("noopener"); rel.add("noreferrer");
+    a.setAttribute("rel", [...rel].join(" "));
+  });
+
   // ---------- 4) Yayın süzgeci ----------
   const list = document.querySelectorAll("ol.pubs li");
   if (!list.length) return;
