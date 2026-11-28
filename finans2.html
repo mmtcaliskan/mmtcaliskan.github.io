@@ -1,0 +1,1343 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finans II Simülatörü</title>
+<meta name="description" content="Finans II Simülatörü: tarayıcıda çalışan etkileşimli ders aracı. M. M. Tuncer Çalışkan.">
+<style>
+:root{color-scheme:light;
+  --page:#f9f9f9;--surface:#ffffff;--ink:#191919;--ink2:#666666;--grid:#e7e7e7;--axis:#c2c2c2;--border:rgba(11,11,11,.10);
+  --s1:#257de0;--s2:#f47230;--s3:#00b894;--s4:#f2a600;--s5:#ee7fac;
+  --good:#0aac23;--crit:#dc3c3d;--goodtext:#006c10;
+  --accent:#257de0;--accent-ink:#1757ac;--wash:#eef5fd;--ylwash:#f4f1fd;--ylink:#6a4ce2;}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;
+  --page:#0b0b0b;--surface:#191919;--ink:#efefef;--ink2:#9c9c9c;--grid:#303030;--axis:#474747;--border:rgba(255,255,255,.10);
+  --s1:#338ced;--s2:#e76624;--s3:#00a888;--s4:#d28e05;--s5:#e24d8b;--goodtext:#53c556;
+  --accent:#338ced;--accent-ink:#84b9f3;--wash:#14243a;--ylwash:#211c35;--ylink:#9887ef;}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15.5px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app{max-width:1080px;margin:0 auto;padding:18px 20px 60px}
+a{color:var(--accent-ink)}
+h1{font-size:1.55rem;line-height:1.25;margin:.15em 0}
+h2{font-size:1.22rem;line-height:1.3;margin:.15em 0}
+h3{font-size:1.02rem;margin:1.3em 0 .35em}
+p{margin:.55em 0}
+ul,ol{margin:.4em 0;padding-left:1.3em} li{margin:.2em 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px}
+.hero{display:flex;gap:18px 28px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin:8px 0 16px}
+.kicker{font-size:.78rem;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+.lead{color:var(--ink2);max-width:62ch}
+.toggles{display:flex;flex-direction:column;gap:8px}
+.tg{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--ink2)} .tg .lbl{min-width:46px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;border-right:1px solid var(--border);background:transparent;color:var(--ink);padding:5px 11px;font:inherit;font-size:.85rem;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--accent);color:#fff}
+.seg button:focus-visible,.btn:focus-visible,.stp:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;font-size:.88rem}
+.howto b{display:block;font-size:.9rem;margin-bottom:2px}
+.unit h2{font-size:1rem;margin:26px 0 10px;color:var(--ink2);font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.lc{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:border-color .15s,transform .15s}
+a.lc:hover{border-color:var(--accent);transform:translateY(-1px)}
+.lc.off{opacity:.6}
+.lc .no{font-size:.76rem;color:var(--ink2)} .lc .tt{font-weight:600;margin:2px 0 8px;line-height:1.35} .lc .mt{font-size:.8rem;color:var(--ink2)}
+.chip{display:inline-block;font-size:.72rem;line-height:1.5;padding:0 8px;border-radius:99px;border:1px solid var(--border);color:var(--ink2);margin-right:4px;vertical-align:middle;white-space:nowrap}
+.chip.pilot{background:var(--wash);color:var(--accent-ink);border-color:transparent}
+.chip.gap{border-style:dashed}
+.chip.ok{color:var(--goodtext);border-color:transparent;background:rgba(10,172,35,.11)}
+.chip.yl{background:var(--ylwash);color:var(--ylink);border-color:transparent}
+.lh{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:flex-end;margin:4px 0 12px}
+.back{font-size:.86rem;text-decoration:none}
+.lmeta{font-size:.8rem;color:var(--ink2)}
+.steps{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 12px}
+.stp{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);color:var(--ink2);border-radius:99px;padding:3px 11px 3px 3px;font:inherit;font-size:.78rem;cursor:pointer;white-space:nowrap}
+.stp .sn{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;background:var(--page);font-weight:600;font-size:.76rem}
+.stp.cur{border-color:var(--accent);color:var(--ink)} .stp.cur .sn{background:var(--accent);color:#fff}
+.stp.done .sn{background:var(--good);color:#fff}
+.stp:disabled{opacity:.4;cursor:not-allowed}
+.step .sh{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:12px}
+.chip.t-kesif{background:var(--wash);color:var(--accent-ink);border-color:transparent}
+.chip.t-alistirma{background:rgba(242,166,0,.15);color:inherit;border-color:transparent}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:10px}
+.lockmsg{font-size:.84rem;color:var(--ink2);text-align:center}
+.btn{font:inherit;font-size:.92rem;padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{padding:3px 10px;font-size:.8rem}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+.eq{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:1.08rem;text-align:center;margin:12px 0;padding:10px 12px;background:var(--page);border-radius:8px;overflow-x:auto}
+.eq i{font-style:italic}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px}
+.fr>span{line-height:1.3;padding:0 3px} .fr>span:first-child{border-bottom:1px solid currentColor}
+.tbl{border-collapse:collapse;font-size:.87rem;margin:10px 0;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{border-bottom:1px solid var(--grid);padding:5px 12px;text-align:right}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl th{color:var(--ink2);font-weight:600}
+.tbl.sym td{text-align:left}
+.tbl tr.tot td{font-weight:700;border-top:1.5px solid var(--axis)}
+.tbl tr.sub td{color:var(--ink2)}
+.tbl td.l{text-align:left}
+.note{padding:10px 14px;border-radius:8px;margin:14px 0;background:var(--page);font-size:.92rem}
+.note.yl{background:var(--ylwash);border-left:3px solid var(--ylink)}
+.note.yl::before{content:var(--yl-label,"İleri düzey");display:block;font-size:.7rem;font-weight:700;color:var(--ylink);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.note.tr::before{content:"Mevzuat notu";display:block;font-size:.7rem;font-weight:700;color:var(--ink2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.note.warn{border-left:3px solid var(--s4)}
+body:not(.yl) .yl-only{display:none!important}
+.k-intro{margin-bottom:14px}
+.kgrid{display:grid;grid-template-columns:270px minmax(0,1fr);gap:22px}
+.kgrid>*{min-width:0}
+@media (max-width:840px){.kgrid{grid-template-columns:minmax(0,1fr)}}
+.sl{display:block;margin:0 0 13px}
+.sl-top{display:flex;justify-content:space-between;gap:8px;font-size:.84rem;color:var(--ink2)}
+.sl output{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);margin:2px 0 0}
+.segw{margin:0 0 13px} .segw .seg{margin-top:4px}
+.task{border:1px dashed var(--accent);border-radius:10px;padding:10px 12px;margin-bottom:16px;background:var(--wash);font-size:.86rem}
+.task.all{border-style:solid;border-color:var(--good)}
+.task-h{font-weight:700;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
+.task-s{font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink2)}
+.ti{display:flex;gap:8px;margin:5px 0}
+.cb{flex:0 0 16px;height:16px;border:1.5px solid var(--ink2);border-radius:4px;margin-top:3px;position:relative}
+.ti.ok .cb{background:var(--good);border-color:var(--good)}
+.ti.ok .cb::after{content:"";position:absolute;left:4px;top:0;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.ti.ok>span:last-child{color:var(--ink2)}
+.ro{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.ro-i{border:1px solid var(--border);border-radius:8px;padding:6px 10px;background:var(--surface)}
+.ro-i.wide{grid-column:1/-1}
+.ro-l{font-size:.74rem;color:var(--ink2);line-height:1.35}
+.ro-v{font-weight:600;font-variant-numeric:tabular-nums}
+.flag{display:inline-flex;gap:5px;align-items:center;font-weight:600;font-size:.82rem;padding:1px 9px;border-radius:99px}
+.flag.good{color:var(--goodtext);background:rgba(10,172,35,.12)}
+.flag.bad{color:var(--crit);background:rgba(220,60,61,.11)}
+.legend{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:.8rem;color:var(--ink2);margin-bottom:2px}
+.lg{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:18px;height:0;border-top:2.5px solid var(--ink2)}
+.sw.l1{border-color:var(--s1)} .sw.l2{border-color:var(--s2)} .sw.l3{border-color:var(--s3)}
+.sw.ref{border-top:1.5px dashed var(--ink2)}
+.sw.box{width:12px;height:12px;border:0;border-radius:3px}
+.sw.box.f1{background:var(--s1)} .sw.box.f2{background:var(--s2)} .sw.box.f3{background:var(--s3)} .sw.box.f4{background:var(--s4)} .sw.box.f5{background:var(--s5)}
+.sw.box.fg{background:var(--axis)}
+.chart{position:relative}
+.chart svg{width:100%;height:auto;display:block;overflow:visible;touch-action:pan-y}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.grid{stroke:var(--grid);stroke-width:1}
+.axis{stroke:var(--axis);stroke-width:1}
+.tick{fill:var(--ink2);font-size:11.5px;font-variant-numeric:tabular-nums}
+.atitle{fill:var(--ink2);font-size:12px}
+.l1,.l2,.l3{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.l1{stroke:var(--s1)} .l2{stroke:var(--s2)} .l3{stroke:var(--s3)}
+.ref{stroke:var(--ink2);stroke-width:1.25;stroke-dasharray:4 4;fill:none}
+.cur{fill:var(--ink);stroke:var(--surface);stroke-width:2}
+.d1{fill:var(--s1);stroke:var(--surface);stroke-width:2}
+.d2{fill:var(--s2);stroke:var(--surface);stroke-width:2}
+.d3{fill:var(--s3);stroke:var(--surface);stroke-width:2}
+.f1{fill:var(--s1)} .f2{fill:var(--s2)} .f3{fill:var(--s3)} .f4{fill:var(--s4)} .f5{fill:var(--s5)} .fg{fill:var(--axis)}
+.seg-r{stroke:var(--surface);stroke-width:2}
+.area1{fill:var(--s1);opacity:.14} .area-g{fill:var(--good);opacity:.14} .area-c{fill:var(--crit);opacity:.12}
+.bar1{fill:var(--s1)} .bar1.dim{opacity:.38}
+.ref2{stroke:var(--axis);stroke-width:1.25;stroke-dasharray:2 3;fill:none}
+.sw.box.bar1{background:var(--s1)} .sw.box.area1{background:var(--s1);opacity:.3}
+.sw.box.area-g{background:var(--good);opacity:.35} .sw.box.area-c{background:var(--crit);opacity:.3}
+.sw.dot{width:10px;height:10px;border:0;border-radius:50%;background:var(--ink)} .sw.dot.d2{background:var(--s2)} .sw.dot.d3{background:var(--s3)}
+.dim{opacity:.38}
+.lab,.lab2{font-size:12px;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.lab{fill:var(--ink)} .lab2{fill:var(--ink2)}
+.labin{font-size:11.5px;fill:#fff;font-variant-numeric:tabular-nums}
+.labin.dk{fill:#0b0b0b}
+.hov line{stroke:var(--ink2);stroke-width:1}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--border);box-shadow:0 4px 14px rgba(0,0,0,.14);border-radius:8px;padding:6px 10px;font-size:.78rem;line-height:1.45;white-space:nowrap;z-index:5;font-variant-numeric:tabular-nums}
+details.dt summary{cursor:pointer;font-size:.82rem;color:var(--ink2);margin-top:10px}
+.dtw{max-height:260px;overflow:auto}
+.q{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin:12px 0}
+.qh{display:flex;gap:4px;align-items:center;margin-bottom:6px}
+.qn{margin-left:auto;font-size:.76rem;color:var(--ink2)}
+.qa{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+input.num,input.acc,select.sel{font:inherit;padding:6px 10px;border:1px solid var(--axis);border-radius:8px;background:var(--surface);color:var(--ink)}
+input.num{width:190px}
+.unit{color:var(--ink2);font-size:.9rem}
+.opts label{display:flex;gap:8px;align-items:flex-start;padding:3px 0;cursor:pointer}
+.opts input{margin-top:5px}
+.fb{margin-top:10px;padding:8px 12px;border-radius:8px;font-size:.9rem}
+.fb:empty{display:none}
+.fb.ok{background:rgba(10,172,35,.11)}
+.fb.try{background:rgba(242,166,0,.15)}
+.fb.rev{background:var(--wash)}
+.qsum{font-size:.86rem;color:var(--ink2);margin-bottom:4px}
+.about{font-size:.8rem;color:var(--ink2);margin-top:30px;border-top:1px solid var(--grid);padding-top:14px}
+.map summary{cursor:pointer;font-weight:600}
+.map{margin-top:26px}
+.done-box{text-align:center;padding:30px}
+.summary li{margin:.35em 0}
+/* ---- Muhasebeye özgü bileşenler ---- */
+.jt{border-collapse:collapse;font-size:.88rem;margin:8px 0 12px;font-variant-numeric:tabular-nums;min-width:min(100%,520px)}
+.jt td,.jt th{padding:4px 10px;border-bottom:1px solid var(--grid)}
+.jt th{color:var(--ink2);font-weight:600;font-size:.78rem;text-align:right}
+.jt th:first-child{text-align:left}
+.jt td.n{text-align:right;width:110px}
+.jt td.cr{padding-left:38px}
+.jt tr.mh td{border-bottom:1.5px solid var(--axis);font-size:.78rem;color:var(--ink2);text-align:center}
+.jt tr.ex td{font-size:.8rem;color:var(--ink2);font-style:italic;border-bottom:1.5px solid var(--axis)}
+.jt tr.tot td{font-weight:700}
+.ta-wrap{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0}
+.ta{min-width:200px;flex:1 1 200px;max-width:300px;font-size:.84rem;font-variant-numeric:tabular-nums}
+.ta-h{text-align:center;font-weight:600;border-bottom:2px solid var(--ink);padding:2px 4px}
+.ta-b{display:grid;grid-template-columns:1fr 1fr;min-height:50px}
+.ta-b>div{padding:3px 6px}
+.ta-b>div:first-child{border-right:2px solid var(--ink)}
+.ta-b>div:last-child{text-align:right}
+.ta-l{display:flex;justify-content:space-between;gap:6px} .ta-b>div:last-child .ta-l{flex-direction:row-reverse}
+.ta-l span:first-child{color:var(--ink2);font-size:.74rem}
+.ta-f{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--axis);font-size:.78rem}
+.ta-f>div{padding:2px 6px} .ta-f>div:last-child{text-align:right}
+.ta-bal{text-align:center;font-size:.78rem;color:var(--ink2)}
+.ta.new .ta-h{color:var(--accent-ink)}
+.je{border-collapse:collapse;margin-top:8px;font-size:.88rem}
+.je td,.je th{padding:3px 4px}
+.je th{color:var(--ink2);font-weight:600;font-size:.76rem;text-align:left}
+.je input.acc{width:250px}
+.je input.num{width:130px;text-align:right}
+.je .tot td{font-size:.82rem;color:var(--ink2);font-variant-numeric:tabular-nums}
+.xbtn{border:0;background:transparent;color:var(--ink2);cursor:pointer;font-size:1rem}
+.tx-list{display:flex;flex-direction:column;gap:6px}
+.tx{display:flex;gap:8px;align-items:flex-start;text-align:left;font:inherit;font-size:.84rem;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 10px;cursor:pointer}
+.tx:hover:not(:disabled){border-color:var(--accent)}
+.tx:disabled{opacity:.5;cursor:default}
+.tx .txn{font-weight:700;color:var(--ink2);min-width:18px}
+.tx select{max-width:100%;min-width:0}
+.tx.on{border-color:var(--good);background:rgba(10,172,35,.07)}
+.cls-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 10px;padding:6px 0;border-bottom:1px solid var(--grid);font-size:.88rem}
+/* Metin en az 180 px yer alır; sığmazsa açılır liste alt satıra iner (dar panelde kelime kelime kırılmayı önler) */
+.cls-row>span{flex:1 1 180px;min-width:0}
+.cls-row select{flex:0 1 auto;max-width:100%;min-width:0}
+.cls-row.ok select{border-color:var(--good)} .cls-row.bad select{border-color:var(--crit)}
+.fs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:700px){.fs{grid-template-columns:1fr}}
+.fs .tbl{width:100%}
+.mono{font-variant-numeric:tabular-nums}
+/* Motorun tablolara eklediği kapsayıcı: dar ekranda tablo sayfayı değil kendini kaydırır */
+.tw{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fs>.tw>.tbl{width:100%}
+/* ---- Telefon (≤600 px): metin sütunları kelime kelime kırılmasın, geniş tablolar kendi içinde kaysın ---- */
+@media (max-width:600px){
+  #app{padding:12px 10px 50px}
+  .card{padding:14px 12px}
+  .q{padding:12px 10px}
+  .tbl th,.tbl td{padding:4px 7px}
+  .tbl:not(.sym) td:not(:first-child){white-space:nowrap}
+  /* Tablo, sütun sayısına göre bir alt genişlik alır; ekrana sığmazsa .tw içinde yana kayar */
+  .tbl.sym:has(tr>:nth-child(2)){min-width:21em}
+  .tbl.sym:has(tr>:nth-child(3)){min-width:31em}
+  .tbl.sym:has(tr>:nth-child(4)){min-width:40em}
+  .tbl:not(.sym):has(tr>:nth-child(4)){min-width:30em}
+  .tbl:not(.sym):has(tr>:nth-child(5)){min-width:36em}
+  .jt{min-width:21em}
+  .jt td,.jt th{padding:4px 6px}
+  .jt td.n{width:auto;white-space:nowrap}
+  .jt td.cr{padding-left:18px}
+  .je{width:100%;font-size:.84rem}
+  .je td,.je th{padding:3px 2px}
+  .je input.acc{width:100%;min-width:7.5em;padding:6px}
+  .je input.num{width:4.6em;padding:6px 4px}
+}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ============================================================
+   Muhasebe simülatörleri — ortak motor, sürüm 0.1 (pilot), 27.11.2026
+   Özgün kod. Mimari 12_Finans_Simulatoru ile aynıdır; ders akışı
+   fikri M. Songur'un Mikroekonomi Simülatörü'nden esinlenmiştir,
+   o çalışmadan kod alınmamıştır.
+   ============================================================ */
+
+/* ---------- Yardımcılar ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+function nf(x,d=0){return Number(x).toLocaleString('tr-TR',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function tl(x,d=0){return (x<-1e-9?'−':'')+nf(Math.abs(x),d)+' TL';}
+function pc(x,d=1){return (x<-1e-12?'−%':'%')+nf(Math.abs(x)*100,d);}
+function pp(x,d=1){return (x<-1e-12?'−':'')+nf(Math.abs(x)*100,d)+' puan';}
+function kTL(v){const a=Math.abs(v),s=v<0?'−':'';if(a>=1e6)return s+nf(a/1e6,(a%1e6)?1:0)+' mn';if(a>=1e3)return s+nf(a/1e3,0)+' bin';return s+nf(a,0);}
+function fr(n,d){return `<span class="fr"><span>${n}</span><span>${d}</span></span>`;}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function r2(x){return Math.round(x*100)/100;}
+const pctFmt=v=>'%'+nf(v,Number.isInteger(v)?0:1);
+
+/* ---------- Tekdüzen Hesap Planı (ders kapsamındaki hesaplar) ----------
+   Bakiye yönü: B = borç bakiyesi verir, A = alacak bakiyesi verir, X = her ikisi */
+const TDHP_SRC=`100|Kasa|B;101|Alınan Çekler|B;102|Bankalar|B;103|Verilen Çekler ve Ödeme Emirleri (−)|A;108|Diğer Hazır Değerler|B;
+110|Hisse Senetleri|B;111|Özel Kesim Tahvil, Senet ve Bonoları|B;112|Kamu Kesimi Tahvil, Senet ve Bonoları|B;118|Diğer Menkul Kıymetler|B;119|Menkul Kıymetler Değer Düşüklüğü Karşılığı (−)|A;
+120|Alıcılar|B;121|Alacak Senetleri|B;122|Alacak Senetleri Reeskontu (−)|A;126|Verilen Depozito ve Teminatlar|B;127|Diğer Ticari Alacaklar|B;128|Şüpheli Ticari Alacaklar|B;129|Şüpheli Ticari Alacaklar Karşılığı (−)|A;
+131|Ortaklardan Alacaklar|B;135|Personelden Alacaklar|B;136|Diğer Çeşitli Alacaklar|B;
+150|İlk Madde ve Malzeme|B;151|Yarı Mamuller|B;152|Mamuller|B;153|Ticari Mallar|B;157|Diğer Stoklar|B;158|Stok Değer Düşüklüğü Karşılığı (−)|A;159|Verilen Sipariş Avansları|B;
+180|Gelecek Aylara Ait Giderler|B;181|Gelir Tahakkukları|B;190|Devreden KDV|B;191|İndirilecek KDV|B;193|Peşin Ödenen Vergiler ve Fonlar|B;195|İş Avansları|B;196|Personel Avansları|B;
+220|Alıcılar (uzun vadeli)|B;226|Verilen Depozito ve Teminatlar (uzun vadeli)|B;240|Bağlı Menkul Kıymetler|B;242|İştirakler|B;245|Bağlı Ortaklıklar|B;
+250|Arazi ve Arsalar|B;251|Yeraltı ve Yerüstü Düzenleri|B;252|Binalar|B;253|Tesis, Makine ve Cihazlar|B;254|Taşıtlar|B;255|Demirbaşlar|B;256|Diğer Maddi Duran Varlıklar|B;257|Birikmiş Amortismanlar (−)|A;258|Yapılmakta Olan Yatırımlar|B;259|Verilen Avanslar|B;
+260|Haklar|B;261|Şerefiye|B;262|Kuruluş ve Örgütlenme Giderleri|B;263|Araştırma ve Geliştirme Giderleri|B;264|Özel Maliyetler|B;267|Diğer Maddi Olmayan Duran Varlıklar|B;268|Birikmiş Amortismanlar (−) (maddi olmayan)|A;280|Gelecek Yıllara Ait Giderler|B;
+300|Banka Kredileri|A;303|Uzun Vadeli Kredilerin Anapara Taksitleri ve Faizleri|A;304|Tahvil Anapara Borç, Taksit ve Faizleri|A;305|Çıkarılmış Bonolar ve Senetler|A;308|Menkul Kıymetler İhraç Farkı (−)|B;309|Diğer Mali Borçlar|A;
+320|Satıcılar|A;321|Borç Senetleri|A;322|Borç Senetleri Reeskontu (−)|B;326|Alınan Depozito ve Teminatlar|A;329|Diğer Ticari Borçlar|A;
+331|Ortaklara Borçlar|A;335|Personele Borçlar|A;336|Diğer Çeşitli Borçlar|A;340|Alınan Sipariş Avansları|A;
+360|Ödenecek Vergi ve Fonlar|A;361|Ödenecek Sosyal Güvenlik Kesintileri|A;370|Dönem Kârı Vergi ve Diğer Yasal Yükümlülük Karşılıkları|A;371|Dönem Kârının Peşin Ödenen Vergi ve Diğer Yükümlülükleri (−)|B;
+380|Gelecek Aylara Ait Gelirler|A;381|Gider Tahakkukları|A;391|Hesaplanan KDV|A;
+400|Banka Kredileri (uzun vadeli)|A;405|Çıkarılmış Tahviller|A;408|Menkul Kıymetler İhraç Farkı (−) (uzun vadeli)|B;420|Satıcılar (uzun vadeli)|A;421|Borç Senetleri (uzun vadeli)|A;480|Gelecek Yıllara Ait Gelirler|A;481|Gider Tahakkukları (uzun vadeli)|A;
+500|Sermaye|A;501|Ödenmemiş Sermaye (−)|B;502|Sermaye Düzeltmesi Olumlu Farkları|A;520|Hisse Senedi İhraç Primleri|A;521|Hisse Senedi İptal Kârları|A;522|MDV Yeniden Değerleme Artışları|A;529|Diğer Sermaye Yedekleri|A;
+540|Yasal Yedekler|A;541|Statü Yedekleri|A;542|Olağanüstü Yedekler|A;548|Diğer Kâr Yedekleri|A;570|Geçmiş Yıllar Kârları|A;580|Geçmiş Yıllar Zararları (−)|B;590|Dönem Net Kârı|A;591|Dönem Net Zararı (−)|B;
+600|Yurt İçi Satışlar|A;601|Yurt Dışı Satışlar|A;602|Diğer Gelirler|A;610|Satıştan İadeler (−)|B;611|Satış İskontoları (−)|B;612|Diğer İndirimler (−)|B;
+620|Satılan Mamuller Maliyeti (−)|B;621|Satılan Ticari Mallar Maliyeti (−)|B;622|Satılan Hizmet Maliyeti (−)|B;
+630|Araştırma ve Geliştirme Giderleri (−)|B;631|Pazarlama, Satış ve Dağıtım Giderleri (−)|B;632|Genel Yönetim Giderleri (−)|B;
+640|İştiraklerden Temettü Gelirleri|A;642|Faiz Gelirleri|A;644|Konusu Kalmayan Karşılıklar|A;645|Menkul Kıymet Satış Kârları|A;646|Kambiyo Kârları|A;647|Reeskont Faiz Gelirleri|A;649|Diğer Olağan Gelir ve Kârlar|A;
+653|Komisyon Giderleri (−)|B;654|Karşılık Giderleri (−)|B;655|Menkul Kıymet Satış Zararları (−)|B;656|Kambiyo Zararları (−)|B;657|Reeskont Faiz Giderleri (−)|B;659|Diğer Olağan Gider ve Zararlar (−)|B;
+660|Kısa Vadeli Borçlanma Giderleri (−)|B;661|Uzun Vadeli Borçlanma Giderleri (−)|B;671|Önceki Dönem Gelir ve Kârları|A;679|Diğer Olağan Dışı Gelir ve Kârlar|A;680|Çalışmayan Kısım Gider ve Zararları (−)|B;681|Önceki Dönem Gider ve Zararları (−)|B;689|Diğer Olağan Dışı Gider ve Zararlar (−)|B;
+690|Dönem Kârı veya Zararı|X;691|Dönem Kârı Vergi ve Diğer Yasal Yükümlülük Karşılıkları (−)|B;692|Dönem Net Kârı veya Zararı|X;
+710|Direkt İlk Madde ve Malzeme Giderleri|B;711|Direkt İlk Madde ve Malzeme Giderleri Yansıtma|A;720|Direkt İşçilik Giderleri|B;721|Direkt İşçilik Giderleri Yansıtma|A;730|Genel Üretim Giderleri|B;731|Genel Üretim Giderleri Yansıtma|A;
+740|Hizmet Üretim Maliyeti|B;741|Hizmet Üretim Maliyeti Yansıtma|A;750|Araştırma ve Geliştirme Giderleri|B;751|Araştırma ve Geliştirme Giderleri Yansıtma|A;
+760|Pazarlama, Satış ve Dağıtım Giderleri|B;761|Pazarlama, Satış ve Dağıtım Giderleri Yansıtma|A;770|Genel Yönetim Giderleri|B;771|Genel Yönetim Giderleri Yansıtma|A;780|Finansman Giderleri|B;781|Finansman Giderleri Yansıtma|A;
+790|İlk Madde ve Malzeme Giderleri|B;791|İşçi Ücret ve Giderleri|B;792|Memur Ücret ve Giderleri|B;793|Dışarıdan Sağlanan Fayda ve Hizmetler|B;794|Çeşitli Giderler|B;795|Vergi, Resim ve Harçlar|B;796|Amortismanlar ve Tükenme Payları|B;797|Finansman Giderleri (7/B)|B;798|Gider Çeşitleri Yansıtma Hesabı|A;799|Üretim Maliyet Hesabı|B`;
+const TDHP={};
+TDHP_SRC.split(';').forEach(s=>{const [c,n,b]=s.trim().split('|');if(c)TDHP[c]={c,n,b};});
+const GRP={'10':'Hazır Değerler','11':'Menkul Kıymetler','12':'Ticari Alacaklar','13':'Diğer Alacaklar','15':'Stoklar','18':'Gelecek Aylara Ait Giderler ve Gelir Tahakkukları','19':'Diğer Dönen Varlıklar',
+ '22':'Ticari Alacaklar','24':'Mali Duran Varlıklar','25':'Maddi Duran Varlıklar','26':'Maddi Olmayan Duran Varlıklar','28':'Gelecek Yıllara Ait Giderler ve Gelir Tahakkukları',
+ '30':'Mali Borçlar','32':'Ticari Borçlar','33':'Diğer Borçlar','34':'Alınan Avanslar','36':'Ödenecek Vergi ve Diğer Yükümlülükler','37':'Borç ve Gider Karşılıkları','38':'Gelecek Aylara Ait Gelirler ve Gider Tahakkukları','39':'Diğer Kısa Vadeli Yabancı Kaynaklar',
+ '40':'Mali Borçlar','42':'Ticari Borçlar','48':'Gelecek Yıllara Ait Gelirler ve Gider Tahakkukları',
+ '50':'Ödenmiş Sermaye','52':'Sermaye Yedekleri','54':'Kâr Yedekleri','57':'Geçmiş Yıllar Kârları','58':'Geçmiş Yıllar Zararları (−)','59':'Dönem Net Kârı (Zararı)'};
+const CLS={'1':'Dönen Varlıklar','2':'Duran Varlıklar','3':'Kısa Vadeli Yabancı Kaynaklar','4':'Uzun Vadeli Yabancı Kaynaklar','5':'Özkaynaklar','6':'Gelir Tablosu Hesapları','7':'Maliyet Hesapları'};
+function an(c){const a=TDHP[c];return a?`${c} ${a.n}`:`${c} (?)`;}
+function findCode(str){
+  const s=String(str||'').trim();if(!s)return null;
+  const m=s.match(/^(\d{3})/);if(m)return TDHP[m[1]]?m[1]:null;
+  const low=s.toLocaleLowerCase('tr-TR');
+  const hit=Object.values(TDHP).find(a=>a.n.toLocaleLowerCase('tr-TR')===low);return hit?hit.c:null;
+}
+
+/* ---------- Yevmiye maddeleri ----------
+   Madde: {d:'açıklama', l:[[kod,borç,alacak],...]}  — B(kod,t) / A(kod,t) yardımcıları */
+const B=(c,t,l)=>l?[String(c),t,0,l]:[String(c),t,0], A=(c,t,l)=>l?[String(c),0,t,l]:[String(c),0,t]; /* l: isteğe bağlı alt hesap etiketi */
+const anl=x=>an(x[0])+(x[3]?` · ${x[3]}`:'');
+const J=(d,l)=>({d,l});
+function entryTotals(l){let b=0,a=0;l.forEach(x=>{b+=x[1];a+=x[2];});return {b,a};}
+let JT_N=0;const JT_ERR=[];
+function jt(entries,o={}){
+  let no=o.start||1,s=`<table class="jt"><thead><tr><th>Hesap</th><th>Borç</th><th>Alacak</th></tr></thead><tbody>`;
+  entries.forEach(e=>{
+    const tt=entryTotals(e.l);JT_N++;if(Math.abs(tt.b-tt.a)>0.01||e.l.some(x=>!TDHP[x[0]]))JT_ERR.push(`${e.d}: ${nf(tt.b,2)} / ${nf(tt.a,2)}`);
+    if(o.num!==false)s+=`<tr class="mh"><td colspan="3">${no++}${e.date?' · '+e.date:''}</td></tr>`;
+    const dr=e.l.filter(x=>x[1]>0),cr=e.l.filter(x=>x[2]>0);
+    dr.forEach(x=>{s+=`<tr><td>${anl(x)}</td><td class="n">${nf(x[1],x[1]%1?2:0)}</td><td class="n"></td></tr>`;});
+    cr.forEach(x=>{s+=`<tr><td class="cr">${anl(x)}</td><td class="n"></td><td class="n">${nf(x[2],x[2]%1?2:0)}</td></tr>`;});
+    if(e.d)s+=`<tr class="ex"><td colspan="3">${e.d}</td></tr>`;
+  });
+  return s+'</tbody></table>';
+}
+function balances(entries){const m={};entries.forEach(e=>e.l.forEach(([c,b,a])=>{if(!m[c])m[c]={b:0,a:0};m[c].b+=b;m[c].a+=a;}));return m;}
+function net(m,c){const x=m[c];return x?x.b-x.a:0;}
+function mizan(entries,o={}){
+  const m=balances(entries),codes=Object.keys(m).sort();
+  let tb=0,ta=0,bb=0,ba=0;
+  const rows=codes.map(c=>{const x=m[c],d=x.b-x.a;tb+=x.b;ta+=x.a;if(d>0)bb+=d;else ba+=-d;
+    return `<tr${o.hl&&o.hl.includes(c)?' style="background:var(--wash)"':''}><td>${an(c)}</td><td>${nf(x.b)}</td><td>${nf(x.a)}</td><td>${d>0.005?nf(d):''}</td><td>${d<-0.005?nf(-d):''}</td></tr>`;}).join('');
+  const ok=Math.abs(tb-ta)<0.01&&Math.abs(bb-ba)<0.01;
+  return {ok,tb,ta,bb,ba,html:`<table class="tbl"><thead><tr><th>Hesap</th><th>Borç toplamı</th><th>Alacak toplamı</th><th>Borç bakiyesi</th><th>Alacak bakiyesi</th></tr></thead><tbody>${rows||'<tr><td colspan="5" class="l lmeta">Henüz kayıt yok.</td></tr>'}
+   <tr class="tot"><td>Toplam</td><td>${nf(tb)}</td><td>${nf(ta)}</td><td>${nf(bb)}</td><td>${nf(ba)}</td></tr></tbody></table>`};
+}
+function taccounts(host,entries,codes,o={}){
+  const items={};codes.forEach(c=>items[c]={d:[],k:[]});
+  entries.forEach((e,i)=>e.l.forEach(([c,b,a])=>{if(!items[c])return;if(b)items[c].d.push([i+1,b]);if(a)items[c].k.push([i+1,a]);}));
+  host.innerHTML=`<div class="ta-wrap">${codes.map(c=>{const x=items[c],sb=x.d.reduce((s,v)=>s+v[1],0),sa=x.k.reduce((s,v)=>s+v[1],0),d=sb-sa;
+    const ln=arr=>arr.map(v=>`<div class="ta-l"><span>(${v[0]})</span><span>${nf(v[1])}</span></div>`).join('');
+    return `<div class="ta${o.hl&&o.hl.includes(c)?' new':''}"><div class="ta-h">${an(c)}</div><div class="ta-b"><div>${ln(x.d)}</div><div>${ln(x.k)}</div></div>
+     <div class="ta-f"><div>${nf(sb)}</div><div>${nf(sa)}</div></div><div class="ta-bal">${Math.abs(d)<0.005?'Bakiye yok':(d>0?'Borç bakiyesi ':'Alacak bakiyesi ')+nf(Math.abs(d))}</div></div>`;}).join('')}</div>`;
+}
+
+/* ---------- Durum (tarayıcıda saklanır) ---------- */
+let S={lvl:'lisans',mode:'tam',done:{},unl:{},pos:{},qs:{}};
+let NOSAVE=false;
+function loadState(){try{const o=JSON.parse(localStorage.getItem(CONFIG.key)||'{}');if(o&&typeof o==='object')S=Object.assign(S,o);}catch(e){}}
+function save(){if(NOSAVE)return;try{localStorage.setItem(CONFIG.key,JSON.stringify(S));}catch(e){}}
+
+/* ---------- Grafik çekirdeği (elle SVG) ---------- */
+function niceStep(span,n){const s0=span/n,mag=Math.pow(10,Math.floor(Math.log10(s0))),e=s0/mag;return mag*(e>=7.5?10:e>=3.5?5:e>=1.5?2:1);}
+function niceTicks(a,b,n=5){if(!(b>a))return [a];const st=niceStep(b-a,n),out=[];for(let v=Math.ceil(a/st-1e-9)*st;v<=b+st*1e-6;v+=st)out.push(Math.round(v/st)*st||0);return out;}
+function niceMax(v,n=5){if(!(v>0))return 1;const st=niceStep(v,n);return Math.ceil(v*1.0001/st)*st;}
+function niceRange(lo,hi,n=5){if(hi-lo<1e-9){hi=lo+1;}const st=niceStep(hi-lo,n);return [Math.floor(lo/st)*st,Math.ceil(hi/st)*st];}
+let CPID=0;
+function frame(host,o){
+  const W=o.w||640,H=o.h||330,m={l:o.ml||66,r:o.mr||22,t:14,b:o.mb||46};
+  if(!host._svg){
+    host.classList.add('chart');
+    host.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img"></svg><div class="tip" hidden></div>`;
+    host._svg=host.querySelector('svg');host._tip=host.querySelector('.tip');
+    const svg=host._svg;
+    const hide=()=>{host._tip.hidden=true;const g=svg.querySelector('.hov');if(g)g.innerHTML='';};
+    svg.addEventListener('pointermove',e=>{
+      const f=host._f;if(!f||!f.hoverFn)return;
+      const ctm=svg.getScreenCTM();if(!ctm)return;
+      const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(ctm.inverse());
+      if(p.x<f.m.l-4||p.x>f.W-f.m.r+4||p.y<f.m.t-4||p.y>f.H-f.m.b+4){hide();return;}
+      const r=f.hoverFn(f.ix(clamp(p.x,f.m.l,f.W-f.m.r)),f.iy(p.y));if(!r){hide();return;}
+      const g=svg.querySelector('.hov');let s='';
+      if(r.x!=null&&r.x>=f.o.x[0]&&r.x<=f.o.x[1])s+=`<line x1="${f.X(r.x)}" x2="${f.X(r.x)}" y1="${f.m.t}" y2="${f.H-f.m.b}"/>`;
+      (r.pts||[]).forEach(q=>{if(isFinite(q[1])&&q[1]>=f.o.y[0]&&q[1]<=f.o.y[1])s+=`<circle cx="${f.X(q[0])}" cy="${f.Y(q[1])}" r="5" class="${q[2]||'cur'}"/>`;});
+      g.innerHTML=s;
+      const tip=host._tip;tip.innerHTML=r.html;tip.hidden=false;
+      const rect=host.getBoundingClientRect();let lx=e.clientX-rect.left+14;const tw=tip.offsetWidth;if(lx+tw>rect.width)lx=e.clientX-rect.left-tw-14;
+      tip.style.left=Math.max(0,lx)+'px';tip.style.top=Math.max(0,e.clientY-rect.top-12)+'px';
+    });
+    svg.addEventListener('pointerleave',hide);
+  }
+  const svg=host._svg;svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('aria-label',o.aria||'Grafik');
+  const pw=W-m.l-m.r,ph=H-m.t-m.b;
+  const X=v=>m.l+(v-o.x[0])/(o.x[1]-o.x[0])*pw;
+  const Y=v=>m.t+ph-(v-o.y[0])/(o.y[1]-o.y[0])*ph;
+  const ix=px=>o.x[0]+(px-m.l)/pw*(o.x[1]-o.x[0]);
+  const iy=py=>o.y[0]+(m.t+ph-py)/ph*(o.y[1]-o.y[0]);
+  const id='cp'+(++CPID);
+  let s=`<defs><clipPath id="${id}"><rect x="${m.l}" y="${m.t-3}" width="${pw}" height="${ph+6}"/></clipPath></defs>`;
+  const yt=o.yticks||niceTicks(o.y[0],o.y[1],5);
+  yt.forEach(v=>{if(v<o.y[0]-1e-9||v>o.y[1]+1e-9)return;s+=`<line class="grid" x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="tick" x="${m.l-8}" y="${Y(v)+4}" text-anchor="end">${o.yfmt?o.yfmt(v):nf(v)}</text>`;});
+  if(o.xcats){o.xcats.forEach((c,i)=>{const parts=String(c).split('|');s+=`<text class="tick" x="${X(i+.5)}" y="${H-m.b+17}" text-anchor="middle">${parts.map((p,k)=>`<tspan x="${X(i+.5)}" dy="${k?13:0}">${p}</tspan>`).join('')}</text>`;});}
+  else{(o.xticks||niceTicks(o.x[0],o.x[1],6)).forEach(v=>{if(v<o.x[0]-1e-9||v>o.x[1]+1e-9)return;s+=`<text class="tick" x="${X(v)}" y="${H-m.b+18}" text-anchor="middle">${o.xfmt?o.xfmt(v):nf(v)}</text>`;});}
+  const y0=(o.y[0]<=0&&o.y[1]>=0)?0:o.y[0];
+  s+=`<line class="axis" x1="${m.l}" x2="${W-m.r}" y1="${Y(y0)}" y2="${Y(y0)}"/>`;
+  if(o.xlab)s+=`<text class="atitle" x="${m.l+pw/2}" y="${H-6}" text-anchor="middle">${o.xlab}</text>`;
+  if(o.ylab)s+=`<text class="atitle" transform="translate(13 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab}</text>`;
+  s+=`<g class="data" clip-path="url(#${id})"></g><g class="ann"></g><g class="hov"></g>`;
+  svg.innerHTML=s;
+  const gd=svg.querySelector('.data'),ga=svg.querySelector('.ann');
+  const cy=v=>clamp(Y(v),-2000,H+2000);
+  const f={W,H,m,o,X,Y,ix,iy,hoverFn:null,
+    add(str){gd.insertAdjacentHTML('beforeend',str);},
+    ann(str){ga.insertAdjacentHTML('beforeend',str);},
+    d(pts){let d='',pen=false;pts.forEach(p=>{if(!isFinite(p[1])){pen=false;return;}d+=(pen?'L':'M')+X(p[0]).toFixed(1)+','+cy(p[1]).toFixed(1);pen=true;});return d;},
+    line(pts,cls){const d=f.d(pts);if(d)f.add(`<path class="${cls}" d="${d}"/>`);},
+    hline(v,cls='ref',lab,anchor='end'){if(v<o.y[0]||v>o.y[1])return;f.add(`<line class="${cls}" x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}"/>`);if(lab)f.text(anchor==='end'?o.x[1]:o.x[0],v,lab,'lab2',anchor,anchor==='end'?-4:4,-6);},
+    vline(v,cls='ref',lab,dy=0){if(v<o.x[0]||v>o.x[1])return;f.add(`<line class="${cls}" x1="${X(v)}" x2="${X(v)}" y1="${m.t}" y2="${H-m.b}"/>`);if(lab){const right=X(v)>m.l+pw*0.72;f.ann(`<text class="lab2" x="${X(v)+(right?-5:5)}" y="${m.t+12+dy}" text-anchor="${right?'end':'start'}">${lab}</text>`);}},
+    dot(x,y,cls='cur',r=5){if(!isFinite(y)||y<o.y[0]||y>o.y[1]||x<o.x[0]||x>o.x[1])return;f.ann(`<circle cx="${X(x)}" cy="${Y(y)}" r="${r}" class="${cls}"/>`);},
+    text(x,y,t,cls='lab',anchor='start',dx=0,dy=0){if(!isFinite(y))return;const px=clamp(X(x)+dx,m.l+2,W-m.r-2),py=clamp(Y(y)+dy,m.t+10,H-m.b-4);f.ann(`<text class="${cls}" x="${px}" y="${py}" text-anchor="${anchor}">${t}</text>`);},
+    /* x0..x1 veri biriminde; v0..v1 değer aralığı; round: uç yuvarlatma (veri ucu) */
+    rect(x0,x1,v0,v1,cls,round=true){const lo=Math.min(v0,v1),hi=Math.max(v0,v1);if(hi-lo<1e-9)return;
+      const px0=X(x0),px1=X(x1),w=px1-px0,yt=Y(hi),yb=Y(lo),h=yb-yt,r=round?Math.min(4,w/2,h):0;
+      if(!r){f.add(`<rect class="${cls}" x="${px0}" y="${yt}" width="${w}" height="${h}"/>`);return;}
+      const up=v1>=v0; /* veri ucu: up ise üst, değilse alt */
+      const p=up?`M${px0},${yb}V${yt+r}Q${px0},${yt} ${px0+r},${yt}H${px1-r}Q${px1},${yt} ${px1},${yt+r}V${yb}Z`
+               :`M${px0},${yt}V${yb-r}Q${px0},${yb} ${px0+r},${yb}H${px1-r}Q${px1},${yb} ${px1},${yb-r}V${yt}Z`;
+      f.add(`<path class="${cls}" d="${p}"/>`);},
+    area(top,bot,cls){const pts=top.concat(bot.slice().reverse());if(pts.length<3)return;f.add(`<path class="${cls}" d="${f.d(pts)}Z"/>`);},
+    bar(i,v,cls='bar1',base=0){f.rect(i+.22,i+.78,base,v,cls);},
+    hover(fn){f.hoverFn=fn;}
+  };
+  host._f=f;return f;
+}
+/* Yığılmış sütun (bilanço): cols=[{name, items:[[etiket,değer,sınıf]]}] */
+function stackChart(host,cols,o={}){
+  const tot=cols.map(c=>c.items.reduce((s,x)=>s+Math.max(0,x[1]),0));
+  const ymax=niceMax(Math.max(o.minMax||0,...tot,1)*1.1);
+  const f=frame(host,{x:[0,cols.length],y:[0,ymax],xcats:cols.map(c=>c.name),yfmt:kTL,ylab:o.ylab||'TL',aria:o.aria||'Yığılmış sütun grafiği',h:o.h||320});
+  cols.forEach((c,i)=>{let base=0;const pos=c.items.filter(x=>x[1]>0.5);
+    pos.forEach((x,k)=>{const top=k===pos.length-1;f.rect(i+.22,i+.78,base,base+x[1],x[2]+' seg-r',top);
+      const hpx=f.Y(base)-f.Y(base+x[1]);if(hpx>16)f.ann(`<text class="labin${x[2]==='f4'?' dk':''}" x="${f.X(i+.5)}" y="${f.Y(base+x[1]/2)+4}" text-anchor="middle">${x[0]}: ${kTL(x[1])}</text>`);
+      base+=x[1];});
+    f.text(i+.5,base,'Toplam '+tl(base),'lab','middle',0,-8);});
+  f.hover(x=>{const i=clamp(Math.floor(x),0,cols.length-1),c=cols[i];return {html:`<b>${c.name.replace(/\|/g,' ')}</b><br>`+c.items.map(it=>`${it[0]}: ${tl(it[1])}`).join('<br>')+`<br><b>Toplam: ${tl(tot[i])}</b>`};});
+  return f;
+}
+/* Şelale: items=[{l, v, t:'total'|'delta'}] */
+function waterfall(host,items,o={}){
+  let run=0;const bars=items.map(it=>{let a,b;if(it.t==='total'){a=0;b=it.v;run=it.v;}else{a=run;b=run+it.v;run=b;}return {...it,a,b};});
+  const lo=Math.min(0,...bars.map(x=>Math.min(x.a,x.b))),hi=Math.max(0,...bars.map(x=>Math.max(x.a,x.b)));
+  const pad=(hi-lo||1)*0.1;const [y0,y1]=niceRange(lo<0?lo-pad:0,hi+pad,5);
+  const f=frame(host,{x:[0,items.length],y:[y0,y1],xcats:items.map(x=>x.l),yfmt:kTL,ylab:'TL',aria:o.aria||'Şelale grafiği',h:o.h||340,mb:58});
+  bars.forEach((x,i)=>{const cls=x.t==='total'?'f1':(x.v>=0?'f3':'f2');f.rect(i+.18,i+.82,x.a,x.b,cls,x.t==='total');
+    if(Math.abs(x.v)>0.5){const top=Math.max(x.a,x.b);f.text(i+.5,x.t==='total'&&x.v<0?Math.min(x.a,x.b):top,(x.t!=='total'&&x.v>0?'+':'')+kTL(x.v),'lab','middle',0,x.t==='total'&&x.v<0?14:-6);}
+    if(i<bars.length-1){const nx=bars[i+1];const lv=x.b;f.add(`<line class="ref" x1="${f.X(i+.82)}" x2="${f.X(i+1.18)}" y1="${f.Y(lv)}" y2="${f.Y(lv)}"/>`);}
+  });
+  f.hover(xx=>{const i=clamp(Math.floor(xx),0,items.length-1),b=bars[i];return {html:`<b>${b.l.replace(/\|/g,' ')}</b><br>${b.t==='total'?'Ara toplam':'Değişim'}: ${tl(b.v)}${b.t!=='total'?'<br>Sonrası: '+tl(b.b):''}`};});
+  return f;
+}
+/* Gruplu sütun: cats=['..'], series=[{n, cls, v:[..]}] */
+function groupChart(host,cats,series,o={}){
+  const all=series.flatMap(s=>s.v),mn=Math.min(0,...all),mx=Math.max(0,...all,1),pad=(mx-mn)*0.1;const [y0,y1]=niceRange(mn<0?mn-pad:0,mx+pad,5);
+  const f=frame(host,{x:[0,cats.length],y:[y0,y1],xcats:cats,yfmt:o.yfmt||kTL,ylab:o.ylab||'TL',aria:o.aria||'Gruplu sütun grafiği',h:o.h||320,mb:o.mb});
+  const k=series.length,w=.64/k;
+  cats.forEach((c,i)=>series.forEach((s,j)=>{const x0=i+.18+j*w+.01,x1=x0+w-.02;f.rect(x0,x1,0,s.v[i],s.cls);
+    if(o.labels!==false&&Math.abs(s.v[i])>0.5)f.text((x0+x1)/2,s.v[i],(o.vfmt||kTL)(s.v[i]),'lab','middle',0,s.v[i]>=0?-6:14);}));
+  f.hover(x=>{const i=clamp(Math.floor(x),0,cats.length-1);return {html:`<b>${String(cats[i]).replace(/\|/g,' ')}</b><br>`+series.map(s=>`${s.n}: ${(o.tfmt||tl)(s.v[i])}`).join('<br>')};});
+  return f;
+}
+
+/* ---------- Arayüz bileşenleri ---------- */
+function sl(host,o){
+  const w=el('label','sl',`<span class="sl-top"><span>${o.label}</span><output></output></span><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.value}">`);
+  if(o.yl)w.classList.add('yl-only');
+  host.appendChild(w);const inp=$('input',w),out=$('output',w);
+  const upd=()=>{out.textContent=o.fmt(+inp.value);};upd();inp.addEventListener('input',upd);
+  return {get v(){return +inp.value;},set v(x){inp.value=x;upd();},on(fn){inp.addEventListener('input',fn);},el:inp};
+}
+function seg(host,label,opts,val,onChange){
+  const w=el('div','segw',`<div class="sl-top"><span>${label}</span></div><div class="seg" role="group" aria-label="${label}"></div>`);
+  const g=$('.seg',w);
+  opts.forEach(([v,t])=>{const b=el('button','',t);b.type='button';if(String(v)===String(val))b.classList.add('on');
+    b.onclick=()=>{g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));onChange(v);};g.appendChild(b);});
+  host.appendChild(w);return w;
+}
+function legend(host,items){host.innerHTML=items.map(([c,t])=>`<span class="lg"><span class="sw ${c}"></span>${t}</span>`).join('');}
+function readouts(host,items){
+  host.innerHTML=items.map(([k,l,yl])=>`<div class="ro-i${yl?' yl-only':''}" data-k="${k}"><div class="ro-l">${l}</div><div class="ro-v">—</div></div>`).join('');
+  /* Uzun metin değerleri (ör. hesap adı) dar kutuda kelime kelime kırılmasın: kutu satırın tamamını alır */
+  return {set(k,v){const e=host.querySelector(`[data-k="${k}"] .ro-v`);if(e){e.innerHTML=v;e.parentNode.classList.toggle('wide',e.textContent.trim().split(/\s+/).length>2);}}};
+}
+function checklist(host,items,api){
+  const box=el('div','task',`<div class="task-h">Görev <span class="task-s"></span></div>`+items.map(i=>`<div class="ti" data-id="${i.id}"><span class="cb" aria-hidden="true"></span><span>${i.t}</span></div>`).join(''));
+  host.appendChild(box);const done=new Set();
+  const setS=()=>{$('.task-s',box).textContent=done.size===items.length?'— tamamlandı, devam edebilirsiniz':`(${done.size}/${items.length})`;};
+  const mark=id=>{if(done.has(id))return;done.add(id);const e=box.querySelector(`[data-id="${id}"]`);if(e)e.classList.add('ok');setS();if(done.size===items.length){box.classList.add('all');api.unlock();}};
+  if(api.unlocked)items.forEach(i=>mark(i.id));else setS();
+  return {mark,has:id=>done.has(id)};
+}
+function kl(root,intro){
+  root.insertAdjacentHTML('beforeend',`${intro?`<div class="k-intro">${intro}</div>`:''}<div class="kgrid"><div class="kctl"><div class="ktask"></div></div><div class="kmain"><div class="legend"></div><div class="kch"></div><div class="ro"></div><div class="kx"></div></div></div>`);
+  return {ctl:$('.kctl',root),task:$('.ktask',root),leg:$('.legend',root),ch:$('.kch',root),ro:$('.ro',root),x:$('.kx',root),main:$('.kmain',root)};
+}
+function dtable(host,cols,rows){
+  let d=host.querySelector('details.dt');
+  if(!d){d=el('details','dt','<summary>Veri tablosu</summary><div class="dtw"></div>');host.appendChild(d);}
+  $('.dtw',d).innerHTML=`<table class="tbl"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+/* Sıralı işlem listesi. txs=[{t:'metin', e:madde, ask:{q,opts,correct}}]; onChange(uygulanan maddeler, son indeks, tahmin doğru mu) */
+function txList(host,txs,onChange,o={}){
+  const w=el('div','');host.appendChild(w);let n=0;const res=[];
+  function render(){
+    w.innerHTML=`<div class="tx-list">${txs.map((x,i)=>`<div class="tx${i<n?' on':''}" data-i="${i}" style="flex-direction:column;cursor:default">
+      <div style="display:flex;gap:8px"><span class="txn">${i+1}</span><span>${x.t}</span></div>
+      ${i===n?`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-left:26px">${x.ask?`<select class="sel" aria-label="Tahmin"><option value="">${x.ask.q}</option>${x.ask.opts.map((op,k)=>`<option value="${k}">${op}</option>`).join('')}</select>`:''}<button type="button" class="btn sm primary">Kaydet</button></div>`:''}
+      ${i<n&&res[i]!=null?`<div style="margin-left:26px;font-size:.78rem">${res[i]?'<span class="flag good">✓ Tahmin doğru</span>':`<span class="flag bad">✗ Doğrusu: ${x.ask.opts[x.ask.correct]}</span>`}</div>`:''}
+     </div>`).join('')}</div><div style="margin-top:8px"><button type="button" class="btn sm" data-reset>↺ Baştan başla</button></div>`;
+    const cur=w.querySelector(`.tx[data-i="${n}"]`);
+    if(cur){const b=$('button',cur),sel=$('select',cur);b.onclick=()=>{const x=txs[n];let ok=null;
+      if(x.ask){if(sel.value===''){sel.focus();return;}ok=+sel.value===x.ask.correct;}res[n]=ok;n++;render();onChange(txs.slice(0,n).map(t=>t.e),n-1,ok,res);};}
+    $('[data-reset]',w).onclick=()=>{n=0;res.length=0;render();onChange([],-1,null,res);};
+  }
+  render();
+  return {get n(){return n;}};
+}
+
+/* ---------- Katalog, görünüm ---------- */
+const TYPE={anlatim:'Konu',ornek:'Çözümlü örnek',kesif:'Keşif',turetim:'Kayıt mantığı',alistirma:'Alıştırmalar',ozet:'Özet'};
+const TAG={hesap:'Hesap',grafik:'Grafik',kavram:'Kavram',kayit:'Yevmiye kaydı'};
+let CAT={};
+const app=document.getElementById('app');
+function isLocked(s){return s.type==='kesif'||s.type==='alistirma';}
+function visSteps(L){return L.steps.filter(s=>(s.level!=='yl'||S.lvl==='yl')&&(S.mode==='tam'||s.core));}
+function toggles(){
+  const [l1,l2]=CONFIG.lvlLabels;
+  return `<div class="toggles">
+   <div class="tg"><span class="lbl">Düzey</span><div class="seg" role="group" aria-label="Düzey"><button type="button" data-lvl="lisans" class="${S.lvl==='lisans'?'on':''}">${l1}</button><button type="button" data-lvl="yl" class="${S.lvl==='yl'?'on':''}">${l2}</button></div></div>
+   <div class="tg"><span class="lbl">Mod</span><div class="seg" role="group" aria-label="Mod"><button type="button" data-mode="tam" class="${S.mode==='tam'?'on':''}">Tam ders</button><button type="button" data-mode="hizli" class="${S.mode==='hizli'?'on':''}">Hızlı yol</button></div></div></div>`;
+}
+function bindToggles(onChange){
+  app.querySelectorAll('[data-lvl]').forEach(b=>b.onclick=()=>{S.lvl=b.dataset.lvl;save();applyLvl();onChange();});
+  app.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;save();onChange();});
+}
+function applyLvl(){document.body.classList.toggle('yl',S.lvl==='yl');}
+
+function renderHome(){
+  document.title=CONFIG.title;
+  const card=x=>{
+    const L=LESSONS[x.id];
+    const meta=`<div class="mt">Hafta ${x.h} · ${x.oc}${L?' · '+L.sure:''}</div>`;
+    const gap=x.gap?`<span class="chip gap" title="${x.gapt||'İzlencenin ders içeriğinde ya da öğrenme çıktılarında var, haftalık planda yok'}">İzlence eksiği</span>`:'';
+    if(!L)return `<div class="lc off" aria-disabled="true"><div class="no">Ders ${x.no} <span class="chip">Planlandı</span>${gap}</div><div class="tt">${x.t}</div>${meta}</div>`;
+    const st=S.done[x.id]?'<span class="chip ok">✓ Tamamlandı</span>':S.pos[x.id]?'<span class="chip pilot">Devam ediyor</span>':'';
+    return `<a class="lc" href="#/ders/${x.id}"><div class="no">Ders ${x.no} ${st}${gap}</div><div class="tt">${x.t}</div>${meta}</a>`;
+  };
+  const rows=CATALOG.flatMap(u=>u.items).map(x=>`<tr><td>${x.no}</td><td style="text-align:left">${x.t}</td><td>${x.h}</td><td>${x.oc}</td><td>${LESSONS[x.id]?'Hazır':'Planlandı'}${x.gap?' · izlence eksiği':''}</td></tr>`).join('');
+  const site=/\/dersler\/simulatorler\//.test(location.pathname.replace(/\\/g,'/'))?`<a class="back" href="../../dersler.html#simulatorler">← Bütün simülatörler</a>`:'';
+  app.innerHTML=`<header class="hero"><div>${site}<div class="kicker">${CONFIG.kicker}</div><h1>${CONFIG.title}</h1>
+   <p class="lead">${CONFIG.lead}</p></div>${toggles()}</header>
+   <section class="card howto">
+    <div><b>Ders akışı</b>Konu → çözümlü örnek → keşifler → ${TYPE.turetim.toLocaleLowerCase('tr-TR')} → alıştırmalar → özet.</div>
+    <div><b>Kilitli adımlar</b>Keşif ve alıştırma adımlarında görevi tamamlamadan "Devam" açılmaz.</div>
+    ${CONFIG.howto3?`<div><b>${CONFIG.howto3[0]}</b>${CONFIG.howto3[1]}</div>`:`<div><b>Yevmiye alıştırmaları</b>Hesap kodunu ya da adını yazın, borç veya alacak tutarını girin. İlk yanlışta ipucu, ikincisinde çözüm gösterilir.</div>`}
+    <div><b>${CONFIG.lvlLabels[1]}</b>${CONFIG.lvlHelp}</div>
+   </section>
+   ${CATALOG.map(u=>`<section class="unit"><h2>${u.u}</h2><div class="cards">${u.items.map(card).join('')}</div></section>`).join('')}
+   <details class="card map"><summary>İzlence eşlemesi: ders → hafta → öğrenme çıktısı</summary>
+    <table class="tbl"><thead><tr><th>Ders</th><th style="text-align:left">Konu</th><th>Hafta</th><th>ÖÇ</th><th>Durum</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="lmeta">${CONFIG.mapNote}</p></details>
+   <footer class="about">
+    <p><b>Sürüm ${CONFIG.version}.</b> Sayılar ve ${CONFIG.company} kurgusaldır; öğretim amaçlıdır. ${CONFIG.footNote||'Vergi oranları ve mevzuat tutarları örnek olarak verilmiştir; kullanmadan önce güncel mevzuatı kontrol edin.'} İlerlemeniz yalnızca bu tarayıcıda saklanır. <button class="btn sm" id="reset">İlerlemeyi sıfırla</button></p>
+    <p>Kod ve içerik özgündür. Ders akışı, kilitli keşif, hızlı yol ve iki düzeyli katman fikirleri Mehmet Songur'un <i>Mikroekonomi Simülatörü</i>'nden esinlenmiştir (github.com/mehmetsongur/Microeconomics-Simulator, CC BY-NC-ND 4.0). O çalışmadan kod ya da içerik alınmamıştır.</p></footer>`;
+  bindToggles(renderHome);
+  $('#reset').onclick=()=>{if(confirm('Bütün ilerleme ve alıştırma cevapları silinsin mi?')){S.done={};S.unl={};S.pos={};S.qs={};save();renderHome();}};
+}
+function mountStep(body,id,st,api){
+  if(st.html)body.innerHTML=st.html();
+  if(st.mount)st.mount(body,api);
+  if(st.type==='alistirma')renderExercises(body,id,st,api);
+}
+function renderLesson(id,idxArg){
+  const L=LESSONS[id];if(!L){location.hash='#/';return;}
+  const meta=CAT[id];document.title=L.title+' · '+CONFIG.title;
+  const steps=visSteps(L);
+  let idx=idxArg;
+  if(idx==null){const k=S.pos[id];idx=Math.max(0,steps.findIndex(s=>s.k===k));}
+  idx=clamp(idx|0,0,steps.length-1);
+  let reach=steps.length-1;
+  if(!PREVIEW)for(let i=0;i<steps.length;i++){if(isLocked(steps[i])&&!S.unl[id+':'+steps[i].k]){reach=i;break;}}
+  if(idx>reach)idx=reach;
+  const st=steps[idx];S.pos[id]=st.k;save();
+  const isDone=i=>i<idx||(isLocked(steps[i])&&S.unl[id+':'+steps[i].k]);
+  app.innerHTML=`<header class="lh"><div><a href="#/" class="back">← Ders kataloğu</a>
+    <div class="lmeta">Ders ${meta.no} · Hafta ${meta.h} · ${meta.oc}${meta.gap?' · <span class="chip gap">İzlence eksiği giderildi</span>':''}</div><h1>${L.title}</h1></div>${toggles()}</header>
+   <nav class="steps" aria-label="Ders adımları">${steps.map((s,i)=>`<button type="button" class="stp${i===idx?' cur':''}${i!==idx&&isDone(i)?' done':''}" data-i="${i}" ${i>reach?'disabled':''}><span class="sn">${i+1}</span><span>${TYPE[s.type]}</span></button>`).join('')}</nav>
+   <article class="card step"><div class="sh"><span class="chip t-${st.type}">${TYPE[st.type]}${st.level==='yl'?' · '+CONFIG.lvlLabels[1]:''}</span><h2>${st.title}</h2></div><div class="sb"></div></article>
+   <footer class="nav"><button type="button" class="btn" id="prev" ${idx===0?'disabled':''}>← Geri</button><span class="lockmsg"></span><button type="button" class="btn primary" id="next"></button></footer>`;
+  bindToggles(()=>{const ns=visSteps(L);let j=ns.findIndex(s=>s.k===st.k);if(j<0){const oi=L.steps.indexOf(st);j=0;ns.forEach((s,k)=>{if(L.steps.indexOf(s)<=oi)j=k;});}go(id,j);});
+  app.querySelectorAll('.stp').forEach(b=>b.onclick=()=>go(id,+b.dataset.i));
+  const key=id+':'+st.k,locked=isLocked(st),next=$('#next'),msg=$('.lockmsg'),last=idx===steps.length-1;
+  const setNext=()=>{const ok=!locked||S.unl[key];next.disabled=!ok;next.textContent=last?'Dersi tamamla ✓':'Devam →';msg.textContent=ok?'':(st.type==='kesif'?'Devam etmek için görevi tamamlayın.':'Devam etmek için bütün soruları cevaplayın.');};
+  const api={unlocked:!!S.unl[key],unlock(){if(!S.unl[key]){S.unl[key]=1;save();}setNext();}};
+  mountStep($('.sb'),id,st,api);
+  setNext();
+  $('#prev').onclick=()=>go(id,idx-1);
+  next.onclick=()=>{if(next.disabled)return;if(last){S.done[id]=1;save();renderDone(id);}else go(id,idx+1);};
+  window.scrollTo(0,0);
+}
+function renderDone(id){
+  const L=LESSONS[id];
+  app.innerHTML=`<div class="card done-box"><h1>Ders tamamlandı ✓</h1><p>${L.title}</p><p><a class="btn primary" href="#/" style="text-decoration:none;display:inline-block">Ders kataloğuna dön</a></p></div>`;
+  window.scrollTo(0,0);
+}
+/* Öğretim elemanı önizlemesi: #/ders/<id>/<adım>/onizle — kilitleri kaldırır, ilerleme kaydetmez */
+let PREVIEW=false;
+function go(id,i){location.hash=`#/ders/${id}/${i}`+(PREVIEW?'/onizle':'');}
+
+/* ---------- Alıştırmalar ---------- */
+function parseNum(s){
+  s=String(s).trim().replace(/\s/g,'').replace(/TL|tl|adet|yıl|gün|pay|%/g,'').replace(/[−–]/g,'-');
+  if(!s)return NaN;
+  if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');
+  return Number(s);
+}
+function isRight(q,v){if(!isFinite(v))return false;const t=q.abs!=null?q.abs:Math.max(Math.abs(q.ans)*(q.rel||0.005),0.01);return Math.abs(v-q.ans)<=t;}
+function netMap(lines){const m={};lines.forEach(([c,b,a])=>{m[c]=(m[c]||0)+b-a;});Object.keys(m).forEach(c=>{if(Math.abs(m[c])<0.5)delete m[c];});return m;}
+/* Öğrenci satırlarını beklenen kayıtla (ya da alternatifleriyle) karşılaştırır */
+function gradeEntry(q,lines){
+  const tol=q.tol||1;const sm=netMap(lines);
+  const res=[q.entry].concat(q.alt||[]).map(ex=>{const em=netMap(ex);const codes=new Set([...Object.keys(em),...Object.keys(sm)]);let good=0,bad=0;
+    codes.forEach(c=>{if(em[c]!=null&&sm[c]!=null&&Math.abs(em[c]-sm[c])<=tol)good++;else bad++;});
+    return {ok:bad===0,good,total:Object.keys(em).length,wrongAcc:Object.keys(sm).filter(c=>em[c]==null)};});
+  return res.find(r=>r.ok)||res.reduce((a,b)=>(b.good-b.wrongAcc.length)>(a.good-a.wrongAcc.length)?b:a);
+}
+let DLID=0;
+function ensureDatalist(){if(document.getElementById('tdhp-dl'))return;const d=el('datalist','');d.id='tdhp-dl';d.innerHTML=Object.values(TDHP).map(a=>`<option value="${a.c} ${a.n}">`).join('');document.body.appendChild(d);}
+function renderExercises(root,lid,step,api){
+  const qs=step.qs.filter(q=>!q.yl||S.lvl==='yl');
+  const sum=el('div','qsum');root.appendChild(sum);
+  root.insertAdjacentHTML('beforeend','<p class="lmeta">Sayısal cevaplarda ondalık için virgül kullanın (ör. 42,58); binlik ayırıcı zorunlu değildir. Yevmiye sorularında hesap kodunu (ör. 153) ya da listeden hesabı seçin; her satıra yalnızca borç <i>ya da</i> alacak tutarı yazın. İlk yanlışta ipucu, ikinci yanlışta çözüm gösterilir.</p>');
+  ensureDatalist();
+  const upd=()=>{const n=qs.length,d=qs.filter(q=>(S.qs[lid+':'+q.id]||{}).s).length,f=qs.filter(q=>{const s=S.qs[lid+':'+q.id];return s&&s.s==='ok'&&s.a===0;}).length;
+    sum.innerHTML=`Cevaplanan: <b>${d}/${n}</b> · İlk denemede doğru: <b>${f}</b>`;if(d===n)api.unlock();};
+  qs.forEach((q,i)=>{
+    const key=lid+':'+q.id;const st=S.qs[key]||(S.qs[key]={a:0,s:''});
+    const c=el('div','q');const kay=q.tag==='kayit';
+    const solHTML=()=>(kay?jt([J(q.ed||'',q.entry)],{num:false}):'')+(q.sol||'');
+    let inner='';
+    if(q.opts)inner=`<div class="opts" role="radiogroup">${q.opts.map((o,k)=>`<label><input type="radio" name="r${key}" value="${k}"><span>${o}</span></label>`).join('')}</div><div class="qa"><button type="button" class="btn chk">Kontrol et</button></div>`;
+    else if(kay)inner=`<table class="je"><thead><tr><th>Hesap</th><th>Borç (TL)</th><th>Alacak (TL)</th><th></th></tr></thead><tbody></tbody><tfoot><tr class="tot"><td style="text-align:right">Toplam</td><td class="tb" style="text-align:right">0</td><td class="tc" style="text-align:right">0</td><td></td></tr></tfoot></table>
+      <div class="qa"><button type="button" class="btn sm addr">+ Satır ekle</button><button type="button" class="btn chk">Kontrol et</button></div>`;
+    else inner=`<div class="qa"><input class="num" inputmode="decimal" aria-label="Cevap" placeholder="Cevabınız"> <span class="unit">${q.unit||''}</span><button type="button" class="btn chk">Kontrol et</button></div>`;
+    c.innerHTML=`<div class="qh"><span class="chip">${TAG[q.tag]}</span>${q.yl?`<span class="chip yl">${CONFIG.lvlLabels[1]}</span>`:''}<span class="qn">Soru ${i+1}/${qs.length}</span></div><div>${q.p}</div>${inner}<div class="fb"></div>`;
+    root.appendChild(c);
+    const fb=$('.fb',c),btn=$('.chk',c),inp=$('input.num',c);
+    let tbody,addRow,rowsData;
+    if(kay){tbody=$('tbody',c);
+      const tot=()=>{let b=0,a=0;tbody.querySelectorAll('tr').forEach(r=>{b+=parseNum(r.querySelector('.vb').value)||0;a+=parseNum(r.querySelector('.va').value)||0;});$('.tb',c).textContent=nf(b,b%1?2:0);$('.tc',c).textContent=nf(a,a%1?2:0);};
+      addRow=()=>{const r=el('tr','',`<td><input class="acc" list="tdhp-dl" placeholder="ör. 102 Bankalar" aria-label="Hesap"></td><td><input class="num vb" inputmode="decimal" aria-label="Borç"></td><td><input class="num va" inputmode="decimal" aria-label="Alacak"></td><td><button type="button" class="xbtn" title="Satırı sil">×</button></td>`);
+        tbody.appendChild(r);r.querySelectorAll('input').forEach(x=>x.addEventListener('input',tot));$('.xbtn',r).onclick=()=>{if(tbody.children.length>1){r.remove();tot();}};};
+      addRow();addRow();$('.addr',c).onclick=addRow;
+      rowsData=()=>{const out=[],errs=[];tbody.querySelectorAll('tr').forEach((r,k)=>{const as=r.querySelector('.acc').value,vb=r.querySelector('.vb').value,va=r.querySelector('.va').value;
+        if(!as.trim()&&!vb.trim()&&!va.trim())return;
+        const code=findCode(as);const b=vb.trim()?parseNum(vb):0,a=va.trim()?parseNum(va):0;
+        if(!code)errs.push(`${k+1}. satırdaki hesap tanınmadı ("${as||'boş'}").`);
+        else if(!isFinite(b)||!isFinite(a))errs.push(`${k+1}. satırdaki tutar sayı değil.`);
+        else if((b>0)===(a>0))errs.push(`${k+1}. satıra yalnızca borç ya da yalnızca alacak tutarı yazın.`);
+        else out.push([code,b,a]);});
+        return {out,errs};};
+    }
+    const lock=()=>{c.querySelectorAll('input,button.chk,button.addr,button.xbtn').forEach(x=>x.disabled=true);};
+    const show=(extra)=>{
+      if(st.s==='ok'){fb.className='fb ok';fb.innerHTML='<b>Doğru.</b> '+solHTML();lock();}
+      else if(st.s==='rev'){fb.className='fb rev';fb.innerHTML='<b>Çözüm:</b> '+solHTML();lock();}
+      else if(st.a===1){fb.className='fb try';fb.innerHTML='<b>Henüz değil; bir kez daha deneyin.</b> '+(extra||'')+'İpucu: '+q.hint;}
+    };
+    btn.onclick=()=>{
+      let right,extra='';
+      if(q.opts){const r=c.querySelector('input[type=radio]:checked');if(!r){fb.className='fb try';fb.textContent='Bir seçenek işaretleyin.';return;}right=+r.value===q.correct;}
+      else if(kay){const {out,errs}=rowsData();
+        if(errs.length){fb.className='fb try';fb.innerHTML=errs.join('<br>');return;}
+        if(out.length<2){fb.className='fb try';fb.textContent='Bir yevmiye maddesinde en az bir borç ve bir alacak satırı olmalıdır.';return;}
+        const t=entryTotals(out);if(Math.abs(t.b-t.a)>0.5){fb.className='fb try';fb.innerHTML=`Kayıt denk değil: borç toplamı ${nf(t.b)}, alacak toplamı ${nf(t.a)}. Çift taraflı kayıtta iki toplam eşit olmalıdır.`;return;}
+        const g=gradeEntry(q,out);right=g.ok;
+        if(!right)extra=`Beklenen ${g.total} hesaptan ${Math.min(g.good,g.total)} tanesi doğru tutar ve yönde.${g.wrongAcc.length?` Bu kayıtta yer almaması gereken hesap: ${g.wrongAcc.join(', ')}.`:''} `;}
+      else{const v=parseNum(inp.value);if(!isFinite(v)){fb.className='fb try';fb.textContent='Sayısal bir değer girin.';return;}right=isRight(q,v);}
+      if(right)st.s='ok';else{st.a++;if(st.a>=2)st.s='rev';}
+      S.qs[key]=st;save();show(extra);upd();
+    };
+    if(inp)inp.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
+    show();
+  });
+  upd();
+}
+
+/* ---------- Öz-sınama: #/selftest ---------- */
+/* Bir adımın etkileşimlerini dener: kaydırıcılar, seçim düğmeleri, işlem listeleri, yevmiye cevapları */
+let UICHK=0,TXCHK=0;
+function poke(b,st,err,tag){
+  if(b.querySelector('.tx-list'))TXCHK++;
+  b.querySelectorAll('input[type=range]').forEach(r=>{[r.min,r.max,r.defaultValue].forEach(v=>{r.value=v;r.dispatchEvent(new Event('input'));});});
+  b.querySelectorAll('.seg button').forEach(x=>x.click());
+  for(let g=0;g<40;g++){const cur=b.querySelector('.tx-list .tx button.primary');if(!cur)break;const sel=cur.parentNode.querySelector('select');if(sel)sel.value='0';cur.click();}
+  b.querySelectorAll('[data-s]').forEach((x,i)=>{if(i===0)x.click();});
+  b.querySelectorAll('.cls-row select').forEach(s=>{s.value=s.options[1]?s.options[1].value:'';s.dispatchEvent(new Event('change'));});
+  b.querySelectorAll('button[data-step]').forEach(x=>{for(let k=0;k<12;k++)if(!x.disabled)x.click();});
+  if(st.qs){const qs=st.qs.filter(q=>!q.yl||S.lvl==='yl');b.querySelectorAll('.q').forEach((c,i)=>{const q=qs[i];if(!q||q.tag!=='kayit')return;
+    const tb=c.querySelector('tbody');while(tb.children.length<q.entry.length)c.querySelector('.addr').click();
+    q.entry.forEach((x,k)=>{const r=tb.children[k];r.querySelector('.acc').value=an(x[0]);r.querySelector('.vb').value=x[1]?nf(x[1],2):'';r.querySelector('.va').value=x[2]?nf(x[2],2):'';});
+    c.querySelector('.chk').click();UICHK++;if(!c.querySelector('.fb.ok'))err(`${tag} S${q.id}: doğru kayıt arayüzde kabul edilmedi (${c.querySelector('.fb').textContent.slice(0,90)})`);});}
+}
+function selfTest(){
+  NOSAVE=true;const out=[];let fail=0;const keep=JSON.parse(JSON.stringify(S));S.qs={};S.unl={};
+  const err=(m)=>{fail++;out.push('HATA  '+m);};
+  window.addEventListener('error',e=>err('pencere: '+e.message));
+  Object.keys(LESSONS).forEach(id=>{if(!CAT[id])err(`${id}: katalogda yok`);});
+  const host=el('div','');host.style.cssText='position:absolute;left:-9999px;width:1000px';document.body.appendChild(host);
+  let nSteps=0,nQ=0,nK=0;
+  ['lisans','yl'].forEach(lvl=>{S.lvl=lvl;S.mode='tam';applyLvl();
+    Object.entries(LESSONS).forEach(([id,L])=>{visSteps(L).forEach(st=>{
+      const b=el('div','');host.appendChild(b);
+      try{mountStep(b,id,st,{unlocked:false,unlock(){}});nSteps++;}catch(e){err(`${lvl} ${id}/${st.k}: ${e.message}`);}
+      try{poke(b,st,err,`${lvl} ${id}/${st.k}`);}catch(e){err(`${lvl} ${id}/${st.k} etkileşim: ${e.message}`);}
+      S.qs={};
+      if(st.qs&&lvl==='yl')st.qs.forEach(q=>{nQ++;
+        if(q.tag==='kayit'){nK++;[q.entry].concat(q.alt||[]).forEach((ex,k)=>{const t=entryTotals(ex);if(Math.abs(t.b-t.a)>0.01)err(`${id} S${q.id} kayıt${k?' alt'+k:''} denk değil (${t.b} / ${t.a})`);
+            ex.forEach(x=>{if(!TDHP[x[0]])err(`${id} S${q.id}: hesap yok ${x[0]}`);});});
+          if(!gradeEntry(q,q.entry).ok)err(`${id} S${q.id}: doğru cevap kabul edilmiyor`);
+          const wrong=q.entry.map(x=>[x[0],x[2],x[1]]);if(gradeEntry(q,wrong).ok)err(`${id} S${q.id}: ters kayıt kabul ediliyor`);}
+        else if(q.opts){if(!(q.correct>=0&&q.correct<q.opts.length))err(`${id} S${q.id}: doğru seçenek yok`);}
+        else if(!isFinite(q.ans))err(`${id} S${q.id}: cevap sayı değil`);
+        if(!q.hint)err(`${id} S${q.id}: ipucu yok`);});
+      b.remove();});});});
+  /* Ders metinlerindeki örnek maddelerin denkliği */
+  (window.EXAMPLE_ENTRIES||[]).forEach(([n,ex])=>{const t=entryTotals(ex.l);if(Math.abs(t.b-t.a)>0.01)err(`örnek madde denk değil: ${n} (${t.b} / ${t.a})`);ex.l.forEach(x=>{if(!TDHP[x[0]])err(`örnek madde ${n}: hesap yok ${x[0]}`);});});
+  [...new Set(JT_ERR)].slice(0,20).forEach(m=>err('ekranda denk olmayan ya da tanımsız hesaplı madde: '+m));
+  out.push(`Ekranda üretilen yevmiye maddesi: ${JT_N}`);
+  host.remove();S=keep;NOSAVE=false;applyLvl();
+  out.unshift(`${CONFIG.title}: ${Object.keys(LESSONS).length} ders, ${nSteps} adım açıldı (iki düzey), ${nQ} soru (${nK} yevmiye) denetlendi, ${(window.EXAMPLE_ENTRIES||[]).length} örnek madde; arayüzde ${UICHK} yevmiye cevabı girildi, ${TXCHK} işlem listesi sonuna kadar oynatıldı. Hata: ${fail}`);
+  app.innerHTML=`<pre id="selftest">${out.join('\n')}</pre>`;document.title=fail?'SELFTEST FAIL '+fail:'SELFTEST OK';
+}
+/* İçerik dosyaları örnek maddelerini buraya kaydeder (öz-sınama için) */
+window.EXAMPLE_ENTRIES=[];
+function EX(name,entries){entries.forEach((e,i)=>window.EXAMPLE_ENTRIES.push([name+' #'+(i+1),e]));return entries;}
+
+function route(){
+  applyLvl();
+  const h=location.hash.replace(/^#\/?/,'').split('/');
+  if(h[0]==='selftest'){selfTest();return;}
+  PREVIEW=h[3]==='onizle';NOSAVE=PREVIEW;
+  if(h[0]==='ders'&&h[1])renderLesson(h[1],h[2]!=null&&h[2]!==''?+h[2]:null);
+  else renderHome();
+}
+function BASLAT(){
+  if(CONFIG.typeLabels)Object.assign(TYPE,CONFIG.typeLabels);
+  loadState();
+  document.documentElement.style.setProperty('--yl-label',`"${CONFIG.lvlLabels[1]}"`);
+  CAT={};let NO=0;CATALOG.forEach(u=>u.items.forEach(x=>{x.no=++NO;CAT[x.id]=x;}));
+  window.addEventListener('hashchange',route);
+  /* Her .tbl/.jt tablosunu yana kayan bir kapsayıcıya sarar (dar ekranda metin sütunları sıkışmasın) */
+  const sar=()=>app.querySelectorAll('table.tbl,table.jt').forEach(t=>{if(t.parentNode.classList.contains('tw'))return;const w=el('div','tw');t.parentNode.insertBefore(w,t);w.appendChild(t);});
+  new MutationObserver(sar).observe(app,{childList:true,subtree:true});
+  route();sar();
+}
+
+/* ================= Ders içeriği: finans2.js ================= */
+/* ============================================================
+   Finans II Simülatörü (ISL3273) — ders içeriği, sürüm 1.0, 28.11.2026
+   Sürekli örnek: kurgusal Anka Makine A.Ş. (Finans I'in devamı)
+   ============================================================ */
+const CONFIG={
+  key:'finans2sim.v1',title:'Finans II Simülatörü',
+  kicker:'İşletme Bölümü · ISL3273 Finans II',
+  lead:'Sermaye maliyeti, sermaye yapısı, çalışma sermayesi, temettü ve türev ürünler: kararların sonucunu kaydırıcılarla görün, sonra modeli türetin. Finans I\'deki kurgusal <b>Anka Makine A.Ş.</b> büyümeye devam ediyor.',
+  company:'Anka Makine A.Ş.',version:'1.0, 28.11.2026',
+  lvlLabels:['Lisans','Lisansüstü'],
+  lvlHelp:'Aynı grafiklere Hamada, Black–Scholes, alfa ve tahmin hatası gibi ek sonuçlar ve sorular eklenir.',
+  howto3:['Hızlı yol','Derste 10–15 dakikalık kullanım için yalnızca çekirdek keşifler ve özet gösterilir.'],
+  typeLabels:{turetim:'Türetim'},
+  footNote:'Faiz, getiri ve vergi oranları öğretim amaçlı örneklerdir.',
+  mapNote:'"İzlence eksiği": çalışma sermayesinin bileşenlerinden alacak yönetimi (kredi politikası) haftalık planda yer almıyor; çalışma sermayesi haftalarına eklendi. ÖÇ7 izlencede "açıklar" düzeyinde; simülatörde türevlerin getiri diyagramları üzerinden hesap yapılır.'
+};
+function af(r,n){return Math.abs(r)<1e-12?n:(1-Math.pow(1+r,-n))/r;}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+function gauss(R){const u=R()||1e-9,v=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function Ncdf(x){const t=1/(1+0.2316419*Math.abs(x)),d=0.3989422804*Math.exp(-x*x/2),p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return x>0?1-p:p;}
+function bs(S,K,r,s,T,call){const d1=(Math.log(S/K)+(r+s*s/2)*T)/(s*Math.sqrt(T)),d2=d1-s*Math.sqrt(T);return call?S*Ncdf(d1)-K*Math.exp(-r*T)*Ncdf(d2):K*Math.exp(-r*T)*Ncdf(-d2)-S*Ncdf(-d1);}
+
+/* ---------- DERS 1 — CAPM ve beta ---------- */
+function K_beta(root,api){
+  const L=kl(root,'Bir hissenin betası, aylık getirilerinin piyasa getirisine göre regresyonunun eğimidir. Aşağıda 60 aylık getiriler <b>gerçek beta</b> ve <b>firmaya özgü oynaklık</b> ile üretiliyor; siz yalnızca noktaları görüp betayı tahmin ediyorsunuz. Firmaya özgü risk tahmini nasıl etkiler?');
+  const ck=checklist(L.task,[{id:'a',t:'Firmaya özgü oynaklığı artırın: R² ne oluyor, tahmin edilen beta nerede kalıyor?'},{id:'b',t:'"Yeni örnek" ile aynı ayarlarda beta tahmininin örnekten örneğe değiştiğini görün.'}],api);
+  const b=sl(L.ctl,{label:'Gerçek beta',min:0,max:2.5,step:0.1,value:1.2,fmt:v=>nf(v,1)});
+  const e=sl(L.ctl,{label:'Firmaya özgü aylık oynaklık',min:1,max:15,step:1,value:5,fmt:v=>'%'+v});
+  let seed=3,yeni=0;const bx=el('div','','<button type="button" class="btn sm">Yeni örnek</button>');L.ctl.appendChild(bx);$('button',bx).onclick=()=>{seed++;yeni++;if(yeni>=2)ck.mark('b');draw(0);};
+  legend(L.leg,[['sw dot','Aylık getiri çiftleri'],['l1','Tahmin edilen regresyon doğrusu']]);
+  const ro=readouts(L.ro,[['bh','Tahmin edilen beta'],['r2','R²'],['se','Betanın standart hatası',1],['al','Alfa (aylık)',1]]);
+  const e0=e.v;
+  function draw(u){
+    const R=rng(seed),pts=[];for(let k=0;k<60;k++){const m=.01+.06*gauss(R),y=.005+b.v*m+e.v/100*gauss(R);pts.push([m,y]);}
+    const n=pts.length,mx=pts.reduce((s,p)=>s+p[0],0)/n,my=pts.reduce((s,p)=>s+p[1],0)/n;let sxy=0,sxx=0,syy=0;pts.forEach(([x,y])=>{sxy+=(x-mx)*(y-my);sxx+=(x-mx)**2;syy+=(y-my)**2;});
+    const bh=sxy/sxx,a=my-bh*mx,r2=sxy*sxy/(sxx*syy),sres=Math.sqrt(Math.max(0,(syy-bh*sxy)/(n-2))),se=sres/Math.sqrt(sxx);
+    const f=frame(L.ch,{x:[-.2,.2],y:[-.5,.5],xlab:'Piyasa getirisi (aylık)',ylab:'Hisse getirisi',xfmt:v=>'%'+nf(v*100,0),yfmt:v=>'%'+nf(v*100,0),aria:'Hisse ve piyasa getirileri'});
+    pts.forEach(p=>f.dot(p[0],p[1],'d2',3.5));f.line([[-.2,a-.2*bh],[.2,a+.2*bh]],'l1');
+    ro.set('bh',nf(bh,2));ro.set('r2',nf(r2,2));ro.set('se',nf(se,2));ro.set('al','%'+nf(a*100,2));
+    if(u&&e.v>e0&&e.v>=10)ck.mark('a');
+  }
+  [b,e].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+function K_sml(root,api){
+  const L=kl(root,'Güvenlik piyasası doğrusu (SML) her beta düzeyi için piyasanın istediği getiriyi verir. Beklenen getirisi doğrunun <b>üstünde</b> kalan hisse ucuzdur (pozitif alfa), <b>altında</b> kalan pahalıdır.');
+  const ck=checklist(L.task,[{id:'a',t:'Anka Makine hissesini (β = 1,2) <b>pahalı</b> hâle getirin.'},{id:'b',t:'Piyasa risk primini artırın: hangi hisseler ucuzluktan pahalılığa geçiyor?'}],api);
+  const rf=sl(L.ctl,{label:'Risksiz faiz',min:5,max:40,step:0.5,value:20,fmt:pctFmt});
+  const mrp=sl(L.ctl,{label:'Piyasa risk primi',min:2,max:15,step:0.5,value:7,fmt:pctFmt});
+  const ea=sl(L.ctl,{label:'Anka hissesinin beklenen getirisi',min:10,max:50,step:0.5,value:30,fmt:pctFmt});
+  const H=[['Banka',0.8,.26],['Gıda',0.6,.23],['Teknoloji',1.6,.32]];
+  legend(L.leg,[['l1','SML'],['sw dot','Hisseler (beklenen getiri)']]);
+  const ro=readouts(L.ro,[['r','Anka için istenen getiri'],['a','Anka alfası'],['k','Karar']]);
+  const m0=mrp.v;
+  function draw(u){
+    const RF=rf.v/100,M=mrp.v/100,s=b=>RF+b*M,all=H.concat([['Anka',1.2,ea.v/100]]);
+    const f=frame(L.ch,{x:[0,2.2],y:[0,.6],xlab:'Beta',ylab:'Getiri',xfmt:v=>nf(v,1),yfmt:v=>'%'+nf(v*100,0),aria:'Güvenlik piyasası doğrusu'});
+    f.line([[0,RF],[2.2,s(2.2)]],'l1');f.dot(1,s(1),'cur',4);f.text(1,s(1),'Piyasa','lab2','start',6,14);
+    all.forEach(([n,b,e])=>{f.dot(b,e,e>=s(b)?'d3':'d2',6);f.text(b,e,n,'lab','start',8,-6);});
+    const A=ea.v/100-s(1.2);ro.set('r',pc(s(1.2),1));ro.set('a',pp(A,1));ro.set('k',A>0?'<span class="flag good">Ucuz: al</span>':A<0?'<span class="flag bad">Pahalı: sat</span>':'Doğru fiyatlı');
+    if(u){if(A<0)ck.mark('a');if(mrp.v!==m0)ck.mark('b');}
+  }
+  [rf,mrp,ea].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+
+/* ---------- DERS 2 — Sermaye yapısı ve AOSM ---------- */
+function wacc(w,o){const DE=w/(1-w),bl=o.bu*(1+(1-o.t)*DE),re=o.rf+bl*o.mrp,rd=o.rf+o.s0+o.k*w*w;return {bl,re,rd,W:(1-w)*re+w*rd*(1-o.t)};}
+function K_wacc(root,api){
+  const L=kl(root,'Anka Makine\'nin borç oranı (borç / toplam değer) arttıkça iki şey olur: daha ucuz borç (faiz vergiden düşülür) ağırlık kazanır, ama hem özkaynak hem borç daha riskli hâle gelip pahalanır. Ağırlıklı ortalama sermaye maliyetinin (AOSM) en düşük olduğu borç oranını bulun.');
+  const ck=checklist(L.task,[{id:'a',t:'AOSM\'nin <b>en düşük</b> olduğu borç oranını bulun (±5 puan).'},{id:'b',t:'Vergi oranını sıfırlayın: en düşük nokta nereye kayıyor?'}],api);
+  const w=sl(L.ctl,{label:'Borç oranı, D / V',min:0,max:80,step:5,value:20,fmt:v=>'%'+v});
+  const t=sl(L.ctl,{label:'Kurumlar vergisi',min:0,max:40,step:1,value:25,fmt:v=>'%'+v});
+  const k=sl(L.ctl,{label:'Borçla artan kredi riski primi',min:0,max:40,step:5,value:15,fmt:v=>nf(v,0)});
+  legend(L.leg,[['l1','AOSM'],['l2','Özkaynak maliyeti'],['l3','Vergi sonrası borç maliyeti']]);
+  const ro=readouts(L.ro,[['re','Özkaynak maliyeti'],['rd','Borç maliyeti (vergi öncesi)'],['W','AOSM'],['bl','Kaldıraçlı beta',1]]);
+  function draw(u){
+    const o={rf:.15,mrp:.07,bu:1,t:t.v/100,s0:.02,k:k.v/100},P=[],E=[],D=[];let best=[0,9];
+    for(let x=0;x<=80;x+=1){const r=wacc(x/100,o);P.push([x,r.W]);E.push([x,r.re]);D.push([x,r.rd*(1-o.t)]);if(r.W<best[1])best=[x,r.W];}
+    const c=wacc(w.v/100,o);
+    const f=frame(L.ch,{x:[0,80],y:[0,niceMax(Math.min(Math.max(...E.map(q=>q[1])),.8))],xlab:'Borç oranı (%)',ylab:'Maliyet',xfmt:v=>'%'+v,yfmt:v=>'%'+nf(v*100,0),aria:'AOSM ve borç oranı'});
+    f.line(E,'l2');f.line(D,'l3');f.line(P,'l1');f.dot(w.v,c.W,'cur',6);f.vline(best[0],'ref','En düşük AOSM');
+    f.hover(x=>{const q=clamp(Math.round(x),0,80),r=wacc(q/100,o);return {x:q,pts:[[q,r.W,'d1'],[q,r.re,'d2'],[q,r.rd*(1-o.t),'d3']],html:`<b>D/V = %${q}</b><br>AOSM: ${pc(r.W,2)}<br>re: ${pc(r.re,2)}<br>rd(1 − t): ${pc(r.rd*(1-o.t),2)}`};});
+    ro.set('re',pc(c.re,2));ro.set('rd',pc(c.rd,2));ro.set('W',pc(c.W,2));ro.set('bl',nf(c.bl,2));
+    L.x.innerHTML=`<p class="lmeta">Varsayımlar: risksiz faiz %15, piyasa risk primi %7, borçsuz beta 1,0; özkaynak betası Hamada denklemiyle, borç maliyeti %15 + %2 + k·(D/V)² ile artıyor. En düşük AOSM bu ayarlarda %${best[0]} borç oranında: ${pc(best[1],2)}.</p>`;
+    if(u){if(Math.abs(w.v-best[0])<=5)ck.mark('a');if(t.v===0)ck.mark('b');}
+  }
+  [w,t,k].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+
+/* ---------- DERS 3 — Sermaye yapısı teorileri ---------- */
+function K_mm(root,api){
+  const L=kl(root,'Borçsuz değeri 10 milyon TL olan Anka Makine\'nin borç miktarı değiştikçe şirket değeri nasıl değişir? <b>MM (vergisiz)</b>: değer değişmez. <b>MM (vergili)</b>: her borç lirası vergi kalkanı kadar değer katar. <b>Dengeleme teorisi</b>: vergi kalkanı, borçla hızla artan finansal sıkıntı maliyetleriyle dengelenir.');
+  const ck=checklist(L.task,[{id:'a',t:'Dengeleme teorisinde şirket değerini en yüksek yapan borç tutarını bulun (±0,5 milyon).'},{id:'b',t:'Sıkıntı maliyetlerini artırın: en iyi borç tutarı nereye gidiyor?'}],api);
+  const t=sl(L.ctl,{label:'Kurumlar vergisi',min:0,max:40,step:1,value:25,fmt:v=>'%'+v});
+  const c=sl(L.ctl,{label:'Finansal sıkıntı maliyeti katsayısı',min:5,max:100,step:5,value:25,fmt:v=>nf(v/100,2)});
+  const D=sl(L.ctl,{label:'Borç tutarı',min:0,max:10,step:0.25,value:2,fmt:v=>nf(v,2)+' mn TL'});
+  legend(L.leg,[['l1','MM vergisiz'],['l2','MM vergili'],['l3','Dengeleme teorisi']]);
+  const ro=readouts(L.ro,[['vl','Değer (dengeleme)'],['ts','Vergi kalkanının BD (t·D)'],['sk','Sıkıntı maliyetinin BD'],['d','En iyi borç']]);
+  const c0=c.v;
+  function draw(u){
+    const T=t.v/100,C=c.v/100,V=d=>10+T*d-C*d*d/10,P1=[],P2=[],P3=[];for(let d=0;d<=10;d+=.25){P1.push([d,10]);P2.push([d,10+T*d]);P3.push([d,V(d)]);}
+    const ds=Math.min(10,T*10/(2*C));
+    const f=frame(L.ch,{x:[0,10],y:[niceRange(Math.min(...P3.map(p=>p[1]),9),13)[0],13],xlab:'Borç (milyon TL)',ylab:'Şirket değeri (milyon TL)',yfmt:v=>nf(v,1),aria:'Sermaye yapısı teorileri'});
+    f.line(P1,'l1');f.line(P2,'l2');f.line(P3,'l3');f.vline(ds,'ref','D*');f.dot(D.v,V(D.v),'cur',6);
+    f.hover(x=>{const d=clamp(Math.round(x*4)/4,0,10);return {x:d,pts:[[d,10,'d1'],[d,10+T*d,'d2'],[d,V(d),'d3']],html:`<b>D = ${nf(d,2)} mn</b><br>Vergisiz: 10,00<br>Vergili: ${nf(10+T*d,2)}<br>Dengeleme: ${nf(V(d),2)}`};});
+    ro.set('vl',nf(V(D.v),2)+' mn TL');ro.set('ts',nf(T*D.v,2)+' mn TL');ro.set('sk',nf(C*D.v*D.v/10,2)+' mn TL');ro.set('d',nf(ds,2)+' mn TL');
+    if(u){if(Math.abs(D.v-ds)<=.5)ck.mark('a');if(c.v>c0)ck.mark('b');}
+  }
+  [t,c,D].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+function K_mm2(root,api){
+  const L=kl(root,'MM II (vergisiz): borç arttıkça özkaynak sahipleri daha fazla risk taşır ve özkaynak maliyeti borç/özkaynak oranıyla doğrusal artar. Ama ucuz borcun ağırlığı da arttığı için AOSM değişmez: <b>r<sub>E</sub> = ρ + (ρ − r<sub>D</sub>) D/E</b>.');
+  const ck=checklist(L.task,[{id:'a',t:'Borç/özkaynak oranını 2\'ye çıkarın ve AOSM\'nin değişmediğini görün.'}],api);
+  const de=sl(L.ctl,{label:'Borç / özkaynak',min:0,max:3,step:0.1,value:0.5,fmt:v=>nf(v,1)});
+  legend(L.leg,[['l2','Özkaynak maliyeti'],['l3','Borç maliyeti'],['l1','AOSM']]);
+  const ro=readouts(L.ro,[['re','r_E'],['w','AOSM']]);
+  function draw(u){
+    const rho=.22,rd=.18,re=x=>rho+(rho-rd)*x,P=[],E=[],Dd=[];for(let x=0;x<=3;x+=.1){E.push([x,re(x)]);Dd.push([x,rd]);P.push([x,rho]);}
+    const f=frame(L.ch,{x:[0,3],y:[0,.4],xlab:'Borç / özkaynak',ylab:'Maliyet',xfmt:v=>nf(v,1),yfmt:v=>'%'+nf(v*100,0),aria:'MM II'});
+    f.line(E,'l2');f.line(Dd,'l3');f.line(P,'l1');f.dot(de.v,re(de.v),'d2',6);
+    ro.set('re',pc(re(de.v),1));ro.set('w',pc(rho,1));
+    if(u&&de.v>=2)ck.mark('a');
+  }
+  de.on(()=>draw(1));draw(0);
+}
+
+/* ---------- DERS 4 — Çalışma sermayesi ---------- */
+function K_nds(root,api){
+  const L=kl(root,'<b>Nakit dönüşüm süresi</b> (NDS) = stok süresi + alacak tahsil süresi − borç ödeme süresi. Bu süre boyunca şirketin parası stokta ve alacakta bağlıdır ve finanse edilmelidir. Anka Makine\'nin yıllık satışlarının maliyeti 900.000 TL, finansman maliyeti %30.');
+  const ck=checklist(L.task,[{id:'a',t:'NDS\'yi <b>30 günün altına</b> indirin.'},{id:'b',t:'NDS\'yi <b>negatife</b> çevirin: şirket müşteriden tahsil ettikten sonra mı ödüyor?'}],api);
+  const s=sl(L.ctl,{label:'Stok süresi',min:0,max:180,step:5,value:100,fmt:v=>v+' gün'});
+  const a=sl(L.ctl,{label:'Alacak tahsil süresi',min:0,max:180,step:5,value:60,fmt:v=>v+' gün'});
+  const b=sl(L.ctl,{label:'Borç ödeme süresi',min:0,max:240,step:5,value:45,fmt:v=>v+' gün'});
+  legend(L.leg,[['box f1','Stokta'],['box f4','Alacakta'],['box f2','Satıcıya borçlu'],['box f3','Nakit dönüşüm süresi']]);
+  const ro=readouts(L.ro,[['n','NDS'],['f','Finanse edilecek tutar'],['m','Yıllık finansman maliyeti']]);
+  function draw(u){
+    const N=s.v+a.v-b.v,F=900000/365*Math.max(0,N),X=Math.max(s.v+a.v,b.v,10);
+    const f=frame(L.ch,{x:[0,niceMax(X)],y:[0,4],xlab:'Gün (mal alımından itibaren)',yticks:[],xfmt:v=>nf(v),aria:'Nakit dönüşüm süresi zaman çizelgesi',h:240,ml:20});
+    f.rect(0,s.v,2.6,3.4,'f1',false);f.rect(s.v,s.v+a.v,2.6,3.4,'f4',false);f.rect(0,b.v,1.6,2.4,'f2',false);
+    if(N>0)f.rect(b.v,s.v+a.v,0.6,1.4,'f3',false);
+    f.text(0,3.6,'Mal alındı → stok → satış → tahsilat','lab2','start',4,0);if(b.v>=25)f.text(0,1.95,'Satıcıya ödeme','labin','start',6,4);
+    if(N>=25)f.text(b.v,1,`NDS ${N} gün`,'labin','start',6,4);
+    ro.set('n',N+' gün');ro.set('f',tl(F));ro.set('m',tl(F*.3));
+    if(u){if(N<30)ck.mark('a');if(N<0)ck.mark('b');}
+  }
+  [s,a,b].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+function K_politika(root,api){
+  const L=kl(root,'Dönen varlıklara ne kadar yatırım yapılmalı? <b>Tutucu</b> politika bol stok ve nakit tutar (düşük risk, düşük getiri); <b>atak</b> politika az tutar (yüksek getiri, likidite riski). Finansmanda ise kısa vadeli borç ucuz ama yenileme riski taşır.');
+  const ck=checklist(L.task,[{id:'a',t:'Üç politikayı da seçin ve ROE ile cari oranı karşılaştırın.'}],api);
+  const P={tutucu:[900000,.15],orta:[600000,.35],atak:[400000,.6]};let p='orta';const seen=new Set(['orta']);
+  seg(L.ctl,'Politika',[['tutucu','Tutucu'],['orta','Orta'],['atak','Atak']],'orta',v=>{p=v;seen.add(v);if(seen.size===3)ck.mark('a');draw();});
+  legend(L.leg,[['box f1','ROE'],['box f2','Cari oran']]);
+  const ro=readouts(L.ro,[['roe','ROE'],['co','Cari oran'],['ak','Kısa vadeli borç payı']]);
+  function draw(){
+    const [DV,kv]=P[p],AK=DV+900000,Ö=AK*.5,B=AK*.5,KV=B*kv,UV=B-KV,faiz=KV*.25+UV*.3,FVOK=200000,NK=(FVOK-faiz)*.75,ROE=NK/Ö,CO=DV/KV;
+    groupChart(L.ch,['ROE (%)','Cari oran'],[{n:'Değer',cls:'f1',v:[ROE*100,CO]}],{yfmt:v=>nf(v,1),ylab:'',vfmt:v=>nf(v,2),tfmt:v=>nf(v,2),aria:'Politikaya göre ROE ve cari oran',h:240});
+    ro.set('roe',pc(ROE,1));ro.set('co',nf(CO,2));ro.set('ak',pc(kv,0));
+    L.x.innerHTML='<p class="lmeta">Varsayımlar: duran varlıklar 900.000 TL, FVÖK 200.000 TL, aktifin yarısı borç; kısa vadeli borç faizi %25, uzun vadeli %30, vergi %25. Gerçekte daha az stok satış kaybına yol açabilir; bu etki modelde yoktur.</p>';
+  }
+  draw();
+}
+
+/* ---------- DERS 5 — Alacak yönetimi (kredi politikası) ---------- */
+function K_kredi2(root,api){
+  const L=kl(root,'Anka Makine vadeleri uzatmayı düşünüyor. Satışlar artacak (birim katkı payı %40), ama alacak tahsil süresi uzayacak ve tahsil edilemeyen alacak oranı yükselecek. Alacaklara bağlanan para (maliyet bedeliyle) %30 fırsat maliyetine sahip. Mevcut durum: satış 1.500.000 TL, tahsil süresi 60 gün, kötü alacak %1.');
+  const ck=checklist(L.task,[{id:'a',t:'Kâr artıran bir kredi politikası değişikliği bulun.'},{id:'b',t:'Satışları artırdığı hâlde kârı azaltan bir değişiklik bulun.'}],api);
+  const ds=sl(L.ctl,{label:'Satış artışı',min:0,max:40,step:2,value:15,fmt:v=>'%'+v});
+  const dso=sl(L.ctl,{label:'Yeni tahsil süresi',min:30,max:150,step:5,value:90,fmt:v=>v+' gün'});
+  const kb=sl(L.ctl,{label:'Yeni kötü alacak oranı (tüm satışlar)',min:0,max:8,step:0.5,value:2,fmt:pctFmt});
+  legend(L.leg,[['box f1','Toplam'],['box f3','Artış'],['box f2','Azalış']]);
+  const ro=readouts(L.ro,[['n','Net kâr etkisi (vergi öncesi)'],['ar','Alacaklara ek yatırım (maliyetle)']]);
+  function draw(u){
+    const S0=1.5e6,S1=S0*(1+ds.v/100),kat=(S1-S0)*.4,kot=-(S1*kb.v/100-S0*.01),ar0=S0/365*60*.6,ar1=S1/365*dso.v*.6,fin=-(ar1-ar0)*.3,N=kat+kot+fin;
+    waterfall(L.ch,[{l:'Ek katkı|payı',v:kat,t:'total'},{l:'Kötü alacak|artışı',v:kot},{l:'Alacak|finansmanı',v:fin},{l:'Net etki',v:N,t:'total'}],{aria:'Kredi politikasının kâra etkisi',h:300});
+    ro.set('n',N>=0?`<span class="flag good">${tl(N)}</span>`:`<span class="flag bad">${tl(N)}</span>`);ro.set('ar',tl(ar1-ar0));
+    if(u){if(N>0&&ds.v>0)ck.mark('a');if(N<0&&ds.v>0)ck.mark('b');}
+  }
+  [ds,dso,kb].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+
+/* ---------- DERS 6 — Temettü politikası ---------- */
+const EPS_SERI=[4,4.4,3.2,4.8,5.5,4.1,6,6.6,5.2,7.2,7.8,6.4];
+function lintner(c,p){const out=[];let d=EPS_SERI[0]*p;EPS_SERI.forEach((e,i)=>{if(i>0)d=d+c*(p*e-d);out.push(d);});return out;}
+function K_lintner(root,api){
+  const L=kl(root,'Lintner (1956) gözlemi: yöneticiler temettüyü kârla birlikte dalgalandırmaz; hedef dağıtım oranına <b>kısmi uyum</b> sağlar: <b>D<sub>t</sub> = D<sub>t−1</sub> + c(p·E<sub>t</sub> − D<sub>t−1</sub>)</b>. Uyum hızı <i>c</i> küçüldükçe temettü yumuşar.');
+  const ck=checklist(L.task,[{id:'a',t:'Uyum hızını 1 yapın: temettü kârı birebir izliyor mu?'},{id:'b',t:'Uyum hızını 0,3\'ün altına indirin ve temettünün kârdaki düşüşlere tepkisini gözleyin.'}],api);
+  const c=sl(L.ctl,{label:'Uyum hızı, c',min:0.1,max:1,step:0.05,value:0.4,fmt:v=>nf(v,2)});
+  const p=sl(L.ctl,{label:'Hedef dağıtım oranı, p',min:10,max:80,step:5,value:40,fmt:v=>'%'+v});
+  legend(L.leg,[['l1','Hisse başına kâr'],['l2','Hisse başına temettü'],['l3','Hedef temettü p·E']]);
+  const ro=readouts(L.ro,[['sd','Temettü değişimlerinin oynaklığı'],['se','Hedef temettünün oynaklığı']]);
+  function draw(u){
+    const D=lintner(c.v,p.v/100),P=p.v/100,n=EPS_SERI.length;
+    const f=frame(L.ch,{x:[1,n],y:[0,8],xlab:'Yıl',ylab:'TL / hisse',aria:'Lintner temettü modeli'});
+    f.line(EPS_SERI.map((e,i)=>[i+1,e]),'l1');f.line(EPS_SERI.map((e,i)=>[i+1,e*P]),'l3');f.line(D.map((d,i)=>[i+1,d]),'l2');
+    f.hover(x=>{const i=clamp(Math.round(x),1,n)-1;return {x:i+1,pts:[[i+1,EPS_SERI[i],'d1'],[i+1,D[i],'d2']],html:`<b>${i+1}. yıl</b><br>EPS: ${nf(EPS_SERI[i],2)}<br>DPS: ${nf(D[i],2)}`};});
+    const sd=a=>{const ch=a.slice(1).map((v,i)=>v-a[i]),m=ch.reduce((s,v)=>s+v,0)/ch.length;return Math.sqrt(ch.reduce((s,v)=>s+(v-m)**2,0)/ch.length);};
+    ro.set('sd',nf(sd(D),3));ro.set('se',nf(sd(EPS_SERI.map(e=>e*P)),3));
+    if(u){if(c.v>=1)ck.mark('a');if(c.v<0.3)ck.mark('b');}
+  }
+  [c,p].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+function K_ilgisiz(root,api){
+  const L=kl(root,'MM temettü ilgisizliği: vergi ve işlem maliyeti yoksa temettü ödemesi hissedarın servetini değiştirmez; temettü kadar hisse fiyatı düşer. Hissedar isterse hisse satarak "kendi temettüsünü" yaratabilir. Vergiler devreye girince tablo değişir.');
+  const ck=checklist(L.task,[{id:'a',t:'Vergileri sıfırlayın: temettü ve hisse geri alımı aynı serveti mi veriyor?'},{id:'b',t:'Temettü stopajını sermaye kazancı vergisinden yüksek yapın: hangisi avantajlı?'}],api);
+  const dv=sl(L.ctl,{label:'Temettü vergisi (stopaj)',min:0,max:30,step:1,value:15,fmt:v=>'%'+v});
+  const kv=sl(L.ctl,{label:'Sermaye kazancı vergisi',min:0,max:30,step:1,value:0,fmt:v=>'%'+v});
+  legend(L.leg,[['box f1','Hissedarın vergi sonrası serveti']]);
+  const ro=readouts(L.ro,[['t','Temettü ile'],['g','Hisse geri alımı ile'],['f','Fark']]);
+  function draw(u){
+    const P=50,N=100,D=5,maliyet=40;
+    const temettu=N*(P-D)+N*D*(1-dv.v/100);
+    const sat=N*D/P,kz=sat*(P-maliyet)*kv.v/100,geri=N*P-kz;
+    groupChart(L.ch,['Temettü','Geri alım'],[{n:'Servet',cls:'f1',v:[temettu,geri]}],{aria:'Temettü ve geri alımda hissedar serveti',h:240});
+    ro.set('t',tl(temettu,2));ro.set('g',tl(geri,2));ro.set('f',tl(geri-temettu,2));
+    L.x.innerHTML='<p class="lmeta">Hissedarın 100 hissesi var; fiyat 50 TL, temettü hisse başına 5 TL, hisselerin alış maliyeti 40 TL. Geri alımda şirket aynı tutarda nakdi hisse satın alarak dağıtır; hissedar 10 hissesini satıyor. Basitleştirme: temettüden sonra fiyat tam temettü kadar düşer.</p>';
+    if(u){if(dv.v===0&&kv.v===0)ck.mark('a');if(dv.v>kv.v)ck.mark('b');}
+  }
+  [dv,kv].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+
+/* ---------- DERS 7 — Nakit yönetimi ---------- */
+function K_baumol(root,api){
+  const L=kl(root,'Baumol modeli: Anka Makine yıl boyunca düzenli olarak <b>T</b> = 1.200.000 TL nakit harcıyor ve nakdini faiz getiren yatırımlardan <b>C</b> büyüklüğündeki aktarımlarla sağlıyor. Her aktarımın sabit maliyeti <b>F</b>; elde tutulan nakdin fırsat maliyeti <b>r</b>. Toplam maliyeti en aza indiren aktarım büyüklüğünü bulun.');
+  const ck=checklist(L.task,[{id:'a',t:'Toplam maliyeti en düşük yapan C\'yi bulun (±%10).'},{id:'b',t:'Faiz oranını artırın: en iyi C büyüyor mu, küçülüyor mu?'}],api);
+  const C=sl(L.ctl,{label:'Aktarım büyüklüğü, C',min:5000,max:150000,step:1000,value:80000,fmt:v=>tl(v)});
+  const F=sl(L.ctl,{label:'Aktarım başına maliyet, F',min:50,max:1000,step:50,value:200,fmt:v=>tl(v)});
+  const r=sl(L.ctl,{label:'Fırsat maliyeti, r',min:5,max:60,step:1,value:30,fmt:v=>'%'+v});
+  legend(L.leg,[['l1','Toplam maliyet'],['l2','Elde tutma maliyeti (C/2)·r'],['l3','İşlem maliyeti (T/C)·F']]);
+  const ro=readouts(L.ro,[['c','C* = √(2TF / r)'],['t','Seçilen C\'de toplam maliyet'],['n','Yıllık aktarım sayısı']]);
+  const r0=r.v;
+  function draw(u){
+    const T=1.2e6,R=r.v/100,FF=F.v,cs=Math.sqrt(2*T*FF/R),cost=c=>c/2*R+T/c*FF,P=[],H=[],I=[];
+    for(let c=5000;c<=150000;c+=1000){P.push([c,cost(c)]);H.push([c,c/2*R]);I.push([c,T/c*FF]);}
+    const f=frame(L.ch,{x:[5000,150000],y:[0,niceMax(Math.min(cost(5000),cost(150000))*1.3)],xlab:'Aktarım büyüklüğü, C (TL)',ylab:'Yıllık maliyet (TL)',xfmt:kTL,yfmt:kTL,aria:'Baumol modeli maliyet eğrileri'});
+    f.line(H,'l2');f.line(I,'l3');f.line(P,'l1');f.vline(cs,'ref','C*');f.dot(C.v,cost(C.v),'cur',6);
+    ro.set('c',tl(cs));ro.set('t',tl(cost(C.v)));ro.set('n',nf(T/C.v,1));
+    if(u){if(Math.abs(C.v-cs)/cs<=.1)ck.mark('a');if(r.v>r0)ck.mark('b');}
+  }
+  [C,F,r].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+function K_millerorr(root,api){
+  const L=kl(root,'Miller–Orr modeli: günlük nakit akışları rastlantısal. Nakit üst sınıra (H) çıkınca fazlası yatırıma aktarılıp hedef düzeye (Z) inilir; alt sınıra (L) düşünce yatırımdan nakit çekilip Z\'ye çıkılır. Z = L + (3Fσ² / 4r)<sup>1/3</sup>, H = L + 3(Z − L).');
+  const ck=checklist(L.task,[{id:'a',t:'Günlük oynaklığı artırın: bant genişliyor mu, işlem sayısı nasıl değişiyor?'},{id:'b',t:'Yeni bir yıl simüle edin.'}],api);
+  const s=sl(L.ctl,{label:'Günlük nakit akışı std. sapması, σ',min:1000,max:15000,step:500,value:5000,fmt:v=>tl(v)});
+  const Lm=sl(L.ctl,{label:'Alt sınır, L',min:0,max:100000,step:5000,value:20000,fmt:v=>tl(v)});
+  let seed=11;const bx=el('div','','<button type="button" class="btn sm">Yeni yıl simüle et</button>');L.ctl.appendChild(bx);$('button',bx).onclick=()=>{seed++;ck.mark('b');draw(0);};
+  legend(L.leg,[['l1','Nakit bakiyesi'],['ref','H, Z ve L']]);
+  const ro=readouts(L.ro,[['z','Hedef Z'],['h','Üst sınır H'],['n','Yıllık işlem sayısı']]);
+  const s0=s.v;
+  function draw(u){
+    const F=200,rd=.3/365,sig=s.v,Lv=Lm.v,Z=Lv+Math.cbrt(3*F*sig*sig/(4*rd)),H=Lv+3*(Z-Lv),R=rng(seed),P=[[0,Z]];let c=Z,n=0;
+    for(let d=1;d<=250;d++){c+=sig*gauss(R);if(c>=H||c<=Lv){P.push([d,c]);c=Z;n++;}P.push([d,c]);}
+    const f=frame(L.ch,{x:[0,250],y:[0,niceMax(H*1.1)],xlab:'İş günü',ylab:'Nakit (TL)',yfmt:kTL,aria:'Miller–Orr nakit bandı'});
+    f.hline(H,'ref','H');f.hline(Z,'ref','Z');f.hline(Lv,'ref','L');f.line(P,'l1');
+    ro.set('z',tl(Z));ro.set('h',tl(H));ro.set('n',n);
+    if(u&&s.v>s0)ck.mark('a');
+  }
+  [s,Lm].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+
+/* ---------- DERS 8 — Stok yönetimi ---------- */
+function K_eoq(root,api){
+  const L=kl(root,'Ekonomik sipariş miktarı (ESM): Anka Makine yılda <b>D</b> = 12.000 adet parça kullanıyor; sipariş başına maliyet <b>S</b>, birim başına yıllık stok tutma maliyeti <b>H</b>. Sipariş büyüdükçe sipariş sayısı azalır ama ortalama stok artar.');
+  const ck=checklist(L.task,[{id:'a',t:'Toplam maliyeti en düşük yapan sipariş miktarını bulun (±%10).'},{id:'b',t:'Stok tutma maliyetini iki katına çıkarın: ESM yarıya mı iniyor?'}],api);
+  const Q=sl(L.ctl,{label:'Sipariş miktarı, Q',min:100,max:3000,step:50,value:1500,fmt:v=>nf(v)+' adet'});
+  const S=sl(L.ctl,{label:'Sipariş başına maliyet, S',min:100,max:2000,step:100,value:500,fmt:v=>tl(v)});
+  const H=sl(L.ctl,{label:'Birim stok tutma maliyeti, H (yıllık)',min:5,max:80,step:5,value:20,fmt:v=>tl(v)});
+  legend(L.leg,[['l1','Toplam maliyet'],['l2','Tutma maliyeti (Q/2)·H'],['l3','Sipariş maliyeti (D/Q)·S']]);
+  const ro=readouts(L.ro,[['e','ESM = √(2DS / H)'],['t','Seçilen Q\'da toplam maliyet'],['n','Yıllık sipariş sayısı']]);
+  const H0=H.v;
+  function draw(u){
+    const D=12000,cost=q=>q/2*H.v+D/q*S.v,e=Math.sqrt(2*D*S.v/H.v),P=[],A=[],B=[];for(let q=100;q<=3000;q+=25){P.push([q,cost(q)]);A.push([q,q/2*H.v]);B.push([q,D/q*S.v]);}
+    const f=frame(L.ch,{x:[100,3000],y:[0,niceMax(Math.min(cost(100),cost(3000))*1.2)],xlab:'Sipariş miktarı (adet)',ylab:'Yıllık maliyet (TL)',yfmt:kTL,aria:'Ekonomik sipariş miktarı'});
+    f.line(A,'l2');f.line(B,'l3');f.line(P,'l1');f.vline(e,'ref','ESM');f.dot(Q.v,cost(Q.v),'cur',6);
+    ro.set('e',nf(e,0)+' adet');ro.set('t',tl(cost(Q.v)));ro.set('n',nf(D/Q.v,1));
+    if(u){if(Math.abs(Q.v-e)/e<=.1)ck.mark('a');if(H.v>=2*H0)ck.mark('b');}
+  }
+  [Q,S,H].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+function K_emniyet(root,api){
+  const L=kl(root,'Talep günden güne değişiyor ve sipariş tedarikçiden <b>teslim süresi</b> sonra geliyor. Stok yeniden sipariş noktasına düştüğünde ESM kadar sipariş verilir. <b>Emniyet stoku</b> artırıldıkça stoksuz kalınan gün sayısı azalır ama ortalama stok artar.');
+  const ck=checklist(L.task,[{id:'a',t:'Emniyet stoku sıfırken stoksuz kalınan günleri görün.'},{id:'b',t:'Yıl boyunca stoksuz gün sayısını sıfırlayan bir emniyet stoku bulun.'}],api);
+  const ss=sl(L.ctl,{label:'Emniyet stoku',min:0,max:300,step:10,value:0,fmt:v=>nf(v)+' adet'});
+  const lt=sl(L.ctl,{label:'Teslim süresi',min:2,max:20,step:1,value:8,fmt:v=>v+' gün'});
+  const sd=sl(L.ctl,{label:'Günlük talebin std. sapması',min:0,max:30,step:2,value:12,fmt:v=>nf(v)+' adet'});
+  legend(L.leg,[['l1','Stok düzeyi'],['ref','Yeniden sipariş noktası']]);
+  const ro=readouts(L.ro,[['r','Yeniden sipariş noktası'],['s','Stoksuz gün sayısı'],['o','Ortalama stok']]);
+  function draw(u){
+    const d=12000/300,Qe=775,ROP=d*lt.v+ss.v,R=rng(5),P=[];let st=Qe+ss.v,bek=-1,yok=0,top=0;
+    for(let g=0;g<300;g++){if(bek===0){st+=Qe;bek=-1;}const t=Math.max(0,d+sd.v*gauss(R));st-=t;if(st<0){yok++;st=0;}top+=st;if(bek>0)bek--;if(st<=ROP&&bek<0)bek=lt.v;P.push([g,st]);}
+    const f=frame(L.ch,{x:[0,300],y:[0,niceMax(Qe+ss.v+50)],xlab:'Gün',ylab:'Stok (adet)',aria:'Stok düzeyi ve emniyet stoku'});
+    f.hline(ROP,'ref','Yeniden sipariş noktası');f.line(P,'l1');
+    ro.set('r',nf(ROP,0)+' adet');ro.set('s',yok);ro.set('o',nf(top/300,0)+' adet');
+    if(u||true){if(ss.v===0&&yok>0)ck.mark('a');if(u&&yok===0)ck.mark('b');}
+  }
+  [ss,lt,sd].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+
+/* ---------- DERS 9 — Türev ürünler ve risk yönetimi ---------- */
+const POZ={lc:['Alım opsiyonu al (long call)',1],sc:['Alım opsiyonu sat (short call)',-1],lp:['Satım opsiyonu al (long put)',1],sp:['Satım opsiyonu sat (short put)',-1],lf:['Vadeli al (long forward)',1],ls:['Dayanak varlık al',1]};
+function getiri(k,S,K,F,prim){if(k==='lc'||k==='sc')return POZ[k][1]*(Math.max(S-K,0)-prim);if(k==='lp'||k==='sp')return POZ[k][1]*(Math.max(K-S,0)-prim);if(k==='lf')return S-F;return S-100;}
+function K_opsiyon(root,api){
+  const L=kl(root,'Dayanak varlığın bugünkü fiyatı 100 TL. Pozisyonları seçin; grafik vadedeki <b>kâr/zarar</b> profilini (prim dahil) gösterir. Birden fazla pozisyon birleştirilerek stratejiler kurulur. Opsiyon primleri Black–Scholes ile hesaplanır (yıllık %40 oynaklık, %30 faiz, 3 ay).');
+  const ck=checklist(L.task,[{id:'a',t:'<b>Korumalı satım</b> kurun: dayanak varlık al + satım opsiyonu al.'},{id:'b',t:'<b>Straddle</b> kurun: aynı kullanım fiyatlı alım ve satım opsiyonu al.'},{id:'c',t:'<b>Örtülü alım</b> kurun: dayanak varlık al + alım opsiyonu sat.'}],api);
+  const K=sl(L.ctl,{label:'Kullanım fiyatı, K',min:60,max:140,step:5,value:100,fmt:v=>tl(v)});
+  const sec=new Set(['lc']);
+  const box=el('div','opts',Object.entries(POZ).map(([k,v])=>`<label><input type="checkbox" value="${k}" ${k==='lc'?'checked':''}><span>${v[0]}</span></label>`).join(''));L.ctl.appendChild(box);
+  box.querySelectorAll('input').forEach(x=>x.onchange=()=>{x.checked?sec.add(x.value):sec.delete(x.value);draw(1);});
+  legend(L.leg,[['l1','Toplam kâr/zarar'],['ref','Sıfır çizgisi']]);
+  const ro=readouts(L.ro,[['c','Alım primi'],['p','Satım primi'],['f','Vadeli fiyat'],['pcp','Alım − satım (parite)',1]]);
+  function draw(u){
+    const S0=100,r=.3,s=.4,T=.25,Kv=K.v,cp=bs(S0,Kv,r,s,T,true),pp_=bs(S0,Kv,r,s,T,false),F=S0*Math.exp(r*T),pts=[];
+    for(let S=40;S<=160;S+=1){let v=0;sec.forEach(k=>{v+=getiri(k,S,Kv,F,k==='lc'||k==='sc'?cp:pp_);});pts.push([S,v]);}
+    const ys=pts.map(p=>p[1]),[y0,y1]=niceRange(Math.min(...ys,-10),Math.max(...ys,10),5);
+    const f=frame(L.ch,{x:[40,160],y:[y0,y1],xlab:'Vadedeki dayanak fiyatı (TL)',ylab:'Kâr / zarar (TL)',aria:'Opsiyon stratejisi getiri diyagramı'});
+    f.hline(0,'ref');f.vline(Kv,'ref','K');if(sec.size)f.line(pts,'l1');
+    f.hover(x=>{const S=clamp(Math.round(x),40,160),v=pts[S-40][1];return {x:S,pts:[[S,v,'d1']],html:`<b>S<sub>T</sub> = ${S}</b><br>Kâr/zarar: ${tl(v,2)}`};});
+    ro.set('c',tl(cp,2));ro.set('p',tl(pp_,2));ro.set('f',tl(F,2));ro.set('pcp',`${nf(cp-pp_,2)} = S − K·e<sup>−rT</sup> = ${nf(S0-Kv*Math.exp(-r*T),2)}`);
+    const h=k=>sec.has(k);if(u){if(h('ls')&&h('lp')&&sec.size===2)ck.mark('a');if(h('lc')&&h('lp')&&sec.size===2)ck.mark('b');if(h('ls')&&h('sc')&&sec.size===2)ck.mark('c');}
+  }
+  K.on(()=>draw(1));draw(0);
+}
+function K_hedge(root,api){
+  const L=kl(root,'Anka Makine 3 ay sonra yabancı tedarikçisine <b>100.000 dolar</b> ödeyecek. Bugünkü kur 40 TL/USD, 3 aylık vadeli kur 41,50 TL. Kur riskine karşı üç seçenek: korunmamak, <b>vadeli işlemle</b> kuru sabitlemek ya da <b>alım opsiyonu</b> almak (kullanım fiyatı 42 TL, prim dolar başına 0,80 TL).');
+  const ck=checklist(L.task,[{id:'a',t:'Kurun 45 TL\'ye çıktığı durumda üç seçeneği karşılaştırın.'},{id:'b',t:'Kurun 38 TL\'ye düştüğü durumda hangi seçeneğin en iyi olduğunu görün.'}],api);
+  const sT=sl(L.ctl,{label:'3 ay sonraki kur',min:34,max:50,step:0.5,value:42,fmt:v=>nf(v,2)+' TL'});
+  legend(L.leg,[['l1','Korunmasız'],['l2','Vadeli işlem'],['l3','Alım opsiyonu']]);
+  const ro=readouts(L.ro,[['k','Korunmasız maliyet'],['v','Vadeli işlemle maliyet'],['o','Opsiyonla maliyet']]);
+  function draw(u){
+    const N=1e5,cost=(s,k)=>k==='k'?N*s:k==='v'?N*41.5:N*(Math.min(s,42)+.8),P={k:[],v:[],o:[]};
+    for(let s=34;s<=50;s+=.5)['k','v','o'].forEach(k=>P[k].push([s,cost(s,k)]));
+    const f=frame(L.ch,{x:[34,50],y:[3.2e6,5.2e6],xlab:'Vadedeki kur (TL/USD)',ylab:'TL cinsinden ödeme',yfmt:kTL,aria:'Kur riskinden korunma'});
+    f.line(P.k,'l1');f.line(P.v,'l2');f.line(P.o,'l3');f.vline(sT.v,'ref');
+    ['k','v','o'].forEach(k=>ro.set(k,tl(cost(sT.v,k))));
+    L.x.innerHTML='<p class="lmeta">Vadeli işlem belirsizliği tamamen ortadan kaldırır ama kur düştüğünde kazançtan da vazgeçirir. Opsiyon bir sigorta gibidir: prim ödenir, kötü senaryoda koruma sağlanır, iyi senaryodan yararlanılır.</p>';
+    if(u){if(sT.v>=45)ck.mark('a');if(sT.v<=38)ck.mark('b');}
+  }
+  sT.on(()=>draw(1));draw(0);
+}
+
+/* ============================================================
+   Dersler
+   ============================================================ */
+const LESSONS={
+capm:{title:'Sermaye varlıklarını fiyatlama modeli (CAPM) ve beta',sure:'40 dk',steps:[
+ {k:'a',type:'anlatim',title:'Risk ve istenen getiri',html:()=>`
+  <p>Finans I'de çeşitlendirmenin firmaya özgü riski yok ettiğini, piyasanın yalnızca <b>sistematik riski</b> ödüllendirdiğini gördünüz. CAPM bu fikri bir denkleme dönüştürür:</p>
+  <div class="eq"><i>E</i>(<i>R</i><sub><i>i</i></sub>) = <i>r</i><sub>f</sub> + β<sub><i>i</i></sub> [<i>E</i>(<i>R</i><sub>m</sub>) − <i>r</i><sub>f</sub>] &nbsp;&nbsp;&nbsp; β<sub><i>i</i></sub> = ${fr('Cov(<i>R</i><sub><i>i</i></sub>, <i>R</i><sub>m</sub>)','σ<sup>2</sup><sub>m</sub>')}</div>
+  <p>β = 1 piyasa kadar, β &gt; 1 piyasadan fazla, β &lt; 1 piyasadan az sistematik risk demektir. Beta uygulamada hisse getirilerinin piyasa endeksi getirilerine regresyonuyla (çoğunlukla 60 aylık ya da 104 haftalık veriyle) tahmin edilir.</p>
+  <div class="note tr">Borsa İstanbul hisseleri için beta genellikle BIST 100 endeksine göre tahmin edilir; risksiz faiz olarak TL cinsi devlet tahvili getirisi, piyasa risk primi için tarihsel ya da tahmini değerler kullanılır. Yüksek enflasyon dönemlerinde nominal oranlar çok oynak olduğu için reel ya da döviz bazlı hesaplar da yapılır.</div>
+  <div class="note yl yl-only">Regresyonla bulunan beta bir <b>tahmindir</b>; standart hatası firmaya özgü oynaklık arttıkça ve gözlem sayısı azaldıkça büyür. Tahmin hatasını azaltmak için Blume düzeltmesi (β<sub>düz</sub> = 0,67β + 0,33) ya da sektör betalarının kaldıraçtan arındırılıp yeniden kaldıraçlandırılması kullanılır. Regresyonun sabiti Jensen alfası olarak yorumlanır.</div>`},
+ {k:'o',type:'ornek',title:'Anka Makine\'nin özkaynak maliyeti',html:()=>`
+  <p><b>Soru.</b> Anka Makine'nin betası 1,2; risksiz faiz %20; piyasa risk primi %7. Özkaynak maliyeti nedir?</p>
+  <p><i>r</i><sub>E</sub> = 20 + 1,2 × 7 = <b>%28,4</b>. Hissenin beklenen getirisi %30 ise alfa +1,6 puandır: hisse modele göre ucuzdur.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Betayı regresyonla tahmin etmek',mount:K_beta},
+ {k:'k2',type:'kesif',core:true,title:'Güvenlik piyasası doğrusu',mount:K_sml},
+ {k:'t',type:'turetim',title:'Betanın portföy yorumu',html:()=>`
+  <p>İyi çeşitlendirilmiş bir portföyün varyansına bir hissenin katkısı, ağırlığı ile piyasa getirisine kovaryansının çarpımıdır. Bu katkı piyasa varyansına bölündüğünde betayı verir. Bir portföyün betası, hisse betalarının ağırlıklı ortalamasıdır: β<sub>p</sub> = Σ <i>w</i><sub><i>i</i></sub> β<sub><i>i</i></sub>. Bu yüzden CAPM'de risk ölçüsü toplam varyans değil betadır.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'hesap',p:'r<sub>f</sub> = %18, piyasa risk primi %8, β = 0,9. İstenen getiri yüzde kaçtır?',ans:25.2,abs:0.05,unit:'%',hint:'CAPM.',sol:'18 + 0,9 × 8 = <b>%25,2</b>.'},
+  {id:2,tag:'hesap',p:'Portföyün %60\'ı β = 1,5 hisselere, %40\'ı β = 0,5 hisselere yatırılmış. Portföy betası kaçtır?',ans:1.1,abs:0.005,unit:'',hint:'Ağırlıklı ortalama.',sol:'0,6 × 1,5 + 0,4 × 0,5 = <b>1,1</b>.'},
+  {id:3,tag:'hesap',p:'Cov(R<sub>i</sub>, R<sub>m</sub>) = 0,018, σ<sub>m</sub> = %12. Beta kaçtır?',ans:1.25,abs:0.005,unit:'',hint:'Kovaryans / piyasa varyansı.',sol:'0,018 / 0,0144 = <b>1,25</b>.'},
+  {id:4,tag:'grafik',p:'Beklenen getirisi SML\'nin üstünde olan bir hisse için ne söylenir?',opts:['Pahalıdır','Ucuzdur (pozitif alfa)','Doğru fiyatlıdır','Betası sıfırdır'],correct:1,hint:'Keşif 2.',sol:'Riskinin gerektirdiğinden fazla getiri bekleniyor: <b>ucuzdur</b>.'},
+  {id:5,tag:'kavram',p:'Firmaya özgü oynaklık arttığında regresyonla tahmin edilen beta için ne olur?',opts:['Sistematik olarak büyür','Ortalamada değişmez ama tahmin hatası (ve R²\'nin düşüklüğü) artar','Sıfıra iner','Bire yaklaşır'],correct:1,hint:'Keşif 1.',sol:'Beta tahmini sapmasız kalır ama <b>daha belirsiz</b> hâle gelir.'},
+  {id:6,tag:'hesap',yl:1,p:'Regresyon betası 1,6 ise Blume düzeltmeli beta kaçtır? (2 ondalık)',ans:.67*1.6+.33,abs:0.005,unit:'',hint:'0,67β + 0,33.',sol:'0,67 × 1,6 + 0,33 = <b>1,40</b>.'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>CAPM: E(R) = r<sub>f</sub> + β(E(R<sub>m</sub>) − r<sub>f</sub>).</li><li>Beta, getirilerin piyasa getirisine regresyonunun eğimidir; portföy betası ağırlıklı ortalamadır.</li><li>SML'nin üstündeki varlık ucuz, altındaki pahalıdır.</li></ul>
+  <p class="lmeta">İzlence: Hafta 1 (sermaye maliyeti ve CAPM) · ÖÇ1.</p>`}
+]},
+
+aosm:{title:'Sermaye yapısı ve ağırlıklı ortalama sermaye maliyeti',sure:'40 dk',steps:[
+ {k:'a',type:'anlatim',title:'AOSM',html:()=>`
+  <div class="eq">AOSM = ${fr('<i>E</i>','<i>V</i>')} <i>r</i><sub>E</sub> + ${fr('<i>D</i>','<i>V</i>')} <i>r</i><sub>D</sub> (1 − <i>t</i>)</div>
+  <p>Ağırlıklar piyasa değerleriyle hesaplanır. Borç maliyeti, şirketin bugün borçlanabileceği oran ya da tahvillerinin vadeye kadar getirisidir; faiz vergiden düşüldüğü için vergi sonrası alınır. Özkaynak maliyeti CAPM ya da Gordon modeliyle bulunur.</p>
+  <p>AOSM, şirketin <b>mevcut riskine benzer</b> projeler için iskonto oranıdır. Borç oranı değiştikçe hem özkaynak hem borç maliyeti değişir; bu yüzden AOSM'yi "ucuz borcu artırarak" sınırsızca düşürmek mümkün değildir.</p>
+  <div class="note yl yl-only"><b>Hamada denklemi</b>: β<sub>L</sub> = β<sub>U</sub>[1 + (1 − <i>t</i>)<i>D</i>/<i>E</i>]. Benzer şirketlerin betaları kaldıraçtan arındırılıp (β<sub>U</sub>) hedef sermaye yapısına göre yeniden kaldıraçlandırılarak halka açık olmayan şirketler ya da yeni sektör projeleri için beta tahmin edilir. Denklem borç betasının sıfır olduğunu varsayar.</div>`},
+ {k:'o',type:'ornek',title:'Anka Makine\'nin AOSM\'si',html:()=>`
+  <p>Özkaynak piyasa değeri 6 milyon TL, borç 4 milyon TL (D/V = %40). r<sub>E</sub> = %28,4; borçlanma faizi %24; vergi %25.</p>
+  <p>AOSM = 0,6 × 28,4 + 0,4 × 24 × 0,75 = 17,04 + 7,20 = <b>%24,24</b>.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Borç oranı ve AOSM',mount:K_wacc},
+ {k:'t',type:'turetim',title:'AOSM neden U biçimli?',html:()=>`
+  <p>Borç oranı düşükken borcun ağırlığını artırmak, pahalı özkaynak yerine ucuz ve vergiden düşülen borç koymak demektir; AOSM düşer. Borç arttıkça özkaynak betası (Hamada) ve borcun kredi riski primi yükselir. Bir noktadan sonra bu artışlar ucuz borcun avantajını aşar ve AOSM yükselir. En düşük nokta, Ders 3'teki dengeleme teorisinin optimum sermaye yapısına karşılık gelir.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'hesap',p:'E/V = %70, r<sub>E</sub> = %26, r<sub>D</sub> = %22, t = %25. AOSM yüzde kaçtır?',ans:.7*26+.3*22*.75,abs:0.01,unit:'%',hint:'Vergi sonrası borç maliyetini unutmayın.',sol:'0,7 × 26 + 0,3 × 16,5 = 18,2 + 4,95 = <b>%23,15</b>.'},
+  {id:2,tag:'kavram',p:'AOSM hesabında ağırlıklar hangi değerlerle bulunmalıdır?',opts:['Defter değerleri','Piyasa değerleri','Nominal değerler','Vergi değerleri'],correct:1,hint:'Yatırımcıların bugün beklediği getiriler.',sol:'<b>Piyasa değerleri</b> (bulunamıyorsa hedef sermaye yapısı).'},
+  {id:3,tag:'kavram',p:'AOSM hangi projeler için doğru iskonto oranıdır?',opts:['Bütün projeler','Şirketin mevcut faaliyetleriyle aynı risk ve finansman yapısındaki projeler','Yalnızca borçla finanse edilen projeler','Risksiz projeler'],correct:1,hint:'Finans I, Ders 10.',sol:'<b>Şirketin ortalama riskine benzer</b> projeler.'},
+  {id:4,tag:'hesap',yl:1,p:'β<sub>U</sub> = 0,9; D/E = 0,8; t = %25. Hamada ile kaldıraçlı beta kaçtır?',ans:.9*(1+.75*.8),abs:0.005,unit:'',hint:'β<sub>U</sub>[1 + (1 − t)D/E].',sol:'0,9 × (1 + 0,6) = <b>1,44</b>.'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>AOSM = (E/V)r<sub>E</sub> + (D/V)r<sub>D</sub>(1 − t), piyasa değeri ağırlıklarıyla.</li><li>Borç arttıkça hem r<sub>E</sub> hem r<sub>D</sub> artar; AOSM U biçimlidir.</li><li>AOSM, şirket ortalaması riskindeki projelerin iskonto oranıdır.</li></ul>
+  <p class="lmeta">İzlence: Hafta 2–3 (sermaye yapısı ve AOSM) · ÖÇ1.</p>`}
+]},
+
+mm:{title:'Sermaye yapısı teorileri: Modigliani–Miller ve dengeleme teorisi',sure:'40 dk',steps:[
+ {k:'a',type:'anlatim',title:'Borç değer yaratır mı?',html:()=>`
+  <ul><li><b>MM I (vergisiz, 1958):</b> Mükemmel piyasada şirket değeri sermaye yapısından bağımsızdır: <i>V</i><sub>L</sub> = <i>V</i><sub>U</sub>. Yatırımcı kaldıracı kendisi de yaratabilir.</li>
+  <li><b>MM II (vergisiz):</b> <i>r</i><sub>E</sub> = ρ + (ρ − <i>r</i><sub>D</sub>)<i>D</i>/<i>E</i>; AOSM sabittir.</li>
+  <li><b>MM (vergili, 1963):</b> Faiz vergiden düşüldüğü için <i>V</i><sub>L</sub> = <i>V</i><sub>U</sub> + <i>t D</i>; teori %100 borcu önerir.</li>
+  <li><b>Dengeleme (trade-off) teorisi:</b> <i>V</i><sub>L</sub> = <i>V</i><sub>U</sub> + BD(vergi kalkanı) − BD(finansal sıkıntı maliyetleri). Optimum, marjinal vergi kazancı ile marjinal sıkıntı maliyetinin eşitlendiği noktadır.</li>
+  <li><b>Hiyerarşi (pecking order) teorisi:</b> Bilgi asimetrisi nedeniyle şirketler önce iç kaynakları, sonra borcu, en son yeni pay ihracını kullanır.</li></ul>`},
+ {k:'o',type:'ornek',title:'Vergi kalkanının değeri',html:()=>`
+  <p>Anka Makine'nin borçsuz değeri 10 milyon TL. 4 milyon TL kalıcı borç alırsa (vergi %25) MM'ye göre değer 10 + 0,25 × 4 = <b>11 milyon TL</b> olur. Finansal sıkıntı maliyetinin bugünkü değeri 0,25 × 4²/10 = 0,4 milyon TL ise dengeleme teorisine göre değer 10,6 milyon TL'dir.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Üç teori, üç eğri',mount:K_mm},
+ {k:'k2',type:'kesif',core:false,title:'MM II: özkaynak maliyeti ve AOSM',mount:K_mm2},
+ {k:'t',type:'turetim',title:'Vergi kalkanının bugünkü değeri ve optimum borç',html:()=>`
+  <p>Kalıcı <i>D</i> borcunun yıllık faizi <i>r</i><sub>D</sub><i>D</i>, vergi tasarrufu <i>t r</i><sub>D</sub><i>D</i>'dir. Bu bir perpetüitedir; borç riskiyle iskontolanırsa bugünkü değeri <i>t r</i><sub>D</sub><i>D</i> / <i>r</i><sub>D</sub> = <i>t D</i>.</p>
+  <p>Sıkıntı maliyeti <i>c D</i><sup>2</sup>/<i>V</i><sub>U</sub> ise <i>V</i> = <i>V</i><sub>U</sub> + <i>t D</i> − <i>c D</i><sup>2</sup>/<i>V</i><sub>U</sub>. Türev sıfıra eşitlenince <i>D</i>* = <i>t V</i><sub>U</sub> / (2<i>c</i>): vergi oranı yüksek, sıkıntı maliyeti düşük şirketler daha fazla borçlanır.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'hesap',p:'V<sub>U</sub> = 20 milyon TL, kalıcı borç 6 milyon TL, vergi %25. MM (vergili) şirket değeri kaç milyon TL\'dir?',ans:21.5,abs:0.01,unit:'mn TL',hint:'V<sub>U</sub> + tD.',sol:'20 + 0,25 × 6 = <b>21,5 milyon TL</b>.'},
+  {id:2,tag:'hesap',p:'ρ = %22, r<sub>D</sub> = %18, D/E = 1,5. MM II (vergisiz) özkaynak maliyeti yüzde kaçtır?',ans:28,abs:0.05,unit:'%',hint:'ρ + (ρ − r<sub>D</sub>)D/E.',sol:'22 + 4 × 1,5 = <b>%28</b>.'},
+  {id:3,tag:'grafik',p:'Finansal sıkıntı maliyetleri artarsa dengeleme teorisindeki optimum borç ne olur?',opts:['Artar','Azalır','Değişmez','Sıfır olur'],correct:1,hint:'Keşif 1.',sol:'<b>Azalır</b>: D* = tV<sub>U</sub>/(2c).'},
+  {id:4,tag:'kavram',p:'Hiyerarşi teorisine göre kârlı şirketler neden daha az borçludur?',opts:['Vergi kalkanına ihtiyaçları yoktur','İç kaynakları yettiği için dış finansmana başvurmazlar','Borç verilmez','Sıkıntı maliyetleri yüksektir'],correct:1,hint:'Finansman sırası.',sol:'İlk tercih <b>iç kaynaklardır</b>; kârlı şirket borçlanmaya ihtiyaç duymaz.'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>MM vergisiz: değer sermaye yapısından bağımsız; MM II: r<sub>E</sub> borçla doğrusal artar.</li><li>MM vergili: V<sub>L</sub> = V<sub>U</sub> + tD.</li><li>Dengeleme: vergi kalkanı ile sıkıntı maliyetleri arasında optimum; hiyerarşi: iç kaynak → borç → pay.</li></ul>
+  <p class="lmeta">İzlence: Hafta 4–5 (sermaye yapısı teorileri) · ÖÇ3.</p>`}
+]},
+
+calisma:{title:'Çalışma sermayesi yönetimi ve nakit dönüşüm süresi',sure:'35 dk',steps:[
+ {k:'a',type:'anlatim',title:'Faaliyet döngüsü',html:()=>`
+  <p><b>Net çalışma sermayesi</b> = dönen varlıklar − kısa vadeli borçlar. Faaliyet döngüsü, mal alımından satışın tahsiline kadar geçen süredir; satıcı kredisi bu sürenin bir kısmını finanse eder:</p>
+  <div class="eq">NDS = ${fr('Stok','SMM / 365')} + ${fr('Alacaklar','Satışlar / 365')} − ${fr('Ticari borçlar','SMM / 365')}</div>
+  <p>NDS kısaldıkça finanse edilmesi gereken tutar ve faiz maliyeti azalır. Ancak stoku çok azaltmak satış kaybına, vadeleri kısaltmak müşteri kaybına, satıcıya geç ödemek erken ödeme iskontosunun kaçırılmasına yol açabilir.</p>`},
+ {k:'o',type:'ornek',title:'Anka Makine\'nin nakit dönüşüm süresi',html:()=>`
+  <p>Stok 250.000, SMM 900.000 → stok süresi ≈ 101 gün. Alacak 250.000, satış 1.500.000 → ≈ 61 gün. Ticari borç 110.000 → ≈ 45 gün. NDS ≈ 101 + 61 − 45 = <b>117 gün</b>; finanse edilecek tutar ≈ 900.000/365 × 117 ≈ 288.500 TL.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Nakit dönüşüm süresi',mount:K_nds},
+ {k:'k2',type:'kesif',core:false,title:'Tutucu, orta ve atak politika',mount:K_politika},
+ {k:'t',type:'turetim',title:'Erken ödeme iskontosunun maliyeti',html:()=>`
+  <p>"2/10 net 40" koşulu: 10 gün içinde ödenirse %2 indirim, aksi hâlde 40 günde tam ödeme. İndirimden vazgeçmek 30 gün için %2/%98 faiz ödemek demektir:</p>
+  <div class="eq">Yıllık maliyet = (1 + ${fr('0,02','0,98')})<sup>365/30</sup> − 1 ≈ %27,9</div>
+  <p>Şirketin borçlanma maliyeti bundan düşükse borç alıp indirimi kullanmak daha ucuzdur.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'hesap',p:'Stok süresi 80, alacak süresi 50, borç süresi 60 gün. NDS kaç gündür?',ans:70,abs:0.5,unit:'gün',hint:'Stok + alacak − borç.',sol:'<b>70 gün</b>.'},
+  {id:2,tag:'hesap',p:'Yıllık SMM 730.000 TL ve NDS 70 gün ise yaklaşık finanse edilecek tutar kaç TL\'dir?',ans:140000,abs:1,unit:'TL',hint:'Günlük SMM × NDS.',sol:'2.000 × 70 = <b>140.000 TL</b>.'},
+  {id:3,tag:'hesap',p:'"1/10 net 30" koşulunda iskontodan vazgeçmenin yıllık bileşik maliyeti yüzde kaçtır? (1 ondalık)',ans:100*(Math.pow(1+1/99,365/20)-1),abs:0.1,unit:'%',hint:'20 gün için %1/%99.',sol:`(1 + 1/99)<sup>365/20</sup> − 1 ≈ <b>%${nf(100*(Math.pow(1+1/99,365/20)-1),1)}</b>.`},
+  {id:4,tag:'kavram',p:'Hangi değişiklik NDS\'yi kısaltır?',opts:['Stok süresinin uzaması','Müşterilere daha uzun vade verilmesi','Satıcılara daha geç ödeme yapılması','Alacak tahsil süresinin uzaması'],correct:2,hint:'Borç süresi formülde eksi işaretlidir.',sol:'<b>Satıcılara daha geç ödeme</b>.'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>NDS = stok süresi + alacak süresi − borç süresi.</li><li>NDS × günlük maliyet ≈ finanse edilecek çalışma sermayesi.</li><li>Erken ödeme iskontosundan vazgeçmenin örtük maliyeti çoğu zaman yüksektir.</li></ul>
+  <p class="lmeta">İzlence: Hafta 6–7 (çalışma sermayesi) · ÖÇ4.</p>`}
+]},
+
+alacak:{title:'Alacak yönetimi ve kredi politikası',sure:'30 dk',steps:[
+ {k:'a',type:'anlatim',title:'Kredi politikasının dört unsuru',html:()=>`
+  <p>Kredi politikası; <b>kredi standartları</b> (kime vade verilecek), <b>kredi koşulları</b> (vade, erken ödeme iskontosu), <b>tahsilat politikası</b> ve <b>kredi limitlerinden</b> oluşur. Politikayı gevşetmek satışları artırır ama üç maliyet doğurur: alacaklara bağlanan paranın fırsat maliyeti, tahsil edilemeyen alacaklar ve tahsilat giderleri.</p>
+  <div class="eq">Δ Kâr = Δ Satış × katkı oranı − Δ Kötü alacak − <i>r</i> × Δ (Alacak yatırımı)</div>
+  <p>Alacak yatırımı maliyet bedeliyle ölçülür: (Satış / 365) × tahsil süresi × (değişken maliyet / satış).</p>
+  <div class="note">Bu ders, izlencede çalışma sermayesinin bileşenlerinden eksik bırakılan alacak yönetimini kapsar.</div>`},
+ {k:'o',type:'ornek',title:'Vadeyi 60 günden 90 güne uzatmak',html:()=>{const S1=1.725e6,kat=225000*.4,kot=S1*.02-15000,ar=(S1/365*90-1.5e6/365*60)*.6;return `
+  <p>Satışlar %15 artıyor (1.725.000 TL); katkı oranı %40; kötü alacak oranı %1'den %2'ye çıkıyor; tahsil süresi 60 günden 90 güne uzuyor; fırsat maliyeti %30.</p>
+  <p>Ek katkı ${tl(kat)} − kötü alacak artışı ${tl(kot)} − alacak finansmanı ${tl(ar*.3)} = <b>${tl(kat-kot-ar*.3)}</b>. Satışlar artsa da politika kârı azaltıyor.</p>`;}},
+ {k:'k1',type:'kesif',core:true,title:'Kredi politikasını gevşetmek',mount:K_kredi2},
+ {k:'t',type:'turetim',title:'Neden maliyet bedeli?',html:()=>`
+  <p>Alacaktaki satış tutarının bir kısmı kârdır; şirket bu kısmı hiç harcamamıştır. Alacak için gerçekten bağlanan para, satılan malın değişken maliyetidir. Bu yüzden fırsat maliyeti hesabında alacak yatırımı değişken maliyet oranıyla çarpılır.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'hesap',p:'Yıllık satış 3.650.000 TL, tahsil süresi 40 gün, değişken maliyet oranı %70. Alacak yatırımı (maliyetle) kaç TL\'dir?',ans:280000,abs:1,unit:'TL',hint:'(S/365) × gün × v.',sol:'10.000 × 40 × 0,7 = <b>280.000 TL</b>.'},
+  {id:2,tag:'hesap',p:'Politika satışları 200.000 TL artırıyor (katkı oranı %35), kötü alacakları 20.000 TL, alacak yatırımını 100.000 TL artırıyor (r = %30). Kâr etkisi kaç TL\'dir?',ans:200000*.35-20000-30000,abs:1,unit:'TL',hint:'70.000 − 20.000 − 30.000.',sol:'<b>20.000 TL</b> artış.'},
+  {id:3,tag:'kavram',p:'Aşağıdakilerden hangisi kredi politikasının unsuru değildir?',opts:['Kredi standartları','Kredi koşulları','Tahsilat politikası','Temettü politikası'],correct:3,hint:'Biri dağıtım kararıdır.',sol:'<b>Temettü politikası</b>.'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>Kredi politikası: standartlar, koşullar, tahsilat, limitler.</li><li>Gevşetmenin kârı = ek katkı − kötü alacak − alacak finansmanı.</li><li>Alacak yatırımı maliyet bedeliyle ölçülür.</li></ul>
+  <p class="lmeta">İzlence: Çalışma sermayesi (Hafta 6–7) · ÖÇ4. İzlencede ayrı başlık yok.</p>`}
+]},
+
+temettu:{title:'Temettü politikaları',sure:'35 dk',steps:[
+ {k:'a',type:'anlatim',title:'Temettü ilgisiz mi?',html:()=>`
+  <p><b>MM temettü ilgisizliği (1961):</b> Yatırım kararı verilmişse, vergi ve işlem maliyeti olmayan bir piyasada temettü politikası şirket değerini etkilemez. Temettü ödenince hisse fiyatı aynı tutarda düşer; isteyen yatırımcı hisse satarak kendi temettüsünü yaratır.</p>
+  <p>Gerçek dünyada temettünün önemli olmasının nedenleri: <b>vergiler</b> (temettü ve sermaye kazancı farklı vergilenir), <b>sinyal etkisi</b> (temettü artışı yönetimin geleceğe güvenini gösterir), <b>vekâlet maliyetleri</b> (dağıtılan nakit yöneticilerin israf edebileceği nakdi azaltır) ve <b>yatırımcı tercihleri</b> (müşteri etkisi).</p>
+  <p><b>Lintner (1956)</b> gözlemi: şirketler hedef bir dağıtım oranına sahiptir ama temettüyü kârdaki geçici dalgalanmalara göre değiştirmez; kısmi uyum sağlar ve temettü kesmekten kaçınır.</p>
+  <div class="note tr">Türkiye'de gerçek kişi ortaklara dağıtılan kâr paylarında stopaj oranı 22.12.2024'ten itibaren %15'tir; tam mükellef kurumlara dağıtımda stopaj yoktur. Borsada işlem gören hisselerin alım satım kazançlarında stopaj uygulaması ayrıca düzenlenir.</div>`},
+ {k:'o',type:'ornek',title:'Temettünün hisse fiyatına etkisi',html:()=>`
+  <p>Anka Makine hissesi 50 TL. Hisse başına 5 TL temettü dağıtılırsa (vergi yoksa) temettü sonrası fiyat 45 TL olur: 100 hisseli bir yatırımcının serveti 100 × 45 + 500 = 5.000 TL, temettüden önceki 5.000 TL ile aynıdır.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Lintner: temettünün yumuşatılması',mount:K_lintner},
+ {k:'k2',type:'kesif',core:true,title:'Temettü mü, hisse geri alımı mı?',mount:K_ilgisiz},
+ {k:'t',type:'turetim',title:'Kendi temettünü yaratmak',html:()=>`
+  <p>Şirket temettü ödemiyorsa ama yatırımcı nakit istiyorsa, hisselerinin <i>D</i>/<i>P</i> oranını satar. Vergisiz dünyada temettü alan yatırımcıyla aynı nakde ve aynı servete ulaşır; tek fark, şirketteki payının biraz azalmasıdır. Tersine, temettü istemeyen yatırımcı aldığı temettüyle yeni hisse alabilir. Yatırımcı her iki yönü kendisi yapabildiğine göre şirketin seçimi değer yaratamaz. Vergiler bu simetriyi bozar: temettü daha ağır vergileniyorsa geri alım daha avantajlıdır.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'hesap',p:'Hisse fiyatı 80 TL; hisse başına 6 TL temettü ödenecek. Vergi yoksa temettü sonrası teorik fiyat kaç TL\'dir?',ans:74,abs:0.01,unit:'TL',hint:'Fiyat temettü kadar düşer.',sol:'<b>74 TL</b>.'},
+  {id:2,tag:'hesap',p:'Lintner modelinde D<sub>t−1</sub> = 2 TL, E<sub>t</sub> = 6 TL, hedef oran %50, uyum hızı 0,4. D<sub>t</sub> kaç TL\'dir?',ans:2.4,abs:0.005,unit:'TL',hint:'D<sub>t−1</sub> + c(p·E<sub>t</sub> − D<sub>t−1</sub>).',sol:'2 + 0,4 × (3 − 2) = <b>2,40 TL</b>.'},
+  {id:3,tag:'kavram',p:'MM temettü ilgisizliğinin varsayımlarından biri değildir:',opts:['Vergi yoktur','İşlem maliyeti yoktur','Yatırım kararı temettüden bağımsızdır','Yöneticiler temettüyü yumuşatır'],correct:3,hint:'Biri Lintner\'ın gözlemidir.',sol:'<b>Temettünün yumuşatılması</b> Lintner\'ın ampirik gözlemidir, MM\'nin varsayımı değildir.'},
+  {id:4,tag:'grafik',p:'Lintner modelinde uyum hızı küçüldükçe temettü serisi nasıl olur?',opts:['Daha oynak','Daha düzgün (yumuşak)','Kârla birebir aynı','Sıfır'],correct:1,hint:'Keşif 1.',sol:'<b>Daha yumuşak</b>; kârdaki geçici düşüşlere az tepki verir.'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>MM: mükemmel piyasada temettü politikası ilgisizdir.</li><li>Vergiler, sinyal, vekâlet maliyetleri ve müşteri etkisi politikayı önemli kılar.</li><li>Lintner: hedef oran ve kısmi uyum; temettü yumuşatılır.</li></ul>
+  <p class="lmeta">İzlence: Hafta 8–9 (temettü politikaları) · ÖÇ2.</p>`}
+]},
+
+nakit:{title:'Nakit yönetimi: Baumol ve Miller–Orr modelleri',sure:'35 dk',steps:[
+ {k:'a',type:'anlatim',title:'Ne kadar nakit?',html:()=>`
+  <p>Nakit tutmanın nedenleri: işlem (günlük ödemeler), ihtiyat (beklenmeyen ihtiyaçlar) ve spekülasyon (fırsatlar). Fazla nakit faiz kaybettirir, az nakit sık aktarım maliyeti ya da ödeme güçlüğü yaratır.</p>
+  <div class="eq">Baumol: <i>C</i>* = √(2<i>T F</i> / <i>r</i>) &nbsp;&nbsp;&nbsp; Miller–Orr: <i>Z</i> = <i>L</i> + (3<i>F</i>σ<sup>2</sup> / 4<i>r</i>)<sup>1/3</sup>, &nbsp;<i>H</i> = <i>L</i> + 3(<i>Z</i> − <i>L</i>)</div>
+  <p>Baumol nakit çıkışlarının düzenli ve kesin olduğunu varsayar; Miller–Orr günlük nakit akışlarını rastlantısal kabul eder ve bir kontrol bandı kurar. Miller–Orr'da <i>r</i> <b>günlük</b> faiz, σ<sup>2</sup> günlük nakit akışlarının varyansıdır.</p>`},
+ {k:'o',type:'ornek',title:'Anka Makine için iki model',html:()=>{const cs=Math.sqrt(2*1.2e6*200/.3),Z=Math.cbrt(3*200*25e6/(4*.3/365));return `
+  <p><b>Baumol:</b> T = 1.200.000, F = 200 TL, r = %30 → C* = √(2 × 1.200.000 × 200 / 0,30) = <b>${tl(cs)}</b>; yılda ${nf(1.2e6/cs,0)} aktarım.</p>
+  <p><b>Miller–Orr:</b> σ = 5.000 TL/gün, günlük r = 0,30/365, L = 20.000 → Z − L = (3 × 200 × 5.000² / (4 × 0,000822))<sup>1/3</sup> ≈ ${tl(Z)}; Z ≈ ${tl(20000+Z)}, H ≈ ${tl(20000+3*Z)}.</p>`;}},
+ {k:'k1',type:'kesif',core:true,title:'Baumol modeli',mount:K_baumol},
+ {k:'k2',type:'kesif',core:true,title:'Miller–Orr kontrol bandı',mount:K_millerorr},
+ {k:'t',type:'turetim',title:'Baumol formülünün türetilmesi',html:()=>`
+  <p>Toplam maliyet TC(<i>C</i>) = (<i>C</i>/2)<i>r</i> + (<i>T</i>/<i>C</i>)<i>F</i>. Türev: <i>r</i>/2 − <i>T F</i>/<i>C</i><sup>2</sup> = 0 → <i>C</i>* = √(2<i>T F</i>/<i>r</i>). Optimumda iki maliyet eşittir. Formül stok yönetimindeki ESM ile aynı yapıdadır: nakit, "stoku tutulan" bir maldır.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'hesap',p:'T = 2.400.000 TL, F = 300 TL, r = %36. Baumol optimum aktarım büyüklüğü kaç TL\'dir?',ans:Math.sqrt(2*2.4e6*300/.36),rel:0.001,unit:'TL',hint:'√(2TF/r).',sol:`√(2 × 2.400.000 × 300 / 0,36) = <b>${tl(Math.sqrt(2*2.4e6*300/.36))}</b>.`},
+  {id:2,tag:'hesap',p:'Miller–Orr: L = 10.000, Z = 25.000 TL. Üst sınır H kaç TL\'dir?',ans:55000,abs:1,unit:'TL',hint:'H = L + 3(Z − L).',sol:'10.000 + 3 × 15.000 = <b>55.000 TL</b>.'},
+  {id:3,tag:'grafik',p:'Faiz oranı artarsa Baumol optimum aktarım büyüklüğü ne olur?',opts:['Artar','Azalır','Değişmez','Sıfır olur'],correct:1,hint:'r paydada.',sol:'Elde nakit tutmak pahalılaşır; <b>C* küçülür</b>.'},
+  {id:4,tag:'kavram',p:'Miller–Orr modelinde nakit akışlarının oynaklığı artarsa bant ne olur?',opts:['Daralır','Genişler','Değişmez','Kaybolur'],correct:1,hint:'σ² formülde.',sol:'<b>Genişler</b> (σ<sup>2/3</sup> ile).'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>Baumol: C* = √(2TF/r); düzenli nakit çıkışları.</li><li>Miller–Orr: rastlantısal akışlar; Z ve H bandı, oynaklıkla genişler.</li><li>İki model de elde tutma maliyeti ile işlem maliyetini dengeler.</li></ul>
+  <p class="lmeta">İzlence: Hafta 10 (nakit yönetimi) · ÖÇ5.</p>`}
+]},
+
+stok:{title:'Stok yönetimi: ekonomik sipariş miktarı ve emniyet stoku',sure:'35 dk',steps:[
+ {k:'a',type:'anlatim',title:'Ne kadar, ne zaman?',html:()=>`
+  <p>Stok yönetiminin iki sorusu: <b>ne kadar</b> sipariş verilmeli ve <b>ne zaman</b>? Ekonomik sipariş miktarı (ESM) sipariş ve tutma maliyetlerinin toplamını en aza indirir:</p>
+  <div class="eq">ESM = √(2<i>D S</i> / <i>H</i>) &nbsp;&nbsp;&nbsp; Yeniden sipariş noktası = günlük talep × teslim süresi + emniyet stoku</div>
+  <p>Talep ve teslim süresi belirsiz olduğunda <b>emniyet stoku</b> stoksuz kalma riskini azaltır. Tam zamanında (JIT) üretim stok tutma maliyetini düşürür ama tedarik zinciri riskini artırır.</p>`},
+ {k:'o',type:'ornek',title:'Anka Makine\'nin parça stoku',html:()=>`
+  <p>D = 12.000 adet/yıl, S = 500 TL, H = 20 TL → ESM = √(2 × 12.000 × 500 / 20) = <b>775 adet</b>; yılda yaklaşık 15,5 sipariş. 300 iş gününde günlük talep 40 adet; teslim süresi 8 gün ise emniyet stoku olmadan yeniden sipariş noktası 320 adettir.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Ekonomik sipariş miktarı',mount:K_eoq},
+ {k:'k2',type:'kesif',core:true,title:'Emniyet stoku ve stoksuz kalma',mount:K_emniyet},
+ {k:'t',type:'turetim',title:'ESM ve Baumol aynı formül',html:()=>`
+  <p>TC(<i>Q</i>) = (<i>Q</i>/2)<i>H</i> + (<i>D</i>/<i>Q</i>)<i>S</i> → <i>Q</i>* = √(2<i>D S</i>/<i>H</i>). <i>H</i> iki katına çıkarsa <i>Q</i>* 1/√2 katına (yaklaşık %71'ine) iner, yarıya değil: karekök kuralı. Talep dört katına çıkarsa sipariş miktarı yalnızca iki katına çıkar; stok yönetiminde ölçek ekonomisi vardır.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'hesap',p:'D = 8.000 adet, S = 400 TL, H = 16 TL. ESM kaç adettir?',ans:Math.sqrt(2*8000*400/16),abs:0.5,unit:'adet',hint:'√(2DS/H).',sol:'√400.000 ≈ <b>632 adet</b>.'},
+  {id:2,tag:'hesap',p:'Günlük talep 50 adet, teslim süresi 6 gün, emniyet stoku 100 adet. Yeniden sipariş noktası kaç adettir?',ans:400,abs:0.5,unit:'adet',hint:'d × L + SS.',sol:'300 + 100 = <b>400 adet</b>.'},
+  {id:3,tag:'grafik',p:'Stok tutma maliyeti iki katına çıkarsa ESM ne olur?',opts:['Yarıya iner','Yaklaşık %71\'ine iner','İki katına çıkar','Değişmez'],correct:1,hint:'Karekök.',sol:'1/√2 ≈ <b>0,71</b> katına iner.'},
+  {id:4,tag:'kavram',p:'Emniyet stoku neden tutulur?',opts:['Sipariş maliyetini azaltmak için','Talep ve teslim süresindeki belirsizliğe karşı','Vergi avantajı için','ESM\'yi artırmak için'],correct:1,hint:'Keşif 2.',sol:'<b>Belirsizliğe karşı</b> stoksuz kalmamak için.'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>ESM = √(2DS/H); toplam maliyet en düşük noktada sipariş ve tutma maliyetleri eşittir.</li><li>Yeniden sipariş noktası = d × L + emniyet stoku.</li><li>Emniyet stoku stoksuz kalma riskini azaltır, ortalama stoku artırır.</li></ul>
+  <p class="lmeta">İzlence: Hafta 11 (stok yönetimi) · ÖÇ6.</p>`}
+]},
+
+turev:{title:'Borç yönetimi ve türev ürünler: vadeli işlemler, opsiyonlar, riskten korunma',sure:'50 dk',steps:[
+ {k:'a',type:'anlatim',title:'Türev ürünler',html:()=>`
+  <p><b>Türev ürün</b>, değeri bir dayanak varlığın (kur, faiz, emtia, hisse) fiyatına bağlı sözleşmedir.</p>
+  <ul><li><b>Vadeli işlem (forward/futures):</b> Belirli bir tarihte belirli bir fiyattan alım ya da satım <b>yükümlülüğü</b>. Vadeli fiyat ≈ <i>S</i><sub>0</sub>(1 + <i>r</i>)<sup><i>T</i></sup> (taşıma maliyeti).</li>
+  <li><b>Alım opsiyonu (call):</b> Kullanım fiyatından alma <b>hakkı</b>; vadede getiri max(<i>S</i><sub>T</sub> − <i>K</i>, 0).</li>
+  <li><b>Satım opsiyonu (put):</b> Kullanım fiyatından satma hakkı; getiri max(<i>K</i> − <i>S</i><sub>T</sub>, 0).</li>
+  <li><b>Swap:</b> Nakit akışlarının değiştirilmesi (ör. değişken faizi sabite çevirmek).</li></ul>
+  <p><b>Alım–satım paritesi</b>: <i>C</i> − <i>P</i> = <i>S</i><sub>0</sub> − <i>K</i>e<sup>−<i>rT</i></sup>. <b>Borç yönetiminde</b> türevler faiz ve kur riskini yönetmek için kullanılır: döviz borcu olan şirket vadeli döviz alarak, değişken faizli krediyi faiz swapıyla sabitleyerek riskini azaltır.</p>
+  <div class="note tr">Türkiye'de vadeli işlem ve opsiyon sözleşmeleri Borsa İstanbul Vadeli İşlem ve Opsiyon Piyasası'nda (VİOP) işlem görür; bankalar şirketlere tezgâh üstü vadeli kur ve swap işlemleri sunar.</div>
+  <div class="note yl yl-only"><b>Black–Scholes:</b> <i>C</i> = <i>S</i>N(<i>d</i><sub>1</sub>) − <i>K</i>e<sup>−<i>rT</i></sup>N(<i>d</i><sub>2</sub>), <i>d</i><sub>1</sub> = [ln(<i>S</i>/<i>K</i>) + (<i>r</i> + σ<sup>2</sup>/2)<i>T</i>]/(σ√<i>T</i>), <i>d</i><sub>2</sub> = <i>d</i><sub>1</sub> − σ√<i>T</i>. Keşifteki primler bu formülle (sürekli bileşik faizle) hesaplanır. TFRS 9 riskten korunma muhasebesi, korunma aracının kazanç ve kayıplarının korunan kalemle aynı döneme eşleştirilmesine izin verir.</div>`},
+ {k:'o',type:'ornek',title:'Kur riskinden korunma',html:()=>`
+  <p>Anka Makine 3 ay sonra 100.000 USD ödeyecek. Vadeli kur 41,50 TL ile korunursa ödeme kur ne olursa olsun <b>4.150.000 TL</b> olur. 42 TL kullanım fiyatlı alım opsiyonu (prim 0,80 TL) alınırsa ödeme en fazla (42 + 0,80) × 100.000 = <b>4.280.000 TL</b> olur; kur 38 TL'ye düşerse ödeme (38 + 0,80) × 100.000 = 3.880.000 TL'dir.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Getiri diyagramları ve stratejiler',mount:K_opsiyon},
+ {k:'k2',type:'kesif',core:true,title:'Kur riskinden korunma: vadeli işlem ve opsiyon',mount:K_hedge},
+ {k:'t',type:'turetim',title:'Alım–satım paritesi',html:()=>`
+  <p>İki portföy düşünün: (A) bir alım opsiyonu + <i>K</i>e<sup>−<i>rT</i></sup> nakit; (B) bir satım opsiyonu + bir dayanak varlık. Vadede ikisi de max(<i>S</i><sub>T</sub>, <i>K</i>) öder. Aynı getiriyi sağlayan iki portföyün bugünkü fiyatı da aynı olmalıdır (arbitraj yokluğu):</p>
+  <div class="eq"><i>C</i> + <i>K</i>e<sup>−<i>rT</i></sup> = <i>P</i> + <i>S</i><sub>0</sub></div>
+  <p>Korumalı satım (varlık + put) getiri profili, alım opsiyonu + tahvil profilinin aynısıdır; keşifte iki stratejinin grafiklerini karşılaştırarak görebilirsiniz.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'hesap',p:'Kullanım fiyatı 100 TL, prim 8 TL olan alım opsiyonu aldınız. Vadede fiyat 115 TL ise net kârınız kaç TL\'dir?',ans:7,abs:0.01,unit:'TL',hint:'max(S − K, 0) − prim.',sol:'15 − 8 = <b>7 TL</b>.'},
+  {id:2,tag:'hesap',p:'Aynı opsiyonda başabaş vade fiyatı kaç TL\'dir?',ans:108,abs:0.01,unit:'TL',hint:'K + prim.',sol:'<b>108 TL</b>.'},
+  {id:3,tag:'hesap',p:'S<sub>0</sub> = 100, K = 100, alım primi 10, e<sup>−rT</sup> = 0,93. Parite ile satım primi kaç TL\'dir?',ans:3,abs:0.01,unit:'TL',hint:'P = C − S + Ke<sup>−rT</sup>.',sol:'10 − 100 + 93 = <b>3 TL</b>.'},
+  {id:4,tag:'kavram',p:'Gelecekte döviz ödeyecek bir ithalatçı kur riskini tamamen sabitlemek istiyor. En uygun araç?',opts:['Vadeli döviz satmak','Vadeli döviz almak','Satım opsiyonu almak','Hiçbir şey yapmamak'],correct:1,hint:'İthalatçı dövize ihtiyaç duyacak.',sol:'<b>Vadeli döviz almak</b> kuru sabitler.'},
+  {id:5,tag:'grafik',p:'Straddle (aynı K\'lı alım ve satım opsiyonu almak) hangi beklentiye uygundur?',opts:['Fiyat değişmeyecek','Fiyat çok hareket edecek ama yönü belli değil','Fiyat kesin yükselecek','Faizler düşecek'],correct:1,hint:'Keşif 1\'deki V biçimi.',sol:'<b>Yüksek oynaklık beklentisi</b>; yön belirsiz.'},
+  {id:6,tag:'hesap',yl:1,p:'S = 100, K = 100, r = %30 (sürekli), σ = %40, T = 0,25. Black–Scholes alım primi kaç TL\'dir? (2 ondalık)',ans:bs(100,100,.3,.4,.25,true),abs:0.05,unit:'TL',hint:'d<sub>1</sub> = (0 + (0,30 + 0,08) × 0,25)/(0,4 × 0,5) = 0,475.',sol:`d<sub>1</sub> = 0,475, d<sub>2</sub> = 0,275 → C ≈ <b>${tl(bs(100,100,.3,.4,.25,true),2)}</b>.`}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>Vadeli işlem yükümlülük, opsiyon haktır; opsiyon alıcısı prim öder.</li><li>Getiri: call max(S − K, 0), put max(K − S, 0); stratejiler bu profillerin toplamıdır.</li><li>Parite: C − P = S − Ke<sup>−rT</sup>.</li><li>Vadeli işlem riski sabitler; opsiyon kötü senaryoya karşı sigorta sağlar.</li></ul>
+  <p class="lmeta">İzlence: Hafta 12–14 (borç yönetimi ve türev ürünler) · ÖÇ7.</p>`}
+]}
+};
+
+const CATALOG=[
+ {u:'A. Sermaye maliyeti ve sermaye yapısı',items:[
+  {id:'capm',h:'1',oc:'ÖÇ1',t:'Sermaye varlıklarını fiyatlama modeli (CAPM) ve beta'},
+  {id:'aosm',h:'2–3',oc:'ÖÇ1',t:'Sermaye yapısı ve ağırlıklı ortalama sermaye maliyeti'},
+  {id:'mm',h:'4–5',oc:'ÖÇ3',t:'Sermaye yapısı teorileri: Modigliani–Miller ve dengeleme teorisi'}]},
+ {u:'B. Çalışma sermayesi yönetimi',items:[
+  {id:'calisma',h:'6–7',oc:'ÖÇ4',t:'Çalışma sermayesi yönetimi ve nakit dönüşüm süresi'},
+  {id:'alacak',h:'6–7',oc:'ÖÇ4',gap:1,gapt:'Çalışma sermayesinin bileşeni olan alacak yönetimi izlencede yok',t:'Alacak yönetimi ve kredi politikası'},
+  {id:'nakit',h:'10',oc:'ÖÇ5',t:'Nakit yönetimi: Baumol ve Miller–Orr modelleri'},
+  {id:'stok',h:'11',oc:'ÖÇ6',t:'Stok yönetimi: ekonomik sipariş miktarı ve emniyet stoku'}]},
+ {u:'C. Dağıtım kararları',items:[
+  {id:'temettu',h:'8–9',oc:'ÖÇ2',t:'Temettü politikaları'}]},
+ {u:'D. Risk yönetimi',items:[
+  {id:'turev',h:'12–14',oc:'ÖÇ7',t:'Borç yönetimi ve türev ürünler: vadeli işlemler, opsiyonlar, riskten korunma'}]}
+];
+
+BASLAT();
+</script>
+</body>
+</html>
