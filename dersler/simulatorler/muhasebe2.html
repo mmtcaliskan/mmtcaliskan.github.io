@@ -1,0 +1,1406 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Muhasebe II Simülatörü</title>
+<meta name="description" content="Muhasebe II Simülatörü: tarayıcıda çalışan etkileşimli ders aracı. M. M. Tuncer Çalışkan.">
+<style>
+:root{color-scheme:light;
+  --page:#f9f9f9;--surface:#ffffff;--ink:#191919;--ink2:#666666;--grid:#e7e7e7;--axis:#c2c2c2;--border:rgba(11,11,11,.10);
+  --s1:#257de0;--s2:#f47230;--s3:#00b894;--s4:#f2a600;--s5:#ee7fac;
+  --good:#0aac23;--crit:#dc3c3d;--goodtext:#006c10;
+  --accent:#257de0;--accent-ink:#1757ac;--wash:#eef5fd;--ylwash:#f4f1fd;--ylink:#6a4ce2;}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;
+  --page:#0b0b0b;--surface:#191919;--ink:#efefef;--ink2:#9c9c9c;--grid:#303030;--axis:#474747;--border:rgba(255,255,255,.10);
+  --s1:#338ced;--s2:#e76624;--s3:#00a888;--s4:#d28e05;--s5:#e24d8b;--goodtext:#53c556;
+  --accent:#338ced;--accent-ink:#84b9f3;--wash:#14243a;--ylwash:#211c35;--ylink:#9887ef;}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15.5px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app{max-width:1080px;margin:0 auto;padding:18px 20px 60px}
+a{color:var(--accent-ink)}
+h1{font-size:1.55rem;line-height:1.25;margin:.15em 0}
+h2{font-size:1.22rem;line-height:1.3;margin:.15em 0}
+h3{font-size:1.02rem;margin:1.3em 0 .35em}
+p{margin:.55em 0}
+ul,ol{margin:.4em 0;padding-left:1.3em} li{margin:.2em 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px}
+.hero{display:flex;gap:18px 28px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin:8px 0 16px}
+.kicker{font-size:.78rem;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+.lead{color:var(--ink2);max-width:62ch}
+.toggles{display:flex;flex-direction:column;gap:8px}
+.tg{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--ink2)} .tg .lbl{min-width:46px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;border-right:1px solid var(--border);background:transparent;color:var(--ink);padding:5px 11px;font:inherit;font-size:.85rem;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--accent);color:#fff}
+.seg button:focus-visible,.btn:focus-visible,.stp:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;font-size:.88rem}
+.howto b{display:block;font-size:.9rem;margin-bottom:2px}
+.unit h2{font-size:1rem;margin:26px 0 10px;color:var(--ink2);font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.lc{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:border-color .15s,transform .15s}
+a.lc:hover{border-color:var(--accent);transform:translateY(-1px)}
+.lc.off{opacity:.6}
+.lc .no{font-size:.76rem;color:var(--ink2)} .lc .tt{font-weight:600;margin:2px 0 8px;line-height:1.35} .lc .mt{font-size:.8rem;color:var(--ink2)}
+.chip{display:inline-block;font-size:.72rem;line-height:1.5;padding:0 8px;border-radius:99px;border:1px solid var(--border);color:var(--ink2);margin-right:4px;vertical-align:middle;white-space:nowrap}
+.chip.pilot{background:var(--wash);color:var(--accent-ink);border-color:transparent}
+.chip.gap{border-style:dashed}
+.chip.ok{color:var(--goodtext);border-color:transparent;background:rgba(10,172,35,.11)}
+.chip.yl{background:var(--ylwash);color:var(--ylink);border-color:transparent}
+.lh{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:flex-end;margin:4px 0 12px}
+.back{font-size:.86rem;text-decoration:none}
+.lmeta{font-size:.8rem;color:var(--ink2)}
+.steps{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 12px}
+.stp{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);color:var(--ink2);border-radius:99px;padding:3px 11px 3px 3px;font:inherit;font-size:.78rem;cursor:pointer;white-space:nowrap}
+.stp .sn{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;background:var(--page);font-weight:600;font-size:.76rem}
+.stp.cur{border-color:var(--accent);color:var(--ink)} .stp.cur .sn{background:var(--accent);color:#fff}
+.stp.done .sn{background:var(--good);color:#fff}
+.stp:disabled{opacity:.4;cursor:not-allowed}
+.step .sh{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:12px}
+.chip.t-kesif{background:var(--wash);color:var(--accent-ink);border-color:transparent}
+.chip.t-alistirma{background:rgba(242,166,0,.15);color:inherit;border-color:transparent}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:10px}
+.lockmsg{font-size:.84rem;color:var(--ink2);text-align:center}
+.btn{font:inherit;font-size:.92rem;padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{padding:3px 10px;font-size:.8rem}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+.eq{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:1.08rem;text-align:center;margin:12px 0;padding:10px 12px;background:var(--page);border-radius:8px;overflow-x:auto}
+.eq i{font-style:italic}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px}
+.fr>span{line-height:1.3;padding:0 3px} .fr>span:first-child{border-bottom:1px solid currentColor}
+.tbl{border-collapse:collapse;font-size:.87rem;margin:10px 0;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{border-bottom:1px solid var(--grid);padding:5px 12px;text-align:right}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl th{color:var(--ink2);font-weight:600}
+.tbl.sym td{text-align:left}
+.tbl tr.tot td{font-weight:700;border-top:1.5px solid var(--axis)}
+.tbl tr.sub td{color:var(--ink2)}
+.tbl td.l{text-align:left}
+.note{padding:10px 14px;border-radius:8px;margin:14px 0;background:var(--page);font-size:.92rem}
+.note.yl{background:var(--ylwash);border-left:3px solid var(--ylink)}
+.note.yl::before{content:var(--yl-label,"İleri düzey");display:block;font-size:.7rem;font-weight:700;color:var(--ylink);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.note.tr::before{content:"Mevzuat notu";display:block;font-size:.7rem;font-weight:700;color:var(--ink2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.note.warn{border-left:3px solid var(--s4)}
+body:not(.yl) .yl-only{display:none!important}
+.k-intro{margin-bottom:14px}
+.kgrid{display:grid;grid-template-columns:270px minmax(0,1fr);gap:22px}
+@media (max-width:840px){.kgrid{grid-template-columns:1fr}}
+.sl{display:block;margin:0 0 13px}
+.sl-top{display:flex;justify-content:space-between;gap:8px;font-size:.84rem;color:var(--ink2)}
+.sl output{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);margin:2px 0 0}
+.segw{margin:0 0 13px} .segw .seg{margin-top:4px}
+.task{border:1px dashed var(--accent);border-radius:10px;padding:10px 12px;margin-bottom:16px;background:var(--wash);font-size:.86rem}
+.task.all{border-style:solid;border-color:var(--good)}
+.task-h{font-weight:700;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
+.task-s{font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink2)}
+.ti{display:flex;gap:8px;margin:5px 0}
+.cb{flex:0 0 16px;height:16px;border:1.5px solid var(--ink2);border-radius:4px;margin-top:3px;position:relative}
+.ti.ok .cb{background:var(--good);border-color:var(--good)}
+.ti.ok .cb::after{content:"";position:absolute;left:4px;top:0;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.ti.ok>span:last-child{color:var(--ink2)}
+.ro{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.ro-i{border:1px solid var(--border);border-radius:8px;padding:6px 10px;background:var(--surface)}
+.ro-l{font-size:.74rem;color:var(--ink2);line-height:1.35}
+.ro-v{font-weight:600;font-variant-numeric:tabular-nums}
+.flag{display:inline-flex;gap:5px;align-items:center;font-weight:600;font-size:.82rem;padding:1px 9px;border-radius:99px}
+.flag.good{color:var(--goodtext);background:rgba(10,172,35,.12)}
+.flag.bad{color:var(--crit);background:rgba(220,60,61,.11)}
+.legend{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:.8rem;color:var(--ink2);margin-bottom:2px}
+.lg{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:18px;height:0;border-top:2.5px solid var(--ink2)}
+.sw.l1{border-color:var(--s1)} .sw.l2{border-color:var(--s2)} .sw.l3{border-color:var(--s3)}
+.sw.ref{border-top:1.5px dashed var(--ink2)}
+.sw.box{width:12px;height:12px;border:0;border-radius:3px}
+.sw.box.f1{background:var(--s1)} .sw.box.f2{background:var(--s2)} .sw.box.f3{background:var(--s3)} .sw.box.f4{background:var(--s4)} .sw.box.f5{background:var(--s5)}
+.sw.box.fg{background:var(--axis)}
+.chart{position:relative}
+.chart svg{width:100%;height:auto;display:block;overflow:visible;touch-action:pan-y}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.grid{stroke:var(--grid);stroke-width:1}
+.axis{stroke:var(--axis);stroke-width:1}
+.tick{fill:var(--ink2);font-size:11.5px;font-variant-numeric:tabular-nums}
+.atitle{fill:var(--ink2);font-size:12px}
+.l1,.l2,.l3{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.l1{stroke:var(--s1)} .l2{stroke:var(--s2)} .l3{stroke:var(--s3)}
+.ref{stroke:var(--ink2);stroke-width:1.25;stroke-dasharray:4 4;fill:none}
+.cur{fill:var(--ink);stroke:var(--surface);stroke-width:2}
+.d1{fill:var(--s1);stroke:var(--surface);stroke-width:2}
+.d2{fill:var(--s2);stroke:var(--surface);stroke-width:2}
+.d3{fill:var(--s3);stroke:var(--surface);stroke-width:2}
+.f1{fill:var(--s1)} .f2{fill:var(--s2)} .f3{fill:var(--s3)} .f4{fill:var(--s4)} .f5{fill:var(--s5)} .fg{fill:var(--axis)}
+.seg-r{stroke:var(--surface);stroke-width:2}
+.area1{fill:var(--s1);opacity:.14} .area-g{fill:var(--good);opacity:.14} .area-c{fill:var(--crit);opacity:.12}
+.bar1{fill:var(--s1)} .bar1.dim{opacity:.38}
+.ref2{stroke:var(--axis);stroke-width:1.25;stroke-dasharray:2 3;fill:none}
+.sw.box.bar1{background:var(--s1)} .sw.box.area1{background:var(--s1);opacity:.3}
+.sw.box.area-g{background:var(--good);opacity:.35} .sw.box.area-c{background:var(--crit);opacity:.3}
+.sw.dot{width:10px;height:10px;border:0;border-radius:50%;background:var(--ink)} .sw.dot.d2{background:var(--s2)} .sw.dot.d3{background:var(--s3)}
+.dim{opacity:.38}
+.lab,.lab2{font-size:12px;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.lab{fill:var(--ink)} .lab2{fill:var(--ink2)}
+.labin{font-size:11.5px;fill:#fff;font-variant-numeric:tabular-nums}
+.labin.dk{fill:#0b0b0b}
+.hov line{stroke:var(--ink2);stroke-width:1}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--border);box-shadow:0 4px 14px rgba(0,0,0,.14);border-radius:8px;padding:6px 10px;font-size:.78rem;line-height:1.45;white-space:nowrap;z-index:5;font-variant-numeric:tabular-nums}
+details.dt summary{cursor:pointer;font-size:.82rem;color:var(--ink2);margin-top:10px}
+.dtw{max-height:260px;overflow:auto}
+.q{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin:12px 0}
+.qh{display:flex;gap:4px;align-items:center;margin-bottom:6px}
+.qn{margin-left:auto;font-size:.76rem;color:var(--ink2)}
+.qa{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+input.num,input.acc,select.sel{font:inherit;padding:6px 10px;border:1px solid var(--axis);border-radius:8px;background:var(--surface);color:var(--ink)}
+input.num{width:190px}
+.unit{color:var(--ink2);font-size:.9rem}
+.opts label{display:flex;gap:8px;align-items:flex-start;padding:3px 0;cursor:pointer}
+.opts input{margin-top:5px}
+.fb{margin-top:10px;padding:8px 12px;border-radius:8px;font-size:.9rem}
+.fb:empty{display:none}
+.fb.ok{background:rgba(10,172,35,.11)}
+.fb.try{background:rgba(242,166,0,.15)}
+.fb.rev{background:var(--wash)}
+.qsum{font-size:.86rem;color:var(--ink2);margin-bottom:4px}
+.about{font-size:.8rem;color:var(--ink2);margin-top:30px;border-top:1px solid var(--grid);padding-top:14px}
+.map summary{cursor:pointer;font-weight:600}
+.map{margin-top:26px}
+.done-box{text-align:center;padding:30px}
+.summary li{margin:.35em 0}
+/* ---- Muhasebeye özgü bileşenler ---- */
+.jt{border-collapse:collapse;font-size:.88rem;margin:8px 0 12px;font-variant-numeric:tabular-nums;min-width:min(100%,520px)}
+.jt td,.jt th{padding:4px 10px;border-bottom:1px solid var(--grid)}
+.jt th{color:var(--ink2);font-weight:600;font-size:.78rem;text-align:right}
+.jt th:first-child{text-align:left}
+.jt td.n{text-align:right;width:110px}
+.jt td.cr{padding-left:38px}
+.jt tr.mh td{border-bottom:1.5px solid var(--axis);font-size:.78rem;color:var(--ink2);text-align:center}
+.jt tr.ex td{font-size:.8rem;color:var(--ink2);font-style:italic;border-bottom:1.5px solid var(--axis)}
+.jt tr.tot td{font-weight:700}
+.ta-wrap{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0}
+.ta{min-width:200px;flex:1 1 200px;max-width:300px;font-size:.84rem;font-variant-numeric:tabular-nums}
+.ta-h{text-align:center;font-weight:600;border-bottom:2px solid var(--ink);padding:2px 4px}
+.ta-b{display:grid;grid-template-columns:1fr 1fr;min-height:50px}
+.ta-b>div{padding:3px 6px}
+.ta-b>div:first-child{border-right:2px solid var(--ink)}
+.ta-b>div:last-child{text-align:right}
+.ta-l{display:flex;justify-content:space-between;gap:6px} .ta-b>div:last-child .ta-l{flex-direction:row-reverse}
+.ta-l span:first-child{color:var(--ink2);font-size:.74rem}
+.ta-f{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--axis);font-size:.78rem}
+.ta-f>div{padding:2px 6px} .ta-f>div:last-child{text-align:right}
+.ta-bal{text-align:center;font-size:.78rem;color:var(--ink2)}
+.ta.new .ta-h{color:var(--accent-ink)}
+.je{border-collapse:collapse;margin-top:8px;font-size:.88rem}
+.je td,.je th{padding:3px 4px}
+.je th{color:var(--ink2);font-weight:600;font-size:.76rem;text-align:left}
+.je input.acc{width:250px}
+.je input.num{width:130px;text-align:right}
+.je .tot td{font-size:.82rem;color:var(--ink2);font-variant-numeric:tabular-nums}
+.xbtn{border:0;background:transparent;color:var(--ink2);cursor:pointer;font-size:1rem}
+.tx-list{display:flex;flex-direction:column;gap:6px}
+.tx{display:flex;gap:8px;align-items:flex-start;text-align:left;font:inherit;font-size:.84rem;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 10px;cursor:pointer}
+.tx:hover:not(:disabled){border-color:var(--accent)}
+.tx:disabled{opacity:.5;cursor:default}
+.tx .txn{font-weight:700;color:var(--ink2);min-width:18px}
+.tx select{max-width:100%;min-width:0}
+.tx.on{border-color:var(--good);background:rgba(10,172,35,.07)}
+.cls-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--grid);font-size:.88rem}
+.cls-row select{max-width:260px}
+.cls-row.ok select{border-color:var(--good)} .cls-row.bad select{border-color:var(--crit)}
+.fs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:700px){.fs{grid-template-columns:1fr}}
+.fs .tbl{width:100%}
+.mono{font-variant-numeric:tabular-nums}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ============================================================
+   Muhasebe simülatörleri — ortak motor, sürüm 0.1 (pilot), 27.11.2026
+   Özgün kod. Mimari 12_Finans_Simulatoru ile aynıdır; ders akışı
+   fikri M. Songur'un Mikroekonomi Simülatörü'nden esinlenmiştir,
+   o çalışmadan kod alınmamıştır.
+   ============================================================ */
+
+/* ---------- Yardımcılar ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+function nf(x,d=0){return Number(x).toLocaleString('tr-TR',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function tl(x,d=0){return (x<-1e-9?'−':'')+nf(Math.abs(x),d)+' TL';}
+function pc(x,d=1){return (x<-1e-12?'−%':'%')+nf(Math.abs(x)*100,d);}
+function pp(x,d=1){return (x<-1e-12?'−':'')+nf(Math.abs(x)*100,d)+' puan';}
+function kTL(v){const a=Math.abs(v),s=v<0?'−':'';if(a>=1e6)return s+nf(a/1e6,(a%1e6)?1:0)+' mn';if(a>=1e3)return s+nf(a/1e3,0)+' bin';return s+nf(a,0);}
+function fr(n,d){return `<span class="fr"><span>${n}</span><span>${d}</span></span>`;}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function r2(x){return Math.round(x*100)/100;}
+const pctFmt=v=>'%'+nf(v,Number.isInteger(v)?0:1);
+
+/* ---------- Tekdüzen Hesap Planı (ders kapsamındaki hesaplar) ----------
+   Bakiye yönü: B = borç bakiyesi verir, A = alacak bakiyesi verir, X = her ikisi */
+const TDHP_SRC=`100|Kasa|B;101|Alınan Çekler|B;102|Bankalar|B;103|Verilen Çekler ve Ödeme Emirleri (−)|A;108|Diğer Hazır Değerler|B;
+110|Hisse Senetleri|B;111|Özel Kesim Tahvil, Senet ve Bonoları|B;112|Kamu Kesimi Tahvil, Senet ve Bonoları|B;118|Diğer Menkul Kıymetler|B;119|Menkul Kıymetler Değer Düşüklüğü Karşılığı (−)|A;
+120|Alıcılar|B;121|Alacak Senetleri|B;122|Alacak Senetleri Reeskontu (−)|A;126|Verilen Depozito ve Teminatlar|B;127|Diğer Ticari Alacaklar|B;128|Şüpheli Ticari Alacaklar|B;129|Şüpheli Ticari Alacaklar Karşılığı (−)|A;
+131|Ortaklardan Alacaklar|B;135|Personelden Alacaklar|B;136|Diğer Çeşitli Alacaklar|B;
+150|İlk Madde ve Malzeme|B;151|Yarı Mamuller|B;152|Mamuller|B;153|Ticari Mallar|B;157|Diğer Stoklar|B;158|Stok Değer Düşüklüğü Karşılığı (−)|A;159|Verilen Sipariş Avansları|B;
+180|Gelecek Aylara Ait Giderler|B;181|Gelir Tahakkukları|B;190|Devreden KDV|B;191|İndirilecek KDV|B;193|Peşin Ödenen Vergiler ve Fonlar|B;195|İş Avansları|B;196|Personel Avansları|B;
+220|Alıcılar (uzun vadeli)|B;226|Verilen Depozito ve Teminatlar (uzun vadeli)|B;240|Bağlı Menkul Kıymetler|B;242|İştirakler|B;245|Bağlı Ortaklıklar|B;
+250|Arazi ve Arsalar|B;251|Yeraltı ve Yerüstü Düzenleri|B;252|Binalar|B;253|Tesis, Makine ve Cihazlar|B;254|Taşıtlar|B;255|Demirbaşlar|B;256|Diğer Maddi Duran Varlıklar|B;257|Birikmiş Amortismanlar (−)|A;258|Yapılmakta Olan Yatırımlar|B;259|Verilen Avanslar|B;
+260|Haklar|B;261|Şerefiye|B;262|Kuruluş ve Örgütlenme Giderleri|B;263|Araştırma ve Geliştirme Giderleri|B;264|Özel Maliyetler|B;267|Diğer Maddi Olmayan Duran Varlıklar|B;268|Birikmiş Amortismanlar (−) (maddi olmayan)|A;280|Gelecek Yıllara Ait Giderler|B;
+300|Banka Kredileri|A;303|Uzun Vadeli Kredilerin Anapara Taksitleri ve Faizleri|A;304|Tahvil Anapara Borç, Taksit ve Faizleri|A;305|Çıkarılmış Bonolar ve Senetler|A;308|Menkul Kıymetler İhraç Farkı (−)|B;309|Diğer Mali Borçlar|A;
+320|Satıcılar|A;321|Borç Senetleri|A;322|Borç Senetleri Reeskontu (−)|B;326|Alınan Depozito ve Teminatlar|A;329|Diğer Ticari Borçlar|A;
+331|Ortaklara Borçlar|A;335|Personele Borçlar|A;336|Diğer Çeşitli Borçlar|A;340|Alınan Sipariş Avansları|A;
+360|Ödenecek Vergi ve Fonlar|A;361|Ödenecek Sosyal Güvenlik Kesintileri|A;370|Dönem Kârı Vergi ve Diğer Yasal Yükümlülük Karşılıkları|A;371|Dönem Kârının Peşin Ödenen Vergi ve Diğer Yükümlülükleri (−)|B;
+380|Gelecek Aylara Ait Gelirler|A;381|Gider Tahakkukları|A;391|Hesaplanan KDV|A;
+400|Banka Kredileri (uzun vadeli)|A;405|Çıkarılmış Tahviller|A;408|Menkul Kıymetler İhraç Farkı (−) (uzun vadeli)|B;420|Satıcılar (uzun vadeli)|A;421|Borç Senetleri (uzun vadeli)|A;480|Gelecek Yıllara Ait Gelirler|A;481|Gider Tahakkukları (uzun vadeli)|A;
+500|Sermaye|A;501|Ödenmemiş Sermaye (−)|B;502|Sermaye Düzeltmesi Olumlu Farkları|A;520|Hisse Senedi İhraç Primleri|A;521|Hisse Senedi İptal Kârları|A;522|MDV Yeniden Değerleme Artışları|A;529|Diğer Sermaye Yedekleri|A;
+540|Yasal Yedekler|A;541|Statü Yedekleri|A;542|Olağanüstü Yedekler|A;548|Diğer Kâr Yedekleri|A;570|Geçmiş Yıllar Kârları|A;580|Geçmiş Yıllar Zararları (−)|B;590|Dönem Net Kârı|A;591|Dönem Net Zararı (−)|B;
+600|Yurt İçi Satışlar|A;601|Yurt Dışı Satışlar|A;602|Diğer Gelirler|A;610|Satıştan İadeler (−)|B;611|Satış İskontoları (−)|B;612|Diğer İndirimler (−)|B;
+620|Satılan Mamuller Maliyeti (−)|B;621|Satılan Ticari Mallar Maliyeti (−)|B;622|Satılan Hizmet Maliyeti (−)|B;
+630|Araştırma ve Geliştirme Giderleri (−)|B;631|Pazarlama, Satış ve Dağıtım Giderleri (−)|B;632|Genel Yönetim Giderleri (−)|B;
+640|İştiraklerden Temettü Gelirleri|A;642|Faiz Gelirleri|A;644|Konusu Kalmayan Karşılıklar|A;645|Menkul Kıymet Satış Kârları|A;646|Kambiyo Kârları|A;647|Reeskont Faiz Gelirleri|A;649|Diğer Olağan Gelir ve Kârlar|A;
+653|Komisyon Giderleri (−)|B;654|Karşılık Giderleri (−)|B;655|Menkul Kıymet Satış Zararları (−)|B;656|Kambiyo Zararları (−)|B;657|Reeskont Faiz Giderleri (−)|B;659|Diğer Olağan Gider ve Zararlar (−)|B;
+660|Kısa Vadeli Borçlanma Giderleri (−)|B;661|Uzun Vadeli Borçlanma Giderleri (−)|B;671|Önceki Dönem Gelir ve Kârları|A;679|Diğer Olağan Dışı Gelir ve Kârlar|A;680|Çalışmayan Kısım Gider ve Zararları (−)|B;681|Önceki Dönem Gider ve Zararları (−)|B;689|Diğer Olağan Dışı Gider ve Zararlar (−)|B;
+690|Dönem Kârı veya Zararı|X;691|Dönem Kârı Vergi ve Diğer Yasal Yükümlülük Karşılıkları (−)|B;692|Dönem Net Kârı veya Zararı|X;
+710|Direkt İlk Madde ve Malzeme Giderleri|B;711|Direkt İlk Madde ve Malzeme Giderleri Yansıtma|A;720|Direkt İşçilik Giderleri|B;721|Direkt İşçilik Giderleri Yansıtma|A;730|Genel Üretim Giderleri|B;731|Genel Üretim Giderleri Yansıtma|A;
+740|Hizmet Üretim Maliyeti|B;741|Hizmet Üretim Maliyeti Yansıtma|A;750|Araştırma ve Geliştirme Giderleri|B;751|Araştırma ve Geliştirme Giderleri Yansıtma|A;
+760|Pazarlama, Satış ve Dağıtım Giderleri|B;761|Pazarlama, Satış ve Dağıtım Giderleri Yansıtma|A;770|Genel Yönetim Giderleri|B;771|Genel Yönetim Giderleri Yansıtma|A;780|Finansman Giderleri|B;781|Finansman Giderleri Yansıtma|A;
+790|İlk Madde ve Malzeme Giderleri|B;791|İşçi Ücret ve Giderleri|B;792|Memur Ücret ve Giderleri|B;793|Dışarıdan Sağlanan Fayda ve Hizmetler|B;794|Çeşitli Giderler|B;795|Vergi, Resim ve Harçlar|B;796|Amortismanlar ve Tükenme Payları|B;797|Finansman Giderleri (7/B)|B;798|Gider Çeşitleri Yansıtma Hesabı|A;799|Üretim Maliyet Hesabı|B`;
+const TDHP={};
+TDHP_SRC.split(';').forEach(s=>{const [c,n,b]=s.trim().split('|');if(c)TDHP[c]={c,n,b};});
+const GRP={'10':'Hazır Değerler','11':'Menkul Kıymetler','12':'Ticari Alacaklar','13':'Diğer Alacaklar','15':'Stoklar','18':'Gelecek Aylara Ait Giderler ve Gelir Tahakkukları','19':'Diğer Dönen Varlıklar',
+ '22':'Ticari Alacaklar','24':'Mali Duran Varlıklar','25':'Maddi Duran Varlıklar','26':'Maddi Olmayan Duran Varlıklar','28':'Gelecek Yıllara Ait Giderler ve Gelir Tahakkukları',
+ '30':'Mali Borçlar','32':'Ticari Borçlar','33':'Diğer Borçlar','34':'Alınan Avanslar','36':'Ödenecek Vergi ve Diğer Yükümlülükler','37':'Borç ve Gider Karşılıkları','38':'Gelecek Aylara Ait Gelirler ve Gider Tahakkukları','39':'Diğer Kısa Vadeli Yabancı Kaynaklar',
+ '40':'Mali Borçlar','42':'Ticari Borçlar','48':'Gelecek Yıllara Ait Gelirler ve Gider Tahakkukları',
+ '50':'Ödenmiş Sermaye','52':'Sermaye Yedekleri','54':'Kâr Yedekleri','57':'Geçmiş Yıllar Kârları','58':'Geçmiş Yıllar Zararları (−)','59':'Dönem Net Kârı (Zararı)'};
+const CLS={'1':'Dönen Varlıklar','2':'Duran Varlıklar','3':'Kısa Vadeli Yabancı Kaynaklar','4':'Uzun Vadeli Yabancı Kaynaklar','5':'Özkaynaklar','6':'Gelir Tablosu Hesapları','7':'Maliyet Hesapları'};
+function an(c){const a=TDHP[c];return a?`${c} ${a.n}`:`${c} (?)`;}
+function findCode(str){
+  const s=String(str||'').trim();if(!s)return null;
+  const m=s.match(/^(\d{3})/);if(m)return TDHP[m[1]]?m[1]:null;
+  const low=s.toLocaleLowerCase('tr-TR');
+  const hit=Object.values(TDHP).find(a=>a.n.toLocaleLowerCase('tr-TR')===low);return hit?hit.c:null;
+}
+
+/* ---------- Yevmiye maddeleri ----------
+   Madde: {d:'açıklama', l:[[kod,borç,alacak],...]}  — B(kod,t) / A(kod,t) yardımcıları */
+const B=(c,t,l)=>l?[String(c),t,0,l]:[String(c),t,0], A=(c,t,l)=>l?[String(c),0,t,l]:[String(c),0,t]; /* l: isteğe bağlı alt hesap etiketi */
+const anl=x=>an(x[0])+(x[3]?` · ${x[3]}`:'');
+const J=(d,l)=>({d,l});
+function entryTotals(l){let b=0,a=0;l.forEach(x=>{b+=x[1];a+=x[2];});return {b,a};}
+let JT_N=0;const JT_ERR=[];
+function jt(entries,o={}){
+  let no=o.start||1,s=`<table class="jt"><thead><tr><th>Hesap</th><th>Borç</th><th>Alacak</th></tr></thead><tbody>`;
+  entries.forEach(e=>{
+    const tt=entryTotals(e.l);JT_N++;if(Math.abs(tt.b-tt.a)>0.01||e.l.some(x=>!TDHP[x[0]]))JT_ERR.push(`${e.d}: ${nf(tt.b,2)} / ${nf(tt.a,2)}`);
+    if(o.num!==false)s+=`<tr class="mh"><td colspan="3">${no++}${e.date?' · '+e.date:''}</td></tr>`;
+    const dr=e.l.filter(x=>x[1]>0),cr=e.l.filter(x=>x[2]>0);
+    dr.forEach(x=>{s+=`<tr><td>${anl(x)}</td><td class="n">${nf(x[1],x[1]%1?2:0)}</td><td class="n"></td></tr>`;});
+    cr.forEach(x=>{s+=`<tr><td class="cr">${anl(x)}</td><td class="n"></td><td class="n">${nf(x[2],x[2]%1?2:0)}</td></tr>`;});
+    if(e.d)s+=`<tr class="ex"><td colspan="3">${e.d}</td></tr>`;
+  });
+  return s+'</tbody></table>';
+}
+function balances(entries){const m={};entries.forEach(e=>e.l.forEach(([c,b,a])=>{if(!m[c])m[c]={b:0,a:0};m[c].b+=b;m[c].a+=a;}));return m;}
+function net(m,c){const x=m[c];return x?x.b-x.a:0;}
+function mizan(entries,o={}){
+  const m=balances(entries),codes=Object.keys(m).sort();
+  let tb=0,ta=0,bb=0,ba=0;
+  const rows=codes.map(c=>{const x=m[c],d=x.b-x.a;tb+=x.b;ta+=x.a;if(d>0)bb+=d;else ba+=-d;
+    return `<tr${o.hl&&o.hl.includes(c)?' style="background:var(--wash)"':''}><td>${an(c)}</td><td>${nf(x.b)}</td><td>${nf(x.a)}</td><td>${d>0.005?nf(d):''}</td><td>${d<-0.005?nf(-d):''}</td></tr>`;}).join('');
+  const ok=Math.abs(tb-ta)<0.01&&Math.abs(bb-ba)<0.01;
+  return {ok,tb,ta,bb,ba,html:`<table class="tbl"><thead><tr><th>Hesap</th><th>Borç toplamı</th><th>Alacak toplamı</th><th>Borç bakiyesi</th><th>Alacak bakiyesi</th></tr></thead><tbody>${rows||'<tr><td colspan="5" class="l lmeta">Henüz kayıt yok.</td></tr>'}
+   <tr class="tot"><td>Toplam</td><td>${nf(tb)}</td><td>${nf(ta)}</td><td>${nf(bb)}</td><td>${nf(ba)}</td></tr></tbody></table>`};
+}
+function taccounts(host,entries,codes,o={}){
+  const items={};codes.forEach(c=>items[c]={d:[],k:[]});
+  entries.forEach((e,i)=>e.l.forEach(([c,b,a])=>{if(!items[c])return;if(b)items[c].d.push([i+1,b]);if(a)items[c].k.push([i+1,a]);}));
+  host.innerHTML=`<div class="ta-wrap">${codes.map(c=>{const x=items[c],sb=x.d.reduce((s,v)=>s+v[1],0),sa=x.k.reduce((s,v)=>s+v[1],0),d=sb-sa;
+    const ln=arr=>arr.map(v=>`<div class="ta-l"><span>(${v[0]})</span><span>${nf(v[1])}</span></div>`).join('');
+    return `<div class="ta${o.hl&&o.hl.includes(c)?' new':''}"><div class="ta-h">${an(c)}</div><div class="ta-b"><div>${ln(x.d)}</div><div>${ln(x.k)}</div></div>
+     <div class="ta-f"><div>${nf(sb)}</div><div>${nf(sa)}</div></div><div class="ta-bal">${Math.abs(d)<0.005?'Bakiye yok':(d>0?'Borç bakiyesi ':'Alacak bakiyesi ')+nf(Math.abs(d))}</div></div>`;}).join('')}</div>`;
+}
+
+/* ---------- Durum (tarayıcıda saklanır) ---------- */
+let S={lvl:'lisans',mode:'tam',done:{},unl:{},pos:{},qs:{}};
+let NOSAVE=false;
+function loadState(){try{const o=JSON.parse(localStorage.getItem(CONFIG.key)||'{}');if(o&&typeof o==='object')S=Object.assign(S,o);}catch(e){}}
+function save(){if(NOSAVE)return;try{localStorage.setItem(CONFIG.key,JSON.stringify(S));}catch(e){}}
+
+/* ---------- Grafik çekirdeği (elle SVG) ---------- */
+function niceStep(span,n){const s0=span/n,mag=Math.pow(10,Math.floor(Math.log10(s0))),e=s0/mag;return mag*(e>=7.5?10:e>=3.5?5:e>=1.5?2:1);}
+function niceTicks(a,b,n=5){if(!(b>a))return [a];const st=niceStep(b-a,n),out=[];for(let v=Math.ceil(a/st-1e-9)*st;v<=b+st*1e-6;v+=st)out.push(Math.round(v/st)*st||0);return out;}
+function niceMax(v,n=5){if(!(v>0))return 1;const st=niceStep(v,n);return Math.ceil(v*1.0001/st)*st;}
+function niceRange(lo,hi,n=5){if(hi-lo<1e-9){hi=lo+1;}const st=niceStep(hi-lo,n);return [Math.floor(lo/st)*st,Math.ceil(hi/st)*st];}
+let CPID=0;
+function frame(host,o){
+  const W=o.w||640,H=o.h||330,m={l:o.ml||66,r:o.mr||22,t:14,b:o.mb||46};
+  if(!host._svg){
+    host.classList.add('chart');
+    host.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img"></svg><div class="tip" hidden></div>`;
+    host._svg=host.querySelector('svg');host._tip=host.querySelector('.tip');
+    const svg=host._svg;
+    const hide=()=>{host._tip.hidden=true;const g=svg.querySelector('.hov');if(g)g.innerHTML='';};
+    svg.addEventListener('pointermove',e=>{
+      const f=host._f;if(!f||!f.hoverFn)return;
+      const ctm=svg.getScreenCTM();if(!ctm)return;
+      const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(ctm.inverse());
+      if(p.x<f.m.l-4||p.x>f.W-f.m.r+4||p.y<f.m.t-4||p.y>f.H-f.m.b+4){hide();return;}
+      const r=f.hoverFn(f.ix(clamp(p.x,f.m.l,f.W-f.m.r)),f.iy(p.y));if(!r){hide();return;}
+      const g=svg.querySelector('.hov');let s='';
+      if(r.x!=null&&r.x>=f.o.x[0]&&r.x<=f.o.x[1])s+=`<line x1="${f.X(r.x)}" x2="${f.X(r.x)}" y1="${f.m.t}" y2="${f.H-f.m.b}"/>`;
+      (r.pts||[]).forEach(q=>{if(isFinite(q[1])&&q[1]>=f.o.y[0]&&q[1]<=f.o.y[1])s+=`<circle cx="${f.X(q[0])}" cy="${f.Y(q[1])}" r="5" class="${q[2]||'cur'}"/>`;});
+      g.innerHTML=s;
+      const tip=host._tip;tip.innerHTML=r.html;tip.hidden=false;
+      const rect=host.getBoundingClientRect();let lx=e.clientX-rect.left+14;const tw=tip.offsetWidth;if(lx+tw>rect.width)lx=e.clientX-rect.left-tw-14;
+      tip.style.left=Math.max(0,lx)+'px';tip.style.top=Math.max(0,e.clientY-rect.top-12)+'px';
+    });
+    svg.addEventListener('pointerleave',hide);
+  }
+  const svg=host._svg;svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('aria-label',o.aria||'Grafik');
+  const pw=W-m.l-m.r,ph=H-m.t-m.b;
+  const X=v=>m.l+(v-o.x[0])/(o.x[1]-o.x[0])*pw;
+  const Y=v=>m.t+ph-(v-o.y[0])/(o.y[1]-o.y[0])*ph;
+  const ix=px=>o.x[0]+(px-m.l)/pw*(o.x[1]-o.x[0]);
+  const iy=py=>o.y[0]+(m.t+ph-py)/ph*(o.y[1]-o.y[0]);
+  const id='cp'+(++CPID);
+  let s=`<defs><clipPath id="${id}"><rect x="${m.l}" y="${m.t-3}" width="${pw}" height="${ph+6}"/></clipPath></defs>`;
+  const yt=o.yticks||niceTicks(o.y[0],o.y[1],5);
+  yt.forEach(v=>{if(v<o.y[0]-1e-9||v>o.y[1]+1e-9)return;s+=`<line class="grid" x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="tick" x="${m.l-8}" y="${Y(v)+4}" text-anchor="end">${o.yfmt?o.yfmt(v):nf(v)}</text>`;});
+  if(o.xcats){o.xcats.forEach((c,i)=>{const parts=String(c).split('|');s+=`<text class="tick" x="${X(i+.5)}" y="${H-m.b+17}" text-anchor="middle">${parts.map((p,k)=>`<tspan x="${X(i+.5)}" dy="${k?13:0}">${p}</tspan>`).join('')}</text>`;});}
+  else{(o.xticks||niceTicks(o.x[0],o.x[1],6)).forEach(v=>{if(v<o.x[0]-1e-9||v>o.x[1]+1e-9)return;s+=`<text class="tick" x="${X(v)}" y="${H-m.b+18}" text-anchor="middle">${o.xfmt?o.xfmt(v):nf(v)}</text>`;});}
+  const y0=(o.y[0]<=0&&o.y[1]>=0)?0:o.y[0];
+  s+=`<line class="axis" x1="${m.l}" x2="${W-m.r}" y1="${Y(y0)}" y2="${Y(y0)}"/>`;
+  if(o.xlab)s+=`<text class="atitle" x="${m.l+pw/2}" y="${H-6}" text-anchor="middle">${o.xlab}</text>`;
+  if(o.ylab)s+=`<text class="atitle" transform="translate(13 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab}</text>`;
+  s+=`<g class="data" clip-path="url(#${id})"></g><g class="ann"></g><g class="hov"></g>`;
+  svg.innerHTML=s;
+  const gd=svg.querySelector('.data'),ga=svg.querySelector('.ann');
+  const cy=v=>clamp(Y(v),-2000,H+2000);
+  const f={W,H,m,o,X,Y,ix,iy,hoverFn:null,
+    add(str){gd.insertAdjacentHTML('beforeend',str);},
+    ann(str){ga.insertAdjacentHTML('beforeend',str);},
+    d(pts){let d='',pen=false;pts.forEach(p=>{if(!isFinite(p[1])){pen=false;return;}d+=(pen?'L':'M')+X(p[0]).toFixed(1)+','+cy(p[1]).toFixed(1);pen=true;});return d;},
+    line(pts,cls){const d=f.d(pts);if(d)f.add(`<path class="${cls}" d="${d}"/>`);},
+    hline(v,cls='ref',lab,anchor='end'){if(v<o.y[0]||v>o.y[1])return;f.add(`<line class="${cls}" x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}"/>`);if(lab)f.text(anchor==='end'?o.x[1]:o.x[0],v,lab,'lab2',anchor,anchor==='end'?-4:4,-6);},
+    vline(v,cls='ref',lab,dy=0){if(v<o.x[0]||v>o.x[1])return;f.add(`<line class="${cls}" x1="${X(v)}" x2="${X(v)}" y1="${m.t}" y2="${H-m.b}"/>`);if(lab){const right=X(v)>m.l+pw*0.72;f.ann(`<text class="lab2" x="${X(v)+(right?-5:5)}" y="${m.t+12+dy}" text-anchor="${right?'end':'start'}">${lab}</text>`);}},
+    dot(x,y,cls='cur',r=5){if(!isFinite(y)||y<o.y[0]||y>o.y[1]||x<o.x[0]||x>o.x[1])return;f.ann(`<circle cx="${X(x)}" cy="${Y(y)}" r="${r}" class="${cls}"/>`);},
+    text(x,y,t,cls='lab',anchor='start',dx=0,dy=0){if(!isFinite(y))return;const px=clamp(X(x)+dx,m.l+2,W-m.r-2),py=clamp(Y(y)+dy,m.t+10,H-m.b-4);f.ann(`<text class="${cls}" x="${px}" y="${py}" text-anchor="${anchor}">${t}</text>`);},
+    /* x0..x1 veri biriminde; v0..v1 değer aralığı; round: uç yuvarlatma (veri ucu) */
+    rect(x0,x1,v0,v1,cls,round=true){const lo=Math.min(v0,v1),hi=Math.max(v0,v1);if(hi-lo<1e-9)return;
+      const px0=X(x0),px1=X(x1),w=px1-px0,yt=Y(hi),yb=Y(lo),h=yb-yt,r=round?Math.min(4,w/2,h):0;
+      if(!r){f.add(`<rect class="${cls}" x="${px0}" y="${yt}" width="${w}" height="${h}"/>`);return;}
+      const up=v1>=v0; /* veri ucu: up ise üst, değilse alt */
+      const p=up?`M${px0},${yb}V${yt+r}Q${px0},${yt} ${px0+r},${yt}H${px1-r}Q${px1},${yt} ${px1},${yt+r}V${yb}Z`
+               :`M${px0},${yt}V${yb-r}Q${px0},${yb} ${px0+r},${yb}H${px1-r}Q${px1},${yb} ${px1},${yb-r}V${yt}Z`;
+      f.add(`<path class="${cls}" d="${p}"/>`);},
+    area(top,bot,cls){const pts=top.concat(bot.slice().reverse());if(pts.length<3)return;f.add(`<path class="${cls}" d="${f.d(pts)}Z"/>`);},
+    bar(i,v,cls='bar1',base=0){f.rect(i+.22,i+.78,base,v,cls);},
+    hover(fn){f.hoverFn=fn;}
+  };
+  host._f=f;return f;
+}
+/* Yığılmış sütun (bilanço): cols=[{name, items:[[etiket,değer,sınıf]]}] */
+function stackChart(host,cols,o={}){
+  const tot=cols.map(c=>c.items.reduce((s,x)=>s+Math.max(0,x[1]),0));
+  const ymax=niceMax(Math.max(o.minMax||0,...tot,1)*1.1);
+  const f=frame(host,{x:[0,cols.length],y:[0,ymax],xcats:cols.map(c=>c.name),yfmt:kTL,ylab:o.ylab||'TL',aria:o.aria||'Yığılmış sütun grafiği',h:o.h||320});
+  cols.forEach((c,i)=>{let base=0;const pos=c.items.filter(x=>x[1]>0.5);
+    pos.forEach((x,k)=>{const top=k===pos.length-1;f.rect(i+.22,i+.78,base,base+x[1],x[2]+' seg-r',top);
+      const hpx=f.Y(base)-f.Y(base+x[1]);if(hpx>16)f.ann(`<text class="labin${x[2]==='f4'?' dk':''}" x="${f.X(i+.5)}" y="${f.Y(base+x[1]/2)+4}" text-anchor="middle">${x[0]}: ${kTL(x[1])}</text>`);
+      base+=x[1];});
+    f.text(i+.5,base,'Toplam '+tl(base),'lab','middle',0,-8);});
+  f.hover(x=>{const i=clamp(Math.floor(x),0,cols.length-1),c=cols[i];return {html:`<b>${c.name.replace(/\|/g,' ')}</b><br>`+c.items.map(it=>`${it[0]}: ${tl(it[1])}`).join('<br>')+`<br><b>Toplam: ${tl(tot[i])}</b>`};});
+  return f;
+}
+/* Şelale: items=[{l, v, t:'total'|'delta'}] */
+function waterfall(host,items,o={}){
+  let run=0;const bars=items.map(it=>{let a,b;if(it.t==='total'){a=0;b=it.v;run=it.v;}else{a=run;b=run+it.v;run=b;}return {...it,a,b};});
+  const lo=Math.min(0,...bars.map(x=>Math.min(x.a,x.b))),hi=Math.max(0,...bars.map(x=>Math.max(x.a,x.b)));
+  const pad=(hi-lo||1)*0.1;const [y0,y1]=niceRange(lo<0?lo-pad:0,hi+pad,5);
+  const f=frame(host,{x:[0,items.length],y:[y0,y1],xcats:items.map(x=>x.l),yfmt:kTL,ylab:'TL',aria:o.aria||'Şelale grafiği',h:o.h||340,mb:58});
+  bars.forEach((x,i)=>{const cls=x.t==='total'?'f1':(x.v>=0?'f3':'f2');f.rect(i+.18,i+.82,x.a,x.b,cls,x.t==='total');
+    if(Math.abs(x.v)>0.5){const top=Math.max(x.a,x.b);f.text(i+.5,x.t==='total'&&x.v<0?Math.min(x.a,x.b):top,(x.t!=='total'&&x.v>0?'+':'')+kTL(x.v),'lab','middle',0,x.t==='total'&&x.v<0?14:-6);}
+    if(i<bars.length-1){const nx=bars[i+1];const lv=x.b;f.add(`<line class="ref" x1="${f.X(i+.82)}" x2="${f.X(i+1.18)}" y1="${f.Y(lv)}" y2="${f.Y(lv)}"/>`);}
+  });
+  f.hover(xx=>{const i=clamp(Math.floor(xx),0,items.length-1),b=bars[i];return {html:`<b>${b.l.replace(/\|/g,' ')}</b><br>${b.t==='total'?'Ara toplam':'Değişim'}: ${tl(b.v)}${b.t!=='total'?'<br>Sonrası: '+tl(b.b):''}`};});
+  return f;
+}
+/* Gruplu sütun: cats=['..'], series=[{n, cls, v:[..]}] */
+function groupChart(host,cats,series,o={}){
+  const all=series.flatMap(s=>s.v),mn=Math.min(0,...all),mx=Math.max(0,...all,1),pad=(mx-mn)*0.1;const [y0,y1]=niceRange(mn<0?mn-pad:0,mx+pad,5);
+  const f=frame(host,{x:[0,cats.length],y:[y0,y1],xcats:cats,yfmt:o.yfmt||kTL,ylab:o.ylab||'TL',aria:o.aria||'Gruplu sütun grafiği',h:o.h||320,mb:o.mb});
+  const k=series.length,w=.64/k;
+  cats.forEach((c,i)=>series.forEach((s,j)=>{const x0=i+.18+j*w+.01,x1=x0+w-.02;f.rect(x0,x1,0,s.v[i],s.cls);
+    if(o.labels!==false&&Math.abs(s.v[i])>0.5)f.text((x0+x1)/2,s.v[i],(o.vfmt||kTL)(s.v[i]),'lab','middle',0,s.v[i]>=0?-6:14);}));
+  f.hover(x=>{const i=clamp(Math.floor(x),0,cats.length-1);return {html:`<b>${String(cats[i]).replace(/\|/g,' ')}</b><br>`+series.map(s=>`${s.n}: ${(o.tfmt||tl)(s.v[i])}`).join('<br>')};});
+  return f;
+}
+
+/* ---------- Arayüz bileşenleri ---------- */
+function sl(host,o){
+  const w=el('label','sl',`<span class="sl-top"><span>${o.label}</span><output></output></span><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.value}">`);
+  if(o.yl)w.classList.add('yl-only');
+  host.appendChild(w);const inp=$('input',w),out=$('output',w);
+  const upd=()=>{out.textContent=o.fmt(+inp.value);};upd();inp.addEventListener('input',upd);
+  return {get v(){return +inp.value;},set v(x){inp.value=x;upd();},on(fn){inp.addEventListener('input',fn);},el:inp};
+}
+function seg(host,label,opts,val,onChange){
+  const w=el('div','segw',`<div class="sl-top"><span>${label}</span></div><div class="seg" role="group" aria-label="${label}"></div>`);
+  const g=$('.seg',w);
+  opts.forEach(([v,t])=>{const b=el('button','',t);b.type='button';if(String(v)===String(val))b.classList.add('on');
+    b.onclick=()=>{g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));onChange(v);};g.appendChild(b);});
+  host.appendChild(w);return w;
+}
+function legend(host,items){host.innerHTML=items.map(([c,t])=>`<span class="lg"><span class="sw ${c}"></span>${t}</span>`).join('');}
+function readouts(host,items){
+  host.innerHTML=items.map(([k,l,yl])=>`<div class="ro-i${yl?' yl-only':''}" data-k="${k}"><div class="ro-l">${l}</div><div class="ro-v">—</div></div>`).join('');
+  return {set(k,v){const e=host.querySelector(`[data-k="${k}"] .ro-v`);if(e)e.innerHTML=v;}};
+}
+function checklist(host,items,api){
+  const box=el('div','task',`<div class="task-h">Görev <span class="task-s"></span></div>`+items.map(i=>`<div class="ti" data-id="${i.id}"><span class="cb" aria-hidden="true"></span><span>${i.t}</span></div>`).join(''));
+  host.appendChild(box);const done=new Set();
+  const setS=()=>{$('.task-s',box).textContent=done.size===items.length?'— tamamlandı, devam edebilirsiniz':`(${done.size}/${items.length})`;};
+  const mark=id=>{if(done.has(id))return;done.add(id);const e=box.querySelector(`[data-id="${id}"]`);if(e)e.classList.add('ok');setS();if(done.size===items.length){box.classList.add('all');api.unlock();}};
+  if(api.unlocked)items.forEach(i=>mark(i.id));else setS();
+  return {mark,has:id=>done.has(id)};
+}
+function kl(root,intro){
+  root.insertAdjacentHTML('beforeend',`${intro?`<div class="k-intro">${intro}</div>`:''}<div class="kgrid"><div class="kctl"><div class="ktask"></div></div><div class="kmain"><div class="legend"></div><div class="kch"></div><div class="ro"></div><div class="kx"></div></div></div>`);
+  return {ctl:$('.kctl',root),task:$('.ktask',root),leg:$('.legend',root),ch:$('.kch',root),ro:$('.ro',root),x:$('.kx',root),main:$('.kmain',root)};
+}
+function dtable(host,cols,rows){
+  let d=host.querySelector('details.dt');
+  if(!d){d=el('details','dt','<summary>Veri tablosu</summary><div class="dtw"></div>');host.appendChild(d);}
+  $('.dtw',d).innerHTML=`<table class="tbl"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+/* Sıralı işlem listesi. txs=[{t:'metin', e:madde, ask:{q,opts,correct}}]; onChange(uygulanan maddeler, son indeks, tahmin doğru mu) */
+function txList(host,txs,onChange,o={}){
+  const w=el('div','');host.appendChild(w);let n=0;const res=[];
+  function render(){
+    w.innerHTML=`<div class="tx-list">${txs.map((x,i)=>`<div class="tx${i<n?' on':''}" data-i="${i}" style="flex-direction:column;cursor:default">
+      <div style="display:flex;gap:8px"><span class="txn">${i+1}</span><span>${x.t}</span></div>
+      ${i===n?`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-left:26px">${x.ask?`<select class="sel" aria-label="Tahmin"><option value="">${x.ask.q}</option>${x.ask.opts.map((op,k)=>`<option value="${k}">${op}</option>`).join('')}</select>`:''}<button type="button" class="btn sm primary">Kaydet</button></div>`:''}
+      ${i<n&&res[i]!=null?`<div style="margin-left:26px;font-size:.78rem">${res[i]?'<span class="flag good">✓ Tahmin doğru</span>':`<span class="flag bad">✗ Doğrusu: ${x.ask.opts[x.ask.correct]}</span>`}</div>`:''}
+     </div>`).join('')}</div><div style="margin-top:8px"><button type="button" class="btn sm" data-reset>↺ Baştan başla</button></div>`;
+    const cur=w.querySelector(`.tx[data-i="${n}"]`);
+    if(cur){const b=$('button',cur),sel=$('select',cur);b.onclick=()=>{const x=txs[n];let ok=null;
+      if(x.ask){if(sel.value===''){sel.focus();return;}ok=+sel.value===x.ask.correct;}res[n]=ok;n++;render();onChange(txs.slice(0,n).map(t=>t.e),n-1,ok,res);};}
+    $('[data-reset]',w).onclick=()=>{n=0;res.length=0;render();onChange([],-1,null,res);};
+  }
+  render();
+  return {get n(){return n;}};
+}
+
+/* ---------- Katalog, görünüm ---------- */
+const TYPE={anlatim:'Konu',ornek:'Çözümlü örnek',kesif:'Keşif',turetim:'Kayıt mantığı',alistirma:'Alıştırmalar',ozet:'Özet'};
+const TAG={hesap:'Hesap',grafik:'Grafik',kavram:'Kavram',kayit:'Yevmiye kaydı'};
+let CAT={};
+const app=document.getElementById('app');
+function isLocked(s){return s.type==='kesif'||s.type==='alistirma';}
+function visSteps(L){return L.steps.filter(s=>(s.level!=='yl'||S.lvl==='yl')&&(S.mode==='tam'||s.core));}
+function toggles(){
+  const [l1,l2]=CONFIG.lvlLabels;
+  return `<div class="toggles">
+   <div class="tg"><span class="lbl">Düzey</span><div class="seg" role="group" aria-label="Düzey"><button type="button" data-lvl="lisans" class="${S.lvl==='lisans'?'on':''}">${l1}</button><button type="button" data-lvl="yl" class="${S.lvl==='yl'?'on':''}">${l2}</button></div></div>
+   <div class="tg"><span class="lbl">Mod</span><div class="seg" role="group" aria-label="Mod"><button type="button" data-mode="tam" class="${S.mode==='tam'?'on':''}">Tam ders</button><button type="button" data-mode="hizli" class="${S.mode==='hizli'?'on':''}">Hızlı yol</button></div></div></div>`;
+}
+function bindToggles(onChange){
+  app.querySelectorAll('[data-lvl]').forEach(b=>b.onclick=()=>{S.lvl=b.dataset.lvl;save();applyLvl();onChange();});
+  app.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;save();onChange();});
+}
+function applyLvl(){document.body.classList.toggle('yl',S.lvl==='yl');}
+
+function renderHome(){
+  document.title=CONFIG.title;
+  const card=x=>{
+    const L=LESSONS[x.id];
+    const meta=`<div class="mt">Hafta ${x.h} · ${x.oc}${L?' · '+L.sure:''}</div>`;
+    const gap=x.gap?`<span class="chip gap" title="${x.gapt||'İzlencenin ders içeriğinde ya da öğrenme çıktılarında var, haftalık planda yok'}">İzlence eksiği</span>`:'';
+    if(!L)return `<div class="lc off" aria-disabled="true"><div class="no">Ders ${x.no} <span class="chip">Planlandı</span>${gap}</div><div class="tt">${x.t}</div>${meta}</div>`;
+    const st=S.done[x.id]?'<span class="chip ok">✓ Tamamlandı</span>':S.pos[x.id]?'<span class="chip pilot">Devam ediyor</span>':'';
+    return `<a class="lc" href="#/ders/${x.id}"><div class="no">Ders ${x.no} ${st}${gap}</div><div class="tt">${x.t}</div>${meta}</a>`;
+  };
+  const rows=CATALOG.flatMap(u=>u.items).map(x=>`<tr><td>${x.no}</td><td style="text-align:left">${x.t}</td><td>${x.h}</td><td>${x.oc}</td><td>${LESSONS[x.id]?'Hazır':'Planlandı'}${x.gap?' · izlence eksiği':''}</td></tr>`).join('');
+  const site=/\/dersler\/simulatorler\//.test(location.pathname.replace(/\\/g,'/'))?`<a class="back" href="../../dersler.html#simulatorler">← Bütün simülatörler</a>`:'';
+  app.innerHTML=`<header class="hero"><div>${site}<div class="kicker">${CONFIG.kicker}</div><h1>${CONFIG.title}</h1>
+   <p class="lead">${CONFIG.lead}</p></div>${toggles()}</header>
+   <section class="card howto">
+    <div><b>Ders akışı</b>Konu → çözümlü örnek → keşifler → ${TYPE.turetim.toLocaleLowerCase('tr-TR')} → alıştırmalar → özet.</div>
+    <div><b>Kilitli adımlar</b>Keşif ve alıştırma adımlarında görevi tamamlamadan "Devam" açılmaz.</div>
+    ${CONFIG.howto3?`<div><b>${CONFIG.howto3[0]}</b>${CONFIG.howto3[1]}</div>`:`<div><b>Yevmiye alıştırmaları</b>Hesap kodunu ya da adını yazın, borç veya alacak tutarını girin. İlk yanlışta ipucu, ikincisinde çözüm gösterilir.</div>`}
+    <div><b>${CONFIG.lvlLabels[1]}</b>${CONFIG.lvlHelp}</div>
+   </section>
+   ${CATALOG.map(u=>`<section class="unit"><h2>${u.u}</h2><div class="cards">${u.items.map(card).join('')}</div></section>`).join('')}
+   <details class="card map"><summary>İzlence eşlemesi: ders → hafta → öğrenme çıktısı</summary>
+    <table class="tbl"><thead><tr><th>Ders</th><th style="text-align:left">Konu</th><th>Hafta</th><th>ÖÇ</th><th>Durum</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="lmeta">${CONFIG.mapNote}</p></details>
+   <footer class="about">
+    <p><b>Sürüm ${CONFIG.version}.</b> Sayılar ve ${CONFIG.company} kurgusaldır; öğretim amaçlıdır. ${CONFIG.footNote||'Vergi oranları ve mevzuat tutarları örnek olarak verilmiştir; kullanmadan önce güncel mevzuatı kontrol edin.'} İlerlemeniz yalnızca bu tarayıcıda saklanır. <button class="btn sm" id="reset">İlerlemeyi sıfırla</button></p>
+    <p>Kod ve içerik özgündür. Ders akışı, kilitli keşif, hızlı yol ve iki düzeyli katman fikirleri Mehmet Songur'un <i>Mikroekonomi Simülatörü</i>'nden esinlenmiştir (github.com/mehmetsongur/Microeconomics-Simulator, CC BY-NC-ND 4.0). O çalışmadan kod ya da içerik alınmamıştır.</p></footer>`;
+  bindToggles(renderHome);
+  $('#reset').onclick=()=>{if(confirm('Bütün ilerleme ve alıştırma cevapları silinsin mi?')){S.done={};S.unl={};S.pos={};S.qs={};save();renderHome();}};
+}
+function mountStep(body,id,st,api){
+  if(st.html)body.innerHTML=st.html();
+  if(st.mount)st.mount(body,api);
+  if(st.type==='alistirma')renderExercises(body,id,st,api);
+}
+function renderLesson(id,idxArg){
+  const L=LESSONS[id];if(!L){location.hash='#/';return;}
+  const meta=CAT[id];document.title=L.title+' · '+CONFIG.title;
+  const steps=visSteps(L);
+  let idx=idxArg;
+  if(idx==null){const k=S.pos[id];idx=Math.max(0,steps.findIndex(s=>s.k===k));}
+  idx=clamp(idx|0,0,steps.length-1);
+  let reach=steps.length-1;
+  if(!PREVIEW)for(let i=0;i<steps.length;i++){if(isLocked(steps[i])&&!S.unl[id+':'+steps[i].k]){reach=i;break;}}
+  if(idx>reach)idx=reach;
+  const st=steps[idx];S.pos[id]=st.k;save();
+  const isDone=i=>i<idx||(isLocked(steps[i])&&S.unl[id+':'+steps[i].k]);
+  app.innerHTML=`<header class="lh"><div><a href="#/" class="back">← Ders kataloğu</a>
+    <div class="lmeta">Ders ${meta.no} · Hafta ${meta.h} · ${meta.oc}${meta.gap?' · <span class="chip gap">İzlence eksiği giderildi</span>':''}</div><h1>${L.title}</h1></div>${toggles()}</header>
+   <nav class="steps" aria-label="Ders adımları">${steps.map((s,i)=>`<button type="button" class="stp${i===idx?' cur':''}${i!==idx&&isDone(i)?' done':''}" data-i="${i}" ${i>reach?'disabled':''}><span class="sn">${i+1}</span><span>${TYPE[s.type]}</span></button>`).join('')}</nav>
+   <article class="card step"><div class="sh"><span class="chip t-${st.type}">${TYPE[st.type]}${st.level==='yl'?' · '+CONFIG.lvlLabels[1]:''}</span><h2>${st.title}</h2></div><div class="sb"></div></article>
+   <footer class="nav"><button type="button" class="btn" id="prev" ${idx===0?'disabled':''}>← Geri</button><span class="lockmsg"></span><button type="button" class="btn primary" id="next"></button></footer>`;
+  bindToggles(()=>{const ns=visSteps(L);let j=ns.findIndex(s=>s.k===st.k);if(j<0){const oi=L.steps.indexOf(st);j=0;ns.forEach((s,k)=>{if(L.steps.indexOf(s)<=oi)j=k;});}go(id,j);});
+  app.querySelectorAll('.stp').forEach(b=>b.onclick=()=>go(id,+b.dataset.i));
+  const key=id+':'+st.k,locked=isLocked(st),next=$('#next'),msg=$('.lockmsg'),last=idx===steps.length-1;
+  const setNext=()=>{const ok=!locked||S.unl[key];next.disabled=!ok;next.textContent=last?'Dersi tamamla ✓':'Devam →';msg.textContent=ok?'':(st.type==='kesif'?'Devam etmek için görevi tamamlayın.':'Devam etmek için bütün soruları cevaplayın.');};
+  const api={unlocked:!!S.unl[key],unlock(){if(!S.unl[key]){S.unl[key]=1;save();}setNext();}};
+  mountStep($('.sb'),id,st,api);
+  setNext();
+  $('#prev').onclick=()=>go(id,idx-1);
+  next.onclick=()=>{if(next.disabled)return;if(last){S.done[id]=1;save();renderDone(id);}else go(id,idx+1);};
+  window.scrollTo(0,0);
+}
+function renderDone(id){
+  const L=LESSONS[id];
+  app.innerHTML=`<div class="card done-box"><h1>Ders tamamlandı ✓</h1><p>${L.title}</p><p><a class="btn primary" href="#/" style="text-decoration:none;display:inline-block">Ders kataloğuna dön</a></p></div>`;
+  window.scrollTo(0,0);
+}
+/* Öğretim elemanı önizlemesi: #/ders/<id>/<adım>/onizle — kilitleri kaldırır, ilerleme kaydetmez */
+let PREVIEW=false;
+function go(id,i){location.hash=`#/ders/${id}/${i}`+(PREVIEW?'/onizle':'');}
+
+/* ---------- Alıştırmalar ---------- */
+function parseNum(s){
+  s=String(s).trim().replace(/\s/g,'').replace(/TL|tl|adet|yıl|gün|pay|%/g,'').replace(/[−–]/g,'-');
+  if(!s)return NaN;
+  if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');
+  return Number(s);
+}
+function isRight(q,v){if(!isFinite(v))return false;const t=q.abs!=null?q.abs:Math.max(Math.abs(q.ans)*(q.rel||0.005),0.01);return Math.abs(v-q.ans)<=t;}
+function netMap(lines){const m={};lines.forEach(([c,b,a])=>{m[c]=(m[c]||0)+b-a;});Object.keys(m).forEach(c=>{if(Math.abs(m[c])<0.5)delete m[c];});return m;}
+/* Öğrenci satırlarını beklenen kayıtla (ya da alternatifleriyle) karşılaştırır */
+function gradeEntry(q,lines){
+  const tol=q.tol||1;const sm=netMap(lines);
+  const res=[q.entry].concat(q.alt||[]).map(ex=>{const em=netMap(ex);const codes=new Set([...Object.keys(em),...Object.keys(sm)]);let good=0,bad=0;
+    codes.forEach(c=>{if(em[c]!=null&&sm[c]!=null&&Math.abs(em[c]-sm[c])<=tol)good++;else bad++;});
+    return {ok:bad===0,good,total:Object.keys(em).length,wrongAcc:Object.keys(sm).filter(c=>em[c]==null)};});
+  return res.find(r=>r.ok)||res.reduce((a,b)=>(b.good-b.wrongAcc.length)>(a.good-a.wrongAcc.length)?b:a);
+}
+let DLID=0;
+function ensureDatalist(){if(document.getElementById('tdhp-dl'))return;const d=el('datalist','');d.id='tdhp-dl';d.innerHTML=Object.values(TDHP).map(a=>`<option value="${a.c} ${a.n}">`).join('');document.body.appendChild(d);}
+function renderExercises(root,lid,step,api){
+  const qs=step.qs.filter(q=>!q.yl||S.lvl==='yl');
+  const sum=el('div','qsum');root.appendChild(sum);
+  root.insertAdjacentHTML('beforeend','<p class="lmeta">Sayısal cevaplarda ondalık için virgül kullanın (ör. 42,58); binlik ayırıcı zorunlu değildir. Yevmiye sorularında hesap kodunu (ör. 153) ya da listeden hesabı seçin; her satıra yalnızca borç <i>ya da</i> alacak tutarı yazın. İlk yanlışta ipucu, ikinci yanlışta çözüm gösterilir.</p>');
+  ensureDatalist();
+  const upd=()=>{const n=qs.length,d=qs.filter(q=>(S.qs[lid+':'+q.id]||{}).s).length,f=qs.filter(q=>{const s=S.qs[lid+':'+q.id];return s&&s.s==='ok'&&s.a===0;}).length;
+    sum.innerHTML=`Cevaplanan: <b>${d}/${n}</b> · İlk denemede doğru: <b>${f}</b>`;if(d===n)api.unlock();};
+  qs.forEach((q,i)=>{
+    const key=lid+':'+q.id;const st=S.qs[key]||(S.qs[key]={a:0,s:''});
+    const c=el('div','q');const kay=q.tag==='kayit';
+    const solHTML=()=>(kay?jt([J(q.ed||'',q.entry)],{num:false}):'')+(q.sol||'');
+    let inner='';
+    if(q.opts)inner=`<div class="opts" role="radiogroup">${q.opts.map((o,k)=>`<label><input type="radio" name="r${key}" value="${k}"><span>${o}</span></label>`).join('')}</div><div class="qa"><button type="button" class="btn chk">Kontrol et</button></div>`;
+    else if(kay)inner=`<table class="je"><thead><tr><th>Hesap</th><th>Borç (TL)</th><th>Alacak (TL)</th><th></th></tr></thead><tbody></tbody><tfoot><tr class="tot"><td style="text-align:right">Toplam</td><td class="tb" style="text-align:right">0</td><td class="tc" style="text-align:right">0</td><td></td></tr></tfoot></table>
+      <div class="qa"><button type="button" class="btn sm addr">+ Satır ekle</button><button type="button" class="btn chk">Kontrol et</button></div>`;
+    else inner=`<div class="qa"><input class="num" inputmode="decimal" aria-label="Cevap" placeholder="Cevabınız"> <span class="unit">${q.unit||''}</span><button type="button" class="btn chk">Kontrol et</button></div>`;
+    c.innerHTML=`<div class="qh"><span class="chip">${TAG[q.tag]}</span>${q.yl?`<span class="chip yl">${CONFIG.lvlLabels[1]}</span>`:''}<span class="qn">Soru ${i+1}/${qs.length}</span></div><div>${q.p}</div>${inner}<div class="fb"></div>`;
+    root.appendChild(c);
+    const fb=$('.fb',c),btn=$('.chk',c),inp=$('input.num',c);
+    let tbody,addRow,rowsData;
+    if(kay){tbody=$('tbody',c);
+      const tot=()=>{let b=0,a=0;tbody.querySelectorAll('tr').forEach(r=>{b+=parseNum(r.querySelector('.vb').value)||0;a+=parseNum(r.querySelector('.va').value)||0;});$('.tb',c).textContent=nf(b,b%1?2:0);$('.tc',c).textContent=nf(a,a%1?2:0);};
+      addRow=()=>{const r=el('tr','',`<td><input class="acc" list="tdhp-dl" placeholder="ör. 102 Bankalar" aria-label="Hesap"></td><td><input class="num vb" inputmode="decimal" aria-label="Borç"></td><td><input class="num va" inputmode="decimal" aria-label="Alacak"></td><td><button type="button" class="xbtn" title="Satırı sil">×</button></td>`);
+        tbody.appendChild(r);r.querySelectorAll('input').forEach(x=>x.addEventListener('input',tot));$('.xbtn',r).onclick=()=>{if(tbody.children.length>1){r.remove();tot();}};};
+      addRow();addRow();$('.addr',c).onclick=addRow;
+      rowsData=()=>{const out=[],errs=[];tbody.querySelectorAll('tr').forEach((r,k)=>{const as=r.querySelector('.acc').value,vb=r.querySelector('.vb').value,va=r.querySelector('.va').value;
+        if(!as.trim()&&!vb.trim()&&!va.trim())return;
+        const code=findCode(as);const b=vb.trim()?parseNum(vb):0,a=va.trim()?parseNum(va):0;
+        if(!code)errs.push(`${k+1}. satırdaki hesap tanınmadı ("${as||'boş'}").`);
+        else if(!isFinite(b)||!isFinite(a))errs.push(`${k+1}. satırdaki tutar sayı değil.`);
+        else if((b>0)===(a>0))errs.push(`${k+1}. satıra yalnızca borç ya da yalnızca alacak tutarı yazın.`);
+        else out.push([code,b,a]);});
+        return {out,errs};};
+    }
+    const lock=()=>{c.querySelectorAll('input,button.chk,button.addr,button.xbtn').forEach(x=>x.disabled=true);};
+    const show=(extra)=>{
+      if(st.s==='ok'){fb.className='fb ok';fb.innerHTML='<b>Doğru.</b> '+solHTML();lock();}
+      else if(st.s==='rev'){fb.className='fb rev';fb.innerHTML='<b>Çözüm:</b> '+solHTML();lock();}
+      else if(st.a===1){fb.className='fb try';fb.innerHTML='<b>Henüz değil; bir kez daha deneyin.</b> '+(extra||'')+'İpucu: '+q.hint;}
+    };
+    btn.onclick=()=>{
+      let right,extra='';
+      if(q.opts){const r=c.querySelector('input[type=radio]:checked');if(!r){fb.className='fb try';fb.textContent='Bir seçenek işaretleyin.';return;}right=+r.value===q.correct;}
+      else if(kay){const {out,errs}=rowsData();
+        if(errs.length){fb.className='fb try';fb.innerHTML=errs.join('<br>');return;}
+        if(out.length<2){fb.className='fb try';fb.textContent='Bir yevmiye maddesinde en az bir borç ve bir alacak satırı olmalıdır.';return;}
+        const t=entryTotals(out);if(Math.abs(t.b-t.a)>0.5){fb.className='fb try';fb.innerHTML=`Kayıt denk değil: borç toplamı ${nf(t.b)}, alacak toplamı ${nf(t.a)}. Çift taraflı kayıtta iki toplam eşit olmalıdır.`;return;}
+        const g=gradeEntry(q,out);right=g.ok;
+        if(!right)extra=`Beklenen ${g.total} hesaptan ${Math.min(g.good,g.total)} tanesi doğru tutar ve yönde.${g.wrongAcc.length?` Bu kayıtta yer almaması gereken hesap: ${g.wrongAcc.join(', ')}.`:''} `;}
+      else{const v=parseNum(inp.value);if(!isFinite(v)){fb.className='fb try';fb.textContent='Sayısal bir değer girin.';return;}right=isRight(q,v);}
+      if(right)st.s='ok';else{st.a++;if(st.a>=2)st.s='rev';}
+      S.qs[key]=st;save();show(extra);upd();
+    };
+    if(inp)inp.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
+    show();
+  });
+  upd();
+}
+
+/* ---------- Öz-sınama: #/selftest ---------- */
+/* Bir adımın etkileşimlerini dener: kaydırıcılar, seçim düğmeleri, işlem listeleri, yevmiye cevapları */
+let UICHK=0,TXCHK=0;
+function poke(b,st,err,tag){
+  if(b.querySelector('.tx-list'))TXCHK++;
+  b.querySelectorAll('input[type=range]').forEach(r=>{[r.min,r.max,r.defaultValue].forEach(v=>{r.value=v;r.dispatchEvent(new Event('input'));});});
+  b.querySelectorAll('.seg button').forEach(x=>x.click());
+  for(let g=0;g<40;g++){const cur=b.querySelector('.tx-list .tx button.primary');if(!cur)break;const sel=cur.parentNode.querySelector('select');if(sel)sel.value='0';cur.click();}
+  b.querySelectorAll('[data-s]').forEach((x,i)=>{if(i===0)x.click();});
+  b.querySelectorAll('.cls-row select').forEach(s=>{s.value=s.options[1]?s.options[1].value:'';s.dispatchEvent(new Event('change'));});
+  b.querySelectorAll('button[data-step]').forEach(x=>{for(let k=0;k<12;k++)if(!x.disabled)x.click();});
+  if(st.qs){const qs=st.qs.filter(q=>!q.yl||S.lvl==='yl');b.querySelectorAll('.q').forEach((c,i)=>{const q=qs[i];if(!q||q.tag!=='kayit')return;
+    const tb=c.querySelector('tbody');while(tb.children.length<q.entry.length)c.querySelector('.addr').click();
+    q.entry.forEach((x,k)=>{const r=tb.children[k];r.querySelector('.acc').value=an(x[0]);r.querySelector('.vb').value=x[1]?nf(x[1],2):'';r.querySelector('.va').value=x[2]?nf(x[2],2):'';});
+    c.querySelector('.chk').click();UICHK++;if(!c.querySelector('.fb.ok'))err(`${tag} S${q.id}: doğru kayıt arayüzde kabul edilmedi (${c.querySelector('.fb').textContent.slice(0,90)})`);});}
+}
+function selfTest(){
+  NOSAVE=true;const out=[];let fail=0;const keep=JSON.parse(JSON.stringify(S));S.qs={};S.unl={};
+  const err=(m)=>{fail++;out.push('HATA  '+m);};
+  window.addEventListener('error',e=>err('pencere: '+e.message));
+  Object.keys(LESSONS).forEach(id=>{if(!CAT[id])err(`${id}: katalogda yok`);});
+  const host=el('div','');host.style.cssText='position:absolute;left:-9999px;width:1000px';document.body.appendChild(host);
+  let nSteps=0,nQ=0,nK=0;
+  ['lisans','yl'].forEach(lvl=>{S.lvl=lvl;S.mode='tam';applyLvl();
+    Object.entries(LESSONS).forEach(([id,L])=>{visSteps(L).forEach(st=>{
+      const b=el('div','');host.appendChild(b);
+      try{mountStep(b,id,st,{unlocked:false,unlock(){}});nSteps++;}catch(e){err(`${lvl} ${id}/${st.k}: ${e.message}`);}
+      try{poke(b,st,err,`${lvl} ${id}/${st.k}`);}catch(e){err(`${lvl} ${id}/${st.k} etkileşim: ${e.message}`);}
+      S.qs={};
+      if(st.qs&&lvl==='yl')st.qs.forEach(q=>{nQ++;
+        if(q.tag==='kayit'){nK++;[q.entry].concat(q.alt||[]).forEach((ex,k)=>{const t=entryTotals(ex);if(Math.abs(t.b-t.a)>0.01)err(`${id} S${q.id} kayıt${k?' alt'+k:''} denk değil (${t.b} / ${t.a})`);
+            ex.forEach(x=>{if(!TDHP[x[0]])err(`${id} S${q.id}: hesap yok ${x[0]}`);});});
+          if(!gradeEntry(q,q.entry).ok)err(`${id} S${q.id}: doğru cevap kabul edilmiyor`);
+          const wrong=q.entry.map(x=>[x[0],x[2],x[1]]);if(gradeEntry(q,wrong).ok)err(`${id} S${q.id}: ters kayıt kabul ediliyor`);}
+        else if(q.opts){if(!(q.correct>=0&&q.correct<q.opts.length))err(`${id} S${q.id}: doğru seçenek yok`);}
+        else if(!isFinite(q.ans))err(`${id} S${q.id}: cevap sayı değil`);
+        if(!q.hint)err(`${id} S${q.id}: ipucu yok`);});
+      b.remove();});});});
+  /* Ders metinlerindeki örnek maddelerin denkliği */
+  (window.EXAMPLE_ENTRIES||[]).forEach(([n,ex])=>{const t=entryTotals(ex.l);if(Math.abs(t.b-t.a)>0.01)err(`örnek madde denk değil: ${n} (${t.b} / ${t.a})`);ex.l.forEach(x=>{if(!TDHP[x[0]])err(`örnek madde ${n}: hesap yok ${x[0]}`);});});
+  [...new Set(JT_ERR)].slice(0,20).forEach(m=>err('ekranda denk olmayan ya da tanımsız hesaplı madde: '+m));
+  out.push(`Ekranda üretilen yevmiye maddesi: ${JT_N}`);
+  host.remove();S=keep;NOSAVE=false;applyLvl();
+  out.unshift(`${CONFIG.title}: ${Object.keys(LESSONS).length} ders, ${nSteps} adım açıldı (iki düzey), ${nQ} soru (${nK} yevmiye) denetlendi, ${(window.EXAMPLE_ENTRIES||[]).length} örnek madde; arayüzde ${UICHK} yevmiye cevabı girildi, ${TXCHK} işlem listesi sonuna kadar oynatıldı. Hata: ${fail}`);
+  app.innerHTML=`<pre id="selftest">${out.join('\n')}</pre>`;document.title=fail?'SELFTEST FAIL '+fail:'SELFTEST OK';
+}
+/* İçerik dosyaları örnek maddelerini buraya kaydeder (öz-sınama için) */
+window.EXAMPLE_ENTRIES=[];
+function EX(name,entries){entries.forEach((e,i)=>window.EXAMPLE_ENTRIES.push([name+' #'+(i+1),e]));return entries;}
+
+function route(){
+  applyLvl();
+  const h=location.hash.replace(/^#\/?/,'').split('/');
+  if(h[0]==='selftest'){selfTest();return;}
+  PREVIEW=h[3]==='onizle';NOSAVE=PREVIEW;
+  if(h[0]==='ders'&&h[1])renderLesson(h[1],h[2]!=null&&h[2]!==''?+h[2]:null);
+  else renderHome();
+}
+function BASLAT(){
+  if(CONFIG.typeLabels)Object.assign(TYPE,CONFIG.typeLabels);
+  loadState();
+  document.documentElement.style.setProperty('--yl-label',`"${CONFIG.lvlLabels[1]}"`);
+  CAT={};let NO=0;CATALOG.forEach(u=>u.items.forEach(x=>{x.no=++NO;CAT[x.id]=x;}));
+  window.addEventListener('hashchange',route);
+  route();
+}
+
+/* ================= Ders içeriği: muhasebe2.js + muhasebe2_ek.js ================= */
+/* ============================================================
+   Muhasebe II Simülatörü (ULI2212) — ders içeriği
+   Sürekli örnek: kurgusal Defne Ticaret A.Ş. (Muhasebe I'in devamı)
+   ============================================================ */
+const CONFIG={
+  key:'muh2sim.v1',title:'Muhasebe II Simülatörü',
+  kicker:'Uluslararası İlişkiler Bölümü · ULI2212 Muhasebe II',
+  lead:'Kaynak hesaplarını, gelir–gider hesaplarını ve dönem sonu kapanışını adım adım kaydedin. Muhasebe I\'deki kurgusal işletme <b>Defne Ticaret A.Ş.</b> ikinci yılında.',
+  company:'Defne Ticaret A.Ş.',version:'0.1 (pilot), 27.11.2026',
+  lvlLabels:['Temel','TFRS katmanı'],
+  lvlHelp:'Aynı konulara TFRS/TMS karşılaştırmaları (TFRS 9, TMS 1, TMS 12) ve ek sorular eklenir.',
+  mapNote:'İzlencede haftalara öğrenme çıktısı bağlanmamıştır; buradaki eşleme konu–ÖÇ içerik uyumuna göre yapılmıştır. Ayrıntı için IZLENCE_ANALIZI.md dosyasına bakın.'
+};
+const AYLAR=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+
+/* ============================================================
+   DERS 2 — Mali borçlar
+   ============================================================ */
+function krediYil(Am,i,m,v){ /* m: kullanım ayı (1–12, ayın ilk günü), v: vade (ay) */
+  const s=m-1,e=s+v-1,acc=[0,0,0],cash=[0,0,0],aylik=Am*i/12;
+  for(let k=s;k<=e;k++){const y=Math.floor(k/12);if(y<3)acc[y]+=aylik;}
+  const ye=Math.floor(e/12);if(ye<3)cash[ye]+=aylik*v;
+  return {acc,cash,ye,e,top:aylik*v};
+}
+function K_faiz(root,api){
+  const L=kl(root,'Defne Ticaret 2026 yılında, seçilen ayın ilk günü bankadan kredi kullanıyor. Faiz <b>basit faizle</b> hesaplanıyor ve anaparayla birlikte vadede ödeniyor. Tahakkuk esasına göre faiz, ödendiği yıla değil <b>ait olduğu yıla</b> gider yazılır.');
+  const ck=checklist(L.task,[{id:'a',t:'Yıl sonunu <b>aşan</b> bir kredi oluşturun ve 31 Aralık tahakkuk kaydını görün.'},{id:'b',t:'Tamamen 2026 içinde kapanan bir kredi oluşturun: tahakkuka gerek kalıyor mu?'},{id:'c',t:'Vadesi <b>12 aydan uzun</b> bir kredi oluşturun ve sınıflandırmanın nasıl değiştiğini görün.'}],api);
+  const a=sl(L.ctl,{label:'Kredi tutarı',min:100000,max:2000000,step:50000,value:600000,fmt:v=>tl(v)});
+  const i=sl(L.ctl,{label:'Yıllık faiz oranı',min:10,max:80,step:1,value:48,fmt:v=>'%'+v});
+  const m=sl(L.ctl,{label:'Kullanım tarihi (2026)',min:1,max:12,step:1,value:10,fmt:v=>'1 '+AYLAR[v-1]});
+  const v=sl(L.ctl,{label:'Vade',min:1,max:24,step:1,value:6,fmt:x=>x+' ay'});
+  legend(L.leg,[['box f1','Tahakkuk esası: o yıla ait faiz gideri'],['box f2','Nakit esası: o yıl ödenen faiz']]);
+  const ro=readouts(L.ro,[['t','Toplam faiz'],['g','2026 faiz gideri'],['h','31.12.2026 gider tahakkuku'],['vd','Vade sonu'],['s','İlk kayıtta sınıflandırma']]);
+  function draw(u){
+    const r=krediYil(a.v,i.v/100,m.v,v.v),tah=r.ye>0?r.acc[0]:0,vy=2026+r.ye;
+    groupChart(L.ch,['2026','2027','2028'],[{n:'Tahakkuk esası',cls:'f1',v:r.acc},{n:'Nakit esası',cls:'f2',v:r.cash}],{aria:'Faiz giderinin yıllara dağılımı'});
+    ro.set('t',tl(r.top));ro.set('g',tl(r.acc[0]));ro.set('h',tah>0?tl(tah):'Gerekmez');ro.set('vd',`${AYLAR[r.e%12]} ${vy} sonu`);
+    ro.set('s',v.v>12?'400 Banka Kredileri (uzun vadeli)':'300 Banka Kredileri (kısa vadeli)');
+    const ents=[J('Kredinin kullanılması',[B(102,a.v),A(v.v>12?400:300,a.v)])];
+    if(tah>0)ents.push(J('31.12.2026: döneme ait faizin tahakkuku',[B(780,tah),A(381,tah)]));
+    L.x.innerHTML='<h3>Kayıtlar</h3>'+jt(ents)+(tah>0?`<p class="lmeta">Vadede ödeme: ${v.v>12?400:300} ve 381 borç (anapara + önceki yıl faizi), 780 borç (cari yıl faizi), 102 alacak. Kalan vadesi 12 ayın altına inen uzun vadeli kredi, bilanço tarihinde 400'den 303'e aktarılır.</p>`:'');
+    if(u){if(tah>0)ck.mark('a');if(r.ye===0)ck.mark('b');if(v.v>12)ck.mark('c');}
+  }
+  [a,i,m,v].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+function K_taksit(root,api){
+  const L=kl(root,'1 Temmuz 2026\'da kullanılan uzun vadeli kredinin anaparası, eşit taksitlerle her yıl 30 Haziran\'da ödeniyor. Her bilanço tarihinde, önümüzdeki <b>12 ay içinde</b> ödenecek taksit kısa vadeli kaynaklara (<b>303</b>) aktarılır; kalanı <b>400</b>\'de kalır. Faiz bu keşifte gösterilmemiştir.');
+  const ck=checklist(L.task,[{id:'a',t:'Bilanço tarihini değiştirerek kredinin bütün yıllarını gezin.'},{id:'b',t:'400 hesabının sıfırlandığı, borcun tamamen kısa vadeye geçtiği yılı bulun.'}],api);
+  const P=sl(L.ctl,{label:'Kredi anaparası',min:300000,max:3000000,step:100000,value:1200000,fmt:v=>tl(v)});
+  const n=sl(L.ctl,{label:'Taksit sayısı (yıl)',min:2,max:6,step:1,value:4,fmt:v=>v+' taksit'});
+  const y=sl(L.ctl,{label:'Bilanço tarihi',min:0,max:5,step:1,value:0,fmt:v=>'31.12.'+(2026+v)});
+  legend(L.leg,[['box f2','303 · 12 ay içinde ödenecek taksit'],['box f1','400 · uzun vadeli kısım']]);
+  const ro=readouts(L.ro,[['k','Kalan anapara'],['c','303 (kısa vadeli)'],['l','400 (uzun vadeli)']]);
+  const seen=new Set();
+  function draw(u){
+    const N=n.v,T=P.v/N;if(y.v>N-1)y.v=N-1;
+    const cols=[];for(let k=0;k<N;k++){const rem=P.v-k*T;cols.push({name:'31.12.'+(2026+k),items:[['303',Math.min(T,rem),'f2'],['400',Math.max(0,rem-T),'f1']]});}
+    const f=stackChart(L.ch,cols,{aria:'Kredinin kısa ve uzun vadeli kısımları'});
+    const k=y.v;f.add(`<rect x="${f.X(k+.14)}" y="${f.m.t}" width="${f.X(k+.86)-f.X(k+.14)}" height="${f.H-f.m.t-f.m.b}" fill="none" stroke="var(--ink2)" stroke-dasharray="3 3" rx="6"/>`);
+    const rem=P.v-k*T,c=Math.min(T,rem),l=Math.max(0,rem-T);
+    ro.set('k',tl(rem));ro.set('c',tl(c));ro.set('l',tl(l));
+    const ents=[];if(k>0)ents.push(J(`30.06.${2026+k}: taksit ödemesi`,[B(303,T),A(102,T)]));
+    ents.push(J(`31.12.${2026+k}: gelecek yıl ödenecek taksitin kısa vadeye aktarılması`,[B(400,T),A(303,T)]));
+    L.x.innerHTML='<h3>Seçili yılın kayıtları</h3>'+jt(ents);
+    if(u){seen.add(N+':'+k);let all=true;for(let j=0;j<N;j++)if(!seen.has(N+':'+j))all=false;if(all)ck.mark('a');if(l<0.5&&rem>0.5)ck.mark('b');}
+  }
+  [P,n,y].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+
+/* ============================================================
+   DERS 3 — Ticari borçlar, reeskont ve alınan avanslar
+   ============================================================ */
+const disIsk=(N,i,t)=>N*i*t/365, icIsk=(N,i,t)=>N*i*t/(365+i*t);
+function K_reeskont(root,api){
+  const L=kl(root,'Vadesi gelmemiş bir borç senedinin bilanço günündeki değeri, üzerindeki tutardan (nominal değer) düşüktür. Aradaki faiz <b>reeskont</b> yoluyla ayrılır. <b>Dış iskontoda</b> faiz nominal değer üzerinden, <b>iç iskontoda</b> senedin bugünkü değeri üzerinden hesaplanır.');
+  const ck=checklist(L.task,[{id:'a',t:'Hesaplama yöntemini <b>iç iskontoya</b> çevirin ve kaydın nasıl değiştiğini görün.'},{id:'b',t:'Kalan günü <b>365</b> yapın: iki yöntemin farkı ne kadar büyüyor?'},{id:'c',t:'Faiz oranını <b>%10 ya da altına</b> indirin: fark ne oluyor?'}],api);
+  const N=sl(L.ctl,{label:'Senedin nominal değeri',min:10000,max:1000000,step:10000,value:120000,fmt:v=>tl(v)});
+  const i=sl(L.ctl,{label:'Reeskont faiz oranı (yıllık)',min:5,max:80,step:1,value:45,fmt:v=>'%'+v});
+  const t=sl(L.ctl,{label:'Bilanço gününden vadeye kalan gün',min:1,max:365,step:1,value:63,fmt:v=>v+' gün'});
+  let yt='dis';seg(L.ctl,'Kayıtta kullanılan yöntem',[['dis','Dış iskonto'],['ic','İç iskonto']],'dis',x=>{yt=x;if(x==='ic')ck.mark('a');draw(1);});
+  legend(L.leg,[['l1','Dış iskonto: N · i · t / 365'],['l2','İç iskonto: N · i · t / (365 + i · t)']]);
+  const ro=readouts(L.ro,[['d','Dış iskonto'],['ic','İç iskonto'],['f','Fark'],['bd','Bugünkü değer (iç)']]);
+  function draw(u){
+    const n=N.v,r=i.v/100,tt=t.v,D=disIsk(n,r,tt),I=icIsk(n,r,tt),P1=[],P2=[];
+    for(let k=0;k<=365;k+=5){P1.push([k,disIsk(n,r,k)]);P2.push([k,icIsk(n,r,k)]);}
+    const f=frame(L.ch,{x:[0,365],y:[0,niceMax(disIsk(n,r,365)*1.05)],xlab:'Vadeye kalan gün',ylab:'Reeskont tutarı (TL)',yfmt:kTL,aria:'Reeskont tutarı ve kalan gün'});
+    f.line(P1,'l1');f.line(P2,'l2');f.vline(tt,'ref');f.dot(tt,D,'d1');f.dot(tt,I,'d2');
+    f.text(365,disIsk(n,r,365),'Dış','lab','end',-4,-8);f.text(365,icIsk(n,r,365),'İç','lab','end',-4,14);
+    f.hover(x=>{const k=clamp(Math.round(x),0,365);return {x:k,pts:[[k,disIsk(n,r,k),'d1'],[k,icIsk(n,r,k),'d2']],html:`<b>${k} gün</b><br>Dış: ${tl(disIsk(n,r,k),2)}<br>İç: ${tl(icIsk(n,r,k),2)}`};});
+    ro.set('d',tl(D,2));ro.set('ic',tl(I,2));ro.set('f',tl(D-I,2));ro.set('bd',tl(n-I,2));
+    const R=r2(yt==='dis'?D:I);
+    L.x.innerHTML='<h3>31 Aralık reeskont kaydı</h3>'+jt([J(`Borç senedi reeskontu (${yt==='dis'?'dış':'iç'} iskonto)`,[B(322,R),A(647,R)])],{num:false})+'<p class="lmeta">Yeni dönemin ilk günü ters kayıt yapılır: 657 Reeskont Faiz Giderleri borç, 322 alacak. Böylece faiz, senedin ödendiği dönemde gider olarak yer alır.</p>';
+    if(u){if(tt===365)ck.mark('b');if(i.v<=10)ck.mark('c');}
+  }
+  [N,i,t].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+const RS=r2(disIsk(120000,.45,63));
+const TX_SENET=[
+  {t:'15.11.2026: 100.000 TL + %20 KDV ticari mal veresiye alındı.',e:J('Kredili mal alışı',[B(153,100000),B(191,20000),A(320,120000)]),ask:{q:'Hangi hesap alacaklanır?',opts:['320 Satıcılar','321 Borç Senetleri','153 Ticari Mallar'],correct:0}},
+  {t:'20.11.2026: Satıcıya olan borç için 4.3.2027 vadeli 120.000 TL\'lik senet verildi.',e:J('Satıcıya senet verilmesi',[B(320,120000),A(321,120000)]),ask:{q:'Hangi hesap borçlanır?',opts:['321 Borç Senetleri','320 Satıcılar','102 Bankalar'],correct:1}},
+  {t:'25.11.2026: Bir müşteriden sipariş için 30.000 TL avans bankaya yatırıldı.',e:J('Alınan sipariş avansı',[B(102,30000),A(340,30000)]),ask:{q:'Hangi hesap alacaklanır?',opts:['120 Alıcılar','340 Alınan Sipariş Avansları','600 Yurt İçi Satışlar'],correct:1}},
+  {t:`31.12.2026: Senet için %45 oranla dış iskonto yöntemiyle reeskont ayrıldı (vadeye 63 gün): ${nf(RS,2)} TL.`,e:J('Borç senedi reeskontu',[B(322,RS),A(647,RS)]),ask:{q:'Hangi hesap alacaklanır?',opts:['657 Reeskont Faiz Giderleri','647 Reeskont Faiz Gelirleri','322 Borç Senetleri Reeskontu'],correct:1}},
+  {t:'2.1.2027: Reeskont kaydı ters çevrildi.',e:J('Reeskontun iptali (ters kayıt)',[B(657,RS),A(322,RS)]),ask:{q:'Hangi hesap borçlanır?',opts:['657 Reeskont Faiz Giderleri','647 Reeskont Faiz Gelirleri','321 Borç Senetleri'],correct:0}},
+  {t:'15.1.2027: Sipariş edilen mal teslim edildi: 80.000 TL + %20 KDV. Avans mahsup edildi, kalanı veresiye.',e:J('Teslim ve avansın mahsubu',[B(340,30000),B(120,66000),A(600,80000),A(391,16000)]),ask:{q:'Avans hesabına ne olur?',opts:['340 borçlandırılarak kapatılır','340 alacaklandırılır','Avans 120\'den düşülür, 340 değişmez'],correct:0}},
+  {t:'4.3.2027: Senet vadesinde bankadan ödendi.',e:J('Senedin ödenmesi',[B(321,120000),A(102,120000)]),ask:{q:'Hangi hesap alacaklanır?',opts:['321 Borç Senetleri','102 Bankalar','322 Borç Senetleri Reeskontu'],correct:1}}
+];
+EX('senet-islemler',TX_SENET.map(x=>x.e));
+function K_senet(root,api){
+  const L=kl(root,'Bir borç senedinin doğuşundan ödenmesine kadar geçen yolculuğu ve araya giren bir sipariş avansını kaydedin. Kayıtlardan önce tahmininizi seçin.');
+  const ck=checklist(L.task,[{id:'a',t:'Yedi işlemin hepsini kaydedin.'},{id:'b',t:'En az <b>beş</b> tahmini doğru yapın.'}],api);
+  const ro=readouts(L.ro,[['b','Bilançodaki net borç senedi (321 − 322)'],['g','2026 reeskont geliri (647)'],['h','2027 reeskont gideri (657)']]);
+  function draw(ents,i){
+    taccounts(L.ch,ents,['320','321','322','340','647','657'],{hl:i>=0?ents[i].l.map(x=>x[0]):[]});
+    const m=balances(ents);ro.set('b',tl(-net(m,'321')-net(m,'322'),2));ro.set('g',tl(-net(m,'647'),2));ro.set('h',tl(net(m,'657'),2));
+    L.x.innerHTML=ents.length?'<h3>Yevmiye</h3>'+jt(ents):'';
+  }
+  txList(L.ctl,TX_SENET,(ents,i,ok,res)=>{draw(ents,i);if(ents.length===TX_SENET.length){ck.mark('a');if(res.filter(Boolean).length>=5)ck.mark('b');}});
+  draw([],-1);
+}
+
+/* ============================================================
+   DERS 5 — Gelir ve gider hesapları; 7/A ve 7/B
+   ============================================================ */
+const GIDERLER=[
+  {t:'Yönetim ofisinin kirası 30.000 TL + %20 KDV, bankadan',a:'770',b:'793',f:'632',x:30000,kdv:6000,k:'102'},
+  {t:'Reklam ajansına 20.000 TL + %20 KDV, bankadan',a:'760',b:'793',f:'631',x:20000,kdv:4000,k:'102'},
+  {t:'Yönetim binasının emlak vergisi 5.000 TL, bankadan',a:'770',b:'795',f:'632',x:5000,kdv:0,k:'102'},
+  {t:'Kısa vadeli kredi faizi 12.000 TL, bankadan',a:'780',b:'797',f:'660',x:12000,kdv:0,k:'102'},
+  {t:'Satış deposu demirbaşlarının amortismanı 8.000 TL',a:'760',b:'796',f:'631',x:8000,kdv:0,k:'257'}
+];
+const YANS={'770':'771','760':'761','780':'781'};
+function giderKayit(sec){
+  const ici=GIDERLER.map(g=>{const l=[B(sec==='A'?g.a:g.b,g.x)];if(g.kdv)l.push(B(191,g.kdv));l.push(A(g.k,g.x+g.kdv));return J(g.t,l);});
+  const fn={};GIDERLER.forEach(g=>fn[g.f]=(fn[g.f]||0)+g.x);
+  let son=[];
+  if(sec==='A'){const by={};GIDERLER.forEach(g=>by[g.a]=(by[g.a]||0)+g.x);
+    Object.keys(by).forEach(c=>{const f=GIDERLER.find(g=>g.a===c).f;son.push(J(`Yansıtma: ${c} → ${f}`,[B(f,by[c]),A(YANS[c],by[c])]));});
+    Object.keys(by).forEach(c=>son.push(J(`${c} ile yansıtma hesabının kapatılması`,[B(YANS[c],by[c]),A(c,by[c])])));}
+  else{const by={};GIDERLER.forEach(g=>by[g.b]=(by[g.b]||0)+g.x);const tot=GIDERLER.reduce((s,g)=>s+g.x,0);
+    son.push(J('Gider çeşitlerinin fonksiyonlara dağıtılması (analitik kayıtlardan)',Object.keys(fn).map(c=>B(c,fn[c])).concat([A(798,tot)])));
+    son.push(J('Gider çeşitleri hesaplarının kapatılması',[B(798,tot)].concat(Object.keys(by).map(c=>A(c,by[c])))));}
+  return {ici,son,fn};
+}
+EX('7A',giderKayit('A').ici.concat(giderKayit('A').son));EX('7B',giderKayit('B').ici.concat(giderKayit('B').son));
+function K_7ab(root,api){
+  const L=kl(root,'Ekim ayındaki beş gider, iki seçenekle de kaydediliyor. <b>7/A</b> giderleri fonksiyonuna (yönetim, pazarlama, finansman) göre, <b>7/B</b> çeşidine (kira, vergi, amortisman, faiz) göre izler. Dönem sonunda her iki yol da gelir tablosundaki aynı hesaplara ulaşır mı?');
+  const ck=checklist(L.task,[{id:'a',t:'7/A seçeneğinde <b>dönem sonu</b> kayıtlarını açın.'},{id:'b',t:'7/B seçeneğinde <b>dönem sonu</b> kayıtlarını açın.'},{id:'c',t:'Aşağıdaki soruyu cevaplayın.'}],api);
+  let sec='A',as='ici';
+  seg(L.ctl,'Seçenek',[['A','7/A (fonksiyon)'],['B','7/B (çeşit)']],'A',v=>{sec=v;draw();});
+  seg(L.ctl,'Aşama',[['ici','Dönem içi'],['son','Dönem sonu']],'ici',v=>{as=v;draw();});
+  const qq=el('div','note',`<b>Soru.</b> 631, 632 ve 660 hesaplarının bakiyeleri iki seçenekte nasıldır?<div class="opts" style="margin-top:6px"><label><input type="radio" name="q7ab" value="0"><span>7/A'da daha yüksektir</span></label><label><input type="radio" name="q7ab" value="1"><span>Aynıdır</span></label><label><input type="radio" name="q7ab" value="2"><span>7/B'de bu hesaplar hiç kullanılmaz</span></label></div><div class="fb"></div>`);
+  L.ctl.appendChild(qq);
+  qq.querySelectorAll('input').forEach(x=>x.onchange=()=>{const fb=$('.fb',qq);if(x.value==='1'){fb.className='fb ok';fb.innerHTML='Doğru: iki seçenek de gelir tablosunda aynı fonksiyonel tutarlara ulaşır.';ck.mark('c');}else{fb.className='fb try';fb.textContent='Dönem sonu kayıtlarını iki seçenekte karşılaştırın.';}});
+  function draw(){
+    const r=giderKayit(sec),ents=as==='ici'?r.ici:r.ici.concat(r.son);
+    const codes=sec==='A'?['770','760','780','771','761','781','631','632','660']:['793','795','796','797','798','631','632','660'];
+    taccounts(L.ch,ents,codes,{hl:as==='son'?['631','632','660']:[]});
+    L.x.innerHTML=`<h3>${as==='ici'?'Dönem içi':'Dönem sonu'} kayıtları · 7/${sec}</h3>`+jt(as==='ici'?r.ici:r.son);
+    if(as==='son'){ck.mark(sec==='A'?'a':'b');}
+  }
+  draw();
+}
+function K_gt2(root,api){
+  const L=kl(root,'Tekdüzen gelir tablosunun basamaklarını kaydırıcılarla değiştirin. Her ara toplam bir önceki basamaktan türetilir: brüt satış → net satış → brüt satış kârı → faaliyet kârı → olağan kâr → dönem kârı.');
+  const ck=checklist(L.task,[{id:'a',t:'Faaliyet kârı pozitif olduğu hâlde dönemi <b>zararla</b> kapatın.'},{id:'b',t:'Faaliyet <b>zararına</b> rağmen dönem kârı elde edin.'},{id:'c',t:'Satış indirimlerini <b>%10 ya da üstüne</b> çıkarın.'}],api);
+  const bs=sl(L.ctl,{label:'Brüt satışlar',min:500000,max:3000000,step:50000,value:2000000,fmt:v=>tl(v)});
+  const ind=sl(L.ctl,{label:'Satış indirimleri (brüt satışın %\'si)',min:0,max:20,step:1,value:3,fmt:v=>'%'+v});
+  const smm=sl(L.ctl,{label:'Satışların maliyeti (net satışın %\'si)',min:30,max:100,step:1,value:60,fmt:v=>'%'+v});
+  const fg=sl(L.ctl,{label:'Faaliyet giderleri',min:0,max:1000000,step:10000,value:350000,fmt:v=>tl(v)});
+  const dg=sl(L.ctl,{label:'Diğer olağan gelir − gider (net)',min:-200000,max:300000,step:10000,value:20000,fmt:v=>tl(v)});
+  const fin=sl(L.ctl,{label:'Finansman giderleri',min:0,max:1000000,step:10000,value:120000,fmt:v=>tl(v)});
+  const od=sl(L.ctl,{label:'Olağan dışı gelir − gider (net)',min:-200000,max:800000,step:10000,value:0,fmt:v=>tl(v)});
+  legend(L.leg,[['box f1','Ara toplam'],['box f3','Artırıcı'],['box f2','Azaltıcı']]);
+  const ro=readouts(L.ro,[['ns','Net satışlar'],['bk','Brüt satış kârı'],['fk','Faaliyet kârı'],['ok','Olağan kâr'],['dk','Dönem kârı']]);
+  function draw(u){
+    const NS=bs.v*(1-ind.v/100),SM=NS*smm.v/100,BK=NS-SM,FK=BK-fg.v,OK=FK+dg.v-fin.v,DK=OK+od.v;
+    waterfall(L.ch,[{l:'Brüt|satışlar',v:bs.v,t:'total'},{l:'Satış|indirimleri',v:-(bs.v-NS)},{l:'Net|satışlar',v:NS,t:'total'},{l:'Satışların|maliyeti',v:-SM},{l:'Brüt satış|kârı',v:BK,t:'total'},{l:'Faaliyet|giderleri',v:-fg.v},{l:'Faaliyet|kârı',v:FK,t:'total'},{l:'Diğer|olağan',v:dg.v},{l:'Finansman|giderleri',v:-fin.v},{l:'Olağan|dışı',v:od.v},{l:'Dönem|kârı',v:DK,t:'total'}],{aria:'Tekdüzen gelir tablosu şelale grafiği',h:360});
+    ro.set('ns',tl(NS));ro.set('bk',tl(BK));ro.set('fk',tl(FK));ro.set('ok',tl(OK));ro.set('dk',tl(DK));
+    if(u){if(FK>0&&DK<0)ck.mark('a');if(FK<0&&DK>0)ck.mark('b');if(ind.v>=10)ck.mark('c');}
+  }
+  [bs,ind,smm,fg,dg,fin,od].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+
+/* ============================================================
+   DERS 6 — Dönem sonu kapanış ve mali tablolar
+   ============================================================ */
+const GELIR={'600':1500000,'642':25000,'679':15000};
+const GIDER={'610':40000,'621':820000,'631':180000,'632':150000,'660':60000,'689':5000};
+function kapanisAdimlari(t,pv){
+  const G=Object.values(GELIR).reduce((a,b)=>a+b,0),H=Object.values(GIDER).reduce((a,b)=>a+b,0),K=G-H,V=r2(K*t),NK=K-V,M=Math.min(pv,V);
+  const s=[
+    ['Gelir hesaplarının 690\'a devri',J('Gelir hesaplarının kapatılması',Object.entries(GELIR).map(([c,v])=>B(c,v)).concat([A(690,G)]))],
+    ['Gider ve indirim hesaplarının 690\'a devri',J('Gider ve indirim hesaplarının kapatılması',[B(690,H)].concat(Object.entries(GIDER).map(([c,v])=>A(c,v))))],
+    ['Dönem kârı üzerinden vergi karşılığı',J(`Kurumlar vergisi karşılığı (%${nf(t*100)})`,[B(691,V),A(370,V)])],
+    ['690\'ın 692\'ye devri',J('Dönem kârının 692\'ye aktarılması',[B(690,K),A(692,K)])],
+    ['691\'in 692\'ye devri',J('Vergi karşılığının 692\'ye aktarılması',[B(692,V),A(691,V)])],
+    ['Dönem net kârının 590\'a devri',J('Dönem net kârı',[B(692,NK),A(590,NK)])]];
+  if(M>0)s.push(['Peşin ödenen vergilerin 371\'e aktarılması',J('Peşin ödenen geçici verginin bilanço gösterimi',[B(371,M),A(193,M)])]);
+  return {s,G,H,K,V,NK,M};
+}
+EX('kapanis',kapanisAdimlari(.25,50000).s.map(x=>x[1]));
+function K_kapanis(root,api){
+  const L=kl(root,'Defne Ticaret\'in 2026 yılı kesin mizanındaki gelir tablosu hesapları aşağıdaki T-hesaplarda başlangıç bakiyeleriyle yer alıyor. Kapanış kayıtlarını "Sonraki adım" ile sırayla yapın. Vergi matrahının ticari kâra eşit olduğu varsayılmıştır (kanunen kabul edilmeyen gider ve istisna yok).');
+  const ck=checklist(L.task,[{id:'a',t:'Kapanışın bütün adımlarını tamamlayın.'},{id:'b',t:'Kapanıştan sonra vergi oranını değiştirin ve net kârın nasıl değiştiğini gözleyin.'}],api);
+  const t=sl(L.ctl,{label:'Kurumlar vergisi oranı (örnek)',min:1,max:40,step:1,value:25,fmt:v=>'%'+v});
+  const pv=sl(L.ctl,{label:'Yıl içinde ödenen geçici vergi (193)',min:0,max:80000,step:5000,value:50000,fmt:v=>tl(v)});
+  const bx=el('div','',`<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn primary" data-step>Sonraki adım →</button><button type="button" class="btn" data-back>↺ Baştan</button></div><ol class="lmeta" style="margin-top:10px"></ol>`);L.ctl.appendChild(bx);
+  const ro=readouts(L.ro,[['k','Dönem kârı (690)'],['v','Vergi karşılığı'],['n','Dönem net kârı (590)'],['o','Beyanla ödenecek vergi (370 − 371)']]);
+  let n=0;
+  function draw(u){
+    const R=kapanisAdimlari(t.v/100,pv.v),N=R.s.length;if(n>N)n=N;
+    const op=J('Kesin mizandaki bakiyeler',Object.entries(GIDER).map(([c,v])=>B(c,v)).concat(pv.v?[B(193,pv.v)]:[]).concat(Object.entries(GELIR).map(([c,v])=>A(c,v))));
+    const done=R.s.slice(0,n).map(x=>x[1]);
+    taccounts(L.ch,[op].concat(done),['600','621','690','691','692','590','370','371','193'],{hl:n?done[n-1].l.map(x=>x[0]):[]});
+    $('ol',bx).innerHTML=R.s.map((x,k)=>`<li style="${k<n?'color:var(--goodtext)':''}">${k<n?'✓ ':''}${x[0]}</li>`).join('');
+    $('[data-step]',bx).disabled=n>=N;$('[data-step]',bx).textContent=n>=N?'Kapanış tamamlandı':'Sonraki adım →';
+    ro.set('k',tl(R.K));ro.set('v',tl(R.V));ro.set('n',n>=6?tl(R.NK):'—');ro.set('o',tl(R.V-R.M));
+    L.x.innerHTML=n?`<h3>Yapılan kapanış kayıtları</h3><p class="lmeta">T-hesaplarda (1) numaralı satır kesin mizandaki bakiyelerdir; diğer gelir ve gider hesapları da aynı şekilde kapanır.</p>`+jt(done,{start:2}):'';
+    if(n>=N)ck.mark('a');if(u&&n>=N&&ck.has('a'))ck.mark('b');
+  }
+  $('[data-step]',bx).onclick=()=>{n++;draw(0);};
+  $('[data-back]',bx).onclick=()=>{n=0;draw(0);};
+  [t,pv].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+const SINIF_OPT=['Dönen varlıklar','Duran varlıklar','Kısa vadeli yabancı kaynaklar','Uzun vadeli yabancı kaynaklar','Özkaynaklar','Gelir tablosu'];
+const SINIF_HES=[['100',25000],['102',260000],['120',180000],['153',240000],['180',12000],['255',400000],['257',-160000],['280',8000],
+ ['320',150000],['370',71250],['371',-50000],['381',18000],['400',200000],['500',300000],['540',15000],['570',47000],['590',213750],['600',1500000],['621',820000],['632',150000]];
+function K_sinif(root,api){
+  const L=kl(root,'Kapanıştan sonraki mizandan alınan hesapları finansal tablolardaki yerlerine yerleştirin. Düzenleyici (−) hesaplar bağlı oldukları bölümde eksi tutarla gösterilir. Gelir tablosu hesapları kapanıştan önceki bakiyeleriyle listelenmiştir. Hepsi doğru yerleştiğinde bilanço kendiliğinden oluşur.');
+  const ck=checklist(L.task,[{id:'a',t:'Yirmi hesabın hepsini doğru bölüme yerleştirin.'}],api);
+  const box=el('div','');L.ctl.appendChild(box);
+  const dogru=c=>c[0]==='6'?5:+c[0]-1;
+  const sec={};
+  box.innerHTML=SINIF_HES.map(([c,v])=>`<div class="cls-row" data-c="${c}"><span>${an(c)}<br><span class="lmeta">${tl(v)}</span></span><select class="sel" aria-label="${c} için bölüm"><option value="">Seçin…</option>${SINIF_OPT.map((o,k)=>`<option value="${k}">${o}</option>`).join('')}</select></div>`).join('');
+  const ro=readouts(L.ro,[['n','Doğru yerleşen'],['A','Aktif toplamı'],['P','Pasif toplamı']]);
+  function draw(){
+    let ok=0;box.querySelectorAll('.cls-row').forEach(r=>{const c=r.dataset.c,s=sec[c];r.classList.toggle('ok',s!=null&&s===dogru(c));r.classList.toggle('bad',s!=null&&s!==dogru(c));if(s===dogru(c))ok++;});
+    const yer=k=>SINIF_HES.filter(([c])=>sec[c]===k&&dogru(c)===k);
+    const sum=arr=>arr.reduce((s,x)=>s+x[1],0);
+    const blk=(k)=>{const a=yer(k);return a.length?`<tr class="sub"><td colspan="2">${SINIF_OPT[k]}</td></tr>`+a.map(([c,v])=>`<tr><td>${an(c)}</td><td>${nf(v)}</td></tr>`).join('')+`<tr><td><b>Toplam</b></td><td><b>${nf(sum(a))}</b></td></tr>`:'';};
+    const A=sum(yer(0))+sum(yer(1)),P=sum(yer(2))+sum(yer(3))+sum(yer(4));
+    L.ch.innerHTML=`<div class="fs"><table class="tbl"><thead><tr><th>AKTİF</th><th>TL</th></tr></thead><tbody>${blk(0)}${blk(1)}<tr class="tot"><td>Aktif toplamı</td><td>${nf(A)}</td></tr></tbody></table>
+     <table class="tbl"><thead><tr><th>PASİF</th><th>TL</th></tr></thead><tbody>${blk(2)}${blk(3)}${blk(4)}<tr class="tot"><td>Pasif toplamı</td><td>${nf(P)}</td></tr></tbody></table></div>`;
+    ro.set('n',`${ok} / ${SINIF_HES.length}`);ro.set('A',tl(A));ro.set('P',tl(P));
+    if(ok===SINIF_HES.length){ck.mark('a');L.x.innerHTML=`<p><span class="flag good">✓ Aktif = Pasif = ${tl(A)}</span></p><p class="lmeta">Gelir tablosundaki dönem net kârı (${tl(213750)}) bilançoda 590 hesabıyla özkaynaklarda yer alır. Vergi karşılığı (370) ile peşin ödenen vergi (371) kısa vadeli yabancı kaynaklarda net gösterilir.</p>`;}
+  }
+  box.querySelectorAll('select').forEach(s=>s.addEventListener('change',()=>{const c=s.closest('.cls-row').dataset.c;sec[c]=s.value===''?null:+s.value;draw();}));
+  draw();
+}
+
+/* ============================================================
+   Ders tanımları
+   ============================================================ */
+const ORN_MALI=EX('mali-ornek',[J('1.10.2026: kredinin kullanılması',[B(102,600000),A(300,600000)]),J('31.12.2026: 3 aylık faizin tahakkuku',[B(780,72000),A(381,72000)]),
+  J('31.03.2027: kredinin ve faizin ödenmesi',[B(300,600000),B(381,72000),B(780,72000),A(102,744000)])]);
+const ORN_TIC_D=r2(disIsk(120000,.45,63)),ORN_TIC_I=r2(icIsk(120000,.45,63));
+const ORN_GG=EX('gelirgider-ornek',[J('Kira gideri (7/A)',[B(770,30000),B(191,6000),A(102,36000)]),J('Kira gideri (7/B)',[B(793,30000),B(191,6000),A(102,36000)])]);
+const ORN_KAP=kapanisAdimlari(.25,50000);
+
+const LESSONS={
+mali:{title:'Mali borçlar: banka kredileri ve faiz tahakkuku',sure:'40 dk',steps:[
+ {k:'a',type:'anlatim',title:'30 ve 40 grubu mali borçlar',html:()=>`
+  <p><b>Mali borçlar</b>, işletmenin finansman sağlamak için bankalara ve sermaye piyasasına olan borçlarıdır. Vadesi bilanço tarihinden itibaren bir yıla kadar olanlar <b>30 Mali Borçlar</b> (kısa vadeli), daha uzun olanlar <b>40 Mali Borçlar</b> (uzun vadeli) grubunda izlenir.</p>
+  <table class="tbl sym"><thead><tr><th>Hesap</th><th>Kullanım</th></tr></thead><tbody>
+   <tr><td>300 Banka Kredileri</td><td>Vadesi bir yıla kadar olan krediler</td></tr>
+   <tr><td>303 Uzun Vadeli Kredilerin Anapara Taksitleri ve Faizleri</td><td>Uzun vadeli kredilerin 12 ay içinde ödenecek kısmı</td></tr>
+   <tr><td>304 / 405 Tahviller</td><td>Çıkarılmış tahviller (Şirketler Muhasebesi dersinde)</td></tr>
+   <tr><td>400 Banka Kredileri</td><td>Vadesi bir yıldan uzun krediler</td></tr></tbody></table>
+  <h3>Faiz gideri ve tahakkuk</h3>
+  <p>Kredi faizi 7/A seçeneğinde <b>780 Finansman Giderleri</b> hesabına yazılır; dönem sonunda 781 yansıtma hesabı aracılığıyla kısa vadeli krediler için <b>660</b>, uzun vadeliler için <b>661</b> hesabına aktarılır. Faizin ödenme zamanı ile ait olduğu dönem farklıysa <b>dönemsellik ilkesi</b> gereği dönem sonunda tahakkuk kaydı yapılır: döneme ait ama henüz ödenmemiş faiz 780 borç, <b>381 Gider Tahakkukları</b> alacak.</p>
+  <div class="note">Bazı ders kitapları tahakkuk eden kredi faizini doğrudan kredi hesabına (300) alacak kaydeder. İki uygulamada da gider aynı döneme yazılır; alıştırmalarda iki kayıt da kabul edilir.</div>
+  <h3>Uzun vadeli kredinin kısa vadeye aktarılması</h3>
+  <p>Her bilanço tarihinde uzun vadeli kredinin önümüzdeki 12 ay içinde ödenecek taksitleri 400'den 303'e aktarılır (400 borç, 303 alacak). Böylece bilanço, kısa vadede ödenecek borçları doğru gösterir ve likidite oranları yanıltıcı olmaz.</p>
+  <div class="note yl yl-only"><b>TFRS 9</b>'a göre krediler ilk kayıtta gerçeğe uygun değerden (işlem maliyetleri düşülerek), sonra <b>etkin faiz yöntemiyle itfa edilmiş maliyetten</b> ölçülür. Kredi açılış komisyonları gibi masraflar doğrudan gider yazılmaz; etkin faiz oranına dahil edilerek kredi süresine yayılır. TMS 1 ise kredinin kısa ya da uzun vadeli sınıflandırılmasında raporlama dönemi sonundaki koşulları (ör. kredi sözleşmesi şartlarının ihlali) dikkate alır.</div>`},
+ {k:'o',type:'ornek',title:'Yıl sonunu aşan kredi',html:()=>`
+  <p><b>Soru.</b> Defne Ticaret 1 Ekim 2026'da bankadan 6 ay vadeli 600.000 TL kredi kullandı. Yıllık faiz oranı %48; faiz vadede anaparayla birlikte ödenecek. Gerekli kayıtları yapın.</p>
+  <p><b>Toplam faiz:</b> 600.000 × 0,48 × 6/12 = 144.000 TL. <b>2026'ya ait kısım</b> (Ekim–Aralık, 3 ay): 600.000 × 0,48 × 3/12 = <b>72.000 TL</b>.</p>
+  ${jt(ORN_MALI)}
+  <p>2026 gelir tablosunda 72.000 TL, 2027 gelir tablosunda 72.000 TL finansman gideri yer alır. Nakit çıkışının tamamı 2027'de olsa da gider iki yıla bölünür.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Faiz hangi döneme ait?',mount:K_faiz},
+ {k:'k2',type:'kesif',core:true,title:'Uzun vadeli kredi: 400\'den 303\'e',mount:K_taksit},
+ {k:'t',type:'turetim',title:'Tahakkuk kaydının mantığı',html:()=>`
+  <p>Basit faizde <i>d</i> günlük faiz <i>F</i> = <i>A</i> · <i>i</i> · <i>d</i> / 365 (ay hesabında <i>A</i> · <i>i</i> · <i>m</i> / 12) ile bulunur. Yıl sonunda iki soru sorulur: <b>Bu yıla ait faiz ne kadar?</b> ve <b>Ne kadarı ödendi?</b> Aradaki fark tahakkuk kaydıyla kapatılır:</p>
+  <div class="eq">Tahakkuk = Döneme ait faiz − Dönem içinde ödenen faiz</div>
+  <p>Fark pozitifse borç doğmuştur (780 borç / 381 alacak). Faiz peşin ödenmiş ve bir kısmı gelecek yıla aitse tersine bir durum vardır: gelecek yıla ait kısım <b>180 Gelecek Aylara Ait Giderler</b>'e alınır. Yeni yılda tahakkuk eden faiz ödendiğinde 381 borçlandırılarak kapatılır; böylece aynı gider iki kez yazılmaz.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'kayit',p:'Bankadan 9 ay vadeli 400.000 TL kredi kullanıldı ve tutar banka hesabına geçti.',entry:[B(102,400000),A(300,400000)],hint:'Vade bir yılın altında: kısa vadeli banka kredisi.',sol:''},
+  {id:2,tag:'hesap',p:'Bu kredi 1 Kasım\'da, yıllık %36 basit faizle alındı; faiz vadede ödenecek. 31 Aralık\'ta tahakkuk ettirilecek faiz kaç TL\'dir?',ans:24000,abs:1,unit:'TL',hint:'Kasım ve Aralık: 2 ay.',sol:'400.000 × 0,36 × 2/12 = <b>24.000 TL</b>.'},
+  {id:3,tag:'kayit',p:'Önceki sorudaki faiz tahakkukunu kaydedin (7/A).',entry:[B(780,24000),A(381,24000)],alt:[[B(780,24000),A(300,24000)]],hint:'Döneme ait ama ödenmemiş gider: gider hesabı borç, tahakkuk hesabı alacak.',sol:'Kredi hesabına (300) alacak kaydı da kabul edilir.'},
+  {id:4,tag:'kayit',p:'Dönem içinde ödenen 15.000 TL kredi faizi bankadan ödendi (7/A).',entry:[B(780,15000),A(102,15000)],hint:'7/A seçeneğinde finansman giderleri 78 grubunda izlenir.',sol:''},
+  {id:5,tag:'kavram',p:'Kısa vadeli banka kredisinin faizinin kaydedildiği 780 hesabı dönem sonunda hangi gelir tablosu hesabına yansıtılır?',opts:['631 Pazarlama, Satış ve Dağıtım Giderleri','660 Kısa Vadeli Borçlanma Giderleri','661 Uzun Vadeli Borçlanma Giderleri','657 Reeskont Faiz Giderleri'],correct:1,hint:'Kredinin vadesine bakın.',sol:'781 aracılığıyla <b>660</b>\'a yansıtılır; uzun vadeli kredilerde 661 kullanılır.'},
+  {id:6,tag:'hesap',p:'1.7.2026\'da kullanılan 1.000.000 TL\'lik kredinin anaparası, 30 Haziran 2027\'den başlayarak 5 eşit yıllık taksitle ödenecek. 31.12.2026 bilançosunda 400 hesabında kaç TL kalır?',ans:800000,abs:1,unit:'TL',hint:'12 ay içinde ödenecek taksit 303\'e aktarılır.',sol:'Taksit 200.000 TL; 30.6.2027 taksiti 303\'e geçer → 400\'de <b>800.000 TL</b> kalır.'},
+  {id:7,tag:'kayit',p:'Önceki sorudaki aktarma kaydını yapın.',entry:[B(400,200000),A(303,200000)],hint:'Uzun vadeli hesap azalır (borç), kısa vadeli hesap artar (alacak).',sol:''},
+  {id:8,tag:'kavram',yl:1,p:'TFRS 9\'a göre krediyi alırken bankaya ödenen 10.000 TL kredi tahsis komisyonu nasıl muhasebeleştirilir?',opts:['Ödendiği dönemde tamamen finansman gideri yazılır','Kredinin ilk ölçümünden düşülür ve etkin faiz yöntemiyle kredi süresine yayılır','Maddi olmayan duran varlık olarak aktifleştirilir','Özkaynaklardan düşülür'],correct:1,hint:'İşlem maliyetleri etkin faiz oranının bir parçasıdır.',sol:'İşlem maliyetleri kredinin ilk ölçümünden düşülür ve <b>etkin faiz yöntemiyle</b> süreye yayılır.'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary">
+  <li>Vadesi bir yıla kadar krediler 300, daha uzun olanlar 400 hesabında izlenir.</li>
+  <li>Faiz 780'e yazılır ve dönem sonunda 781 aracılığıyla 660 ya da 661'e yansıtılır.</li>
+  <li>Döneme ait ama ödenmemiş faiz yıl sonunda tahakkuk ettirilir: 780 borç, 381 alacak.</li>
+  <li>Uzun vadeli kredinin 12 ay içinde ödenecek kısmı her bilanço tarihinde 400'den 303'e aktarılır.</li></ul>
+  <p class="lmeta">İzlence: Hafta 2–3 (kısa vadeli yabancı kaynaklar: mali borçlar) · ÖÇ1.</p>`}
+]},
+
+ticari:{title:'Ticari borçlar, borç senetleri reeskontu ve alınan avanslar',sure:'45 dk',steps:[
+ {k:'a',type:'anlatim',title:'32 ve 34 grubu hesaplar',html:()=>`
+  <p><b>Ticari borçlar</b> işletmenin esas faaliyetiyle ilgili mal ve hizmet alımlarından doğan borçlarıdır. Senetsiz borçlar <b>320 Satıcılar</b>, senede bağlananlar <b>321 Borç Senetleri</b> hesabında izlenir. Alınan depozito ve teminatlar 326, diğer ticari borçlar 329 hesabına yazılır.</p>
+  <h3>Borç senetleri reeskontu</h3>
+  <p>Vadesi gelmemiş bir borç senedinin üzerindeki tutar, vadeye kadar işleyecek faizi de içerir. Dönem sonunda senet, <b>değerleme günündeki değerine</b> indirgenebilir. Aradaki faiz <b>322 Borç Senetleri Reeskontu (−)</b> hesabına borç, <b>647 Reeskont Faiz Gelirleri</b> hesabına alacak yazılır. Yeni dönemin ilk günü kayıt ters çevrilir (657 borç, 322 alacak).</p>
+  <div class="eq">Dış iskonto = ${fr('<i>N</i> · <i>i</i> · <i>t</i>','365')} &nbsp;&nbsp;&nbsp; İç iskonto = ${fr('<i>N</i> · <i>i</i> · <i>t</i>','365 + <i>i</i> · <i>t</i>')}</div>
+  <p><i>N</i> senedin nominal değeri, <i>i</i> yıllık faiz oranı, <i>t</i> değerleme gününden vadeye kalan gündür.</p>
+  <div class="note tr">VUK'a göre senetlerin reeskonta tabi tutulması isteğe bağlıdır; ancak alacak senetlerini reeskonta tabi tutan işletme borç senetlerini de reeskonta tabi tutmak zorundadır. Uygulamada genellikle TCMB'nin ilan ettiği reeskont faiz oranı kullanılır.</div>
+  <h3>Alınan sipariş avansları</h3>
+  <p>Mal ya da hizmet teslim edilmeden önce müşteriden alınan tutarlar satış değildir; işletme için bir <b>yükümlülüktür</b> ve <b>340 Alınan Sipariş Avansları</b> hesabında izlenir. Teslim yapıldığında satış kaydedilir ve 340 borçlandırılarak kapatılır. KDV kural olarak teslimle doğar; teslimden önce fatura düzenlenirse fatura tarihinde doğar.</p>
+  <div class="note yl yl-only"><b>TFRS 15</b> açısından alınan avans bir <b>sözleşme yükümlülüğüdür</b>; hasılat, mal üzerindeki kontrol müşteriye geçtiğinde kaydedilir. TFRS 9'a göre ticari borçlar itfa edilmiş maliyetle ölçülür; vadesi bir yıldan kısa ve önemli finansman bileşeni içermeyen ticari borçlarda iskonto etkisi genellikle önemsizdir ve indirgeme yapılmayabilir.</div>`},
+ {k:'o',type:'ornek',title:'Defne Ticaret\'in borç senedi',html:()=>`
+  <p><b>Soru.</b> Defne Ticaret 20.11.2026'da satıcısına 4.3.2027 vadeli 120.000 TL'lik borç senedi verdi. Reeskont oranı %45; 31.12.2026'dan vadeye 63 gün var. Reeskont tutarını iki yöntemle hesaplayın ve dış iskontoya göre kaydı yapın.</p>
+  <p><b>Dış iskonto:</b> 120.000 × 0,45 × 63 / 365 = <b>${nf(ORN_TIC_D,2)} TL</b>.</p>
+  <p><b>İç iskonto:</b> 120.000 × 0,45 × 63 / (365 + 0,45 × 63) = 3.402.000 / 393,35 = <b>${nf(ORN_TIC_I,2)} TL</b>.</p>
+  ${jt([J('31.12.2026: borç senedi reeskontu',[B(322,ORN_TIC_D),A(647,ORN_TIC_D)]),J('2.1.2027: ters kayıt',[B(657,ORN_TIC_D),A(322,ORN_TIC_D)])])}
+  <p>31.12.2026 bilançosunda borç senetleri net ${nf(120000-ORN_TIC_D,2)} TL olarak görünür (321 − 322).</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Reeskont: iç ve dış iskonto',mount:K_reeskont},
+ {k:'k2',type:'kesif',core:true,title:'Bir borç senedinin ve bir avansın yolculuğu',mount:K_senet},
+ {k:'t',type:'turetim',title:'İki iskonto formülü nereden gelir?',html:()=>`
+  <p>Senedin bugünkü değeri <i>BD</i>, basit faizle vadeye kadar büyüyünce nominal değere ulaşır: <i>N</i> = <i>BD</i>(1 + <i>i</i> · <i>t</i> / 365). Buradan <b>iç iskonto</b> (gerçek faiz) bulunur:</p>
+  <div class="eq"><i>N</i> − <i>BD</i> = <i>N</i> − ${fr('<i>N</i>','1 + <i>i t</i> / 365')} = ${fr('<i>N i t</i>','365 + <i>i t</i>')}</div>
+  <p><b>Dış iskonto</b> ise faizi bugünkü değer yerine nominal değer üzerinden hesaplar: <i>N i t</i> / 365. Payda daha küçük olduğu için dış iskonto her zaman iç iskontodan büyüktür. Fark <i>i</i> · <i>t</i> küçükken önemsizdir, yüksek faiz ve uzun vadede büyür.</p>
+  <p><b>Neden gelir hesabı?</b> Borç senedinin reeskontu borcu azaltır. Senedin içindeki faizin bu döneme ait olmayan kısmı bu dönemin gideri değildir; reeskont, tutarın içindeki gelecek döneme ait faizi ayırır ve bu dönemde gelir yazar. Ters kayıtla aynı tutar senedin ödendiği dönemde gider olarak yer alır.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'kayit',p:'90.000 TL + %20 KDV tutarında ticari mal veresiye alındı.',entry:[B(153,90000),B(191,18000),A(320,108000)],hint:'Satıcıya olan borç KDV dahil tutardır.',sol:''},
+  {id:2,tag:'kayit',p:'Satıcıya olan 108.000 TL\'lik borç için senet verildi.',entry:[B(320,108000),A(321,108000)],hint:'Senetsiz borç azalır, senetli borç artar.',sol:''},
+  {id:3,tag:'hesap',p:'Nominal değeri 200.000 TL, vadesine 73 gün kalan bir borç senedi için %40 oranla <b>dış iskonto</b> yöntemiyle reeskont tutarı kaç TL\'dir?',ans:16000,abs:1,unit:'TL',hint:'N · i · t / 365.',sol:'200.000 × 0,40 × 73 / 365 = <b>16.000 TL</b>.'},
+  {id:4,tag:'kayit',p:'Önceki sorudaki reeskontu 31 Aralık\'ta kaydedin.',entry:[B(322,16000),A(647,16000)],hint:'Borç senedi reeskontu bir faiz <i>geliri</i> doğurur.',sol:''},
+  {id:5,tag:'hesap',p:'Aynı senet için <b>iç iskonto</b> yöntemiyle reeskont tutarı kaç TL\'dir? (2 ondalık)',ans:icIsk(200000,.4,73),abs:0.05,unit:'TL',hint:'Payda 365 + i · t.',sol:`200.000 × 0,40 × 73 / (365 + 0,40 × 73) = 5.840.000 / 394,2 = <b>${nf(icIsk(200000,.4,73),2)} TL</b>.`},
+  {id:6,tag:'kayit',p:'Müşteriden sipariş karşılığı 50.000 TL avans bankaya yatırıldı (fatura düzenlenmedi).',entry:[B(102,50000),A(340,50000)],hint:'Teslim yapılmadan alınan tutar satış değil, yükümlülüktür.',sol:''},
+  {id:7,tag:'kavram',p:'31 Aralık bilançosunda borç senetleri nasıl gösterilir?',opts:['321 ve 322 ayrı ayrı aktifte','321 pasifte, 322 aktifte','321 pasifte; 322 bu tutardan düşülerek net','Yalnızca 322 gösterilir'],correct:2,hint:'322 bir düzenleyici (−) hesaptır.',sol:'322, 321\'i düzenler; borç senetleri pasifte <b>net</b> tutarla gösterilir.'},
+  {id:8,tag:'kavram',yl:1,p:'TFRS 15\'e göre müşteriden alınan sipariş avansı hangi kalemdir?',opts:['Hasılat','Sözleşme yükümlülüğü','Sözleşme varlığı','Özkaynak'],correct:1,hint:'İşletme henüz edimini yerine getirmedi.',sol:'Teslim gerçekleşene kadar avans bir <b>sözleşme yükümlülüğüdür</b>.'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary">
+  <li>Senetsiz ticari borçlar 320, senetli olanlar 321 hesabında izlenir.</li>
+  <li>Dönem sonunda borç senetleri reeskonta tabi tutulabilir: 322 borç, 647 alacak; yeni dönemde ters kayıt (657 / 322).</li>
+  <li>Dış iskonto nominal değer, iç iskonto bugünkü değer üzerinden hesaplanır; dış iskonto her zaman daha büyüktür.</li>
+  <li>Alınan sipariş avansları teslime kadar 340'ta yükümlülük olarak bekler.</li></ul>
+  <p class="lmeta">İzlence: Hafta 4–5 (ticari borçlar), 6 (alınan avanslar) · ÖÇ2.</p>`}
+]},
+
+gelirgider:{title:'Gelir ve gider hesapları; 7/A ve 7/B seçenekleri',sure:'45 dk',steps:[
+ {k:'a',type:'anlatim',title:'6 grubu ve 7 grubu hesaplar',html:()=>`
+  <p><b>6 Gelir Tablosu Hesapları</b> gelir tablosunun satırlarıyla aynı sırayı izler: 60 Brüt satışlar, 61 Satış indirimleri (−), 62 Satışların maliyeti (−), 63 Faaliyet giderleri (−), 64–65 Diğer faaliyetlerden olağan gelir ve kârlar / gider ve zararlar, 66 Finansman giderleri (−), 67–68 Olağan dışı gelir ve kârlar / gider ve zararlar, 69 Dönem net kârı veya zararı.</p>
+  <h3>7 Maliyet hesapları: iki seçenek</h3>
+  <p><b>7/A seçeneği</b> giderleri <b>fonksiyonlarına</b> göre izler: 710 direkt ilk madde, 720 direkt işçilik, 730 genel üretim, 760 pazarlama–satış–dağıtım, 770 genel yönetim, 780 finansman giderleri. Her hesabın bir <b>yansıtma</b> hesabı vardır (761, 771, 781…). Dönem sonunda dönem giderleri yansıtma hesapları aracılığıyla 63 ve 66 grubuna aktarılır.</p>
+  <p><b>7/B seçeneği</b> giderleri <b>çeşitlerine</b> göre izler: 790 ilk madde ve malzeme, 791 işçi ücret ve giderleri, 792 memur ücret ve giderleri, 793 dışarıdan sağlanan fayda ve hizmetler, 794 çeşitli giderler, 795 vergi–resim–harçlar, 796 amortismanlar, 797 finansman giderleri. Dönem sonunda tutarlar analitik kayıtlardan yararlanılarak fonksiyonlara dağıtılır; karşı hesap <b>798 Gider Çeşitleri Yansıtma Hesabı</b>'dır.</p>
+  <div class="note tr">Muhasebe Sistemi Uygulama Genel Tebliği'ne göre belirlenen büyüklük ölçütlerini aşan işletmeler 7/A seçeneğini kullanmak zorundadır; aşmayanlar iki seçenekten birini seçebilir. Ölçütler tebliğ ve sonraki düzenlemelerle belirlenir; güncel tutarları kontrol edin.</div>
+  <div class="note yl yl-only"><b>TMS 1</b>'e göre giderler kâr veya zarar tablosunda ya <b>niteliğine</b> (çeşit) ya da <b>fonksiyonuna</b> göre sunulur. Fonksiyon esasını seçen işletme, giderlerin niteliğine ilişkin ek bilgiyi (amortisman ve itfa payları, çalışanlara sağlanan faydalar) dipnotlarda verir. 7/A ve 7/B ayrımı bu iki sunum seçeneğinin defter düzeyindeki karşılığıdır.</div>`},
+ {k:'o',type:'ornek',title:'Aynı kira gideri, iki kayıt',html:()=>`
+  <p><b>Soru.</b> Defne Ticaret yönetim ofisinin Ekim kirası olan 30.000 TL + %20 KDV'yi bankadan ödedi. 7/A ve 7/B seçeneğine göre kayıtları yapın.</p>
+  ${jt(ORN_GG)}
+  <p>7/A'da kira, <b>kim için</b> yapıldığına (yönetim) göre 770'e; 7/B'de <b>ne tür</b> bir gider olduğuna (dışarıdan alınan hizmet) göre 793'e yazılır. Dönem sonunda iki yol da 632 Genel Yönetim Giderleri hesabına ulaşır: 7/A'da 771 yansıtma hesabıyla, 7/B'de 798 ile.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Aynı gider, iki yol: 7/A ve 7/B',mount:K_7ab},
+ {k:'k2',type:'kesif',core:true,title:'Gelir tablosunun basamakları',mount:K_gt2},
+ {k:'t',type:'turetim',title:'Yansıtma hesapları neden var?',html:()=>`
+  <p>7/A'da bir gider dönem boyunca 770'in <b>borç</b> tarafında birikir. Dönem sonunda bu tutarın gelir tablosuna (632) taşınması gerekir; ama 770'in dönem içi ayrıntısı (analitik bilgi) korunmak istenir. Bu yüzden 770 doğrudan alacaklandırılmaz; karşılığında bir yansıtma hesabı kullanılır:</p>
+  <div class="eq">632 borç / 771 alacak &nbsp;→&nbsp; 771 borç / 770 alacak</div>
+  <p>İlk kayıt tutarı gelir tablosuna taşır, ikinci kayıt 770 ile 771'i birbirine kapatır. Sonuçta 7 grubu sıfırlanır, tutar 63 grubunda kalır ve dönem sonu kapanışında 690'a aktarılır. 7/B'de aynı işi tek bir yansıtma hesabı (798) bütün gider çeşitleri için yapar.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'kayit',p:'7/A: Yönetim binasının kirası 40.000 TL + %20 KDV bankadan ödendi.',entry:[B(770,40000),B(191,8000),A(102,48000)],hint:'Yönetim faaliyetine ait gider: 77 grubu.',sol:''},
+  {id:2,tag:'kayit',p:'7/B: Aynı kira ödemesini kaydedin.',entry:[B(793,40000),B(191,8000),A(102,48000)],hint:'Kira, dışarıdan sağlanan bir hizmettir.',sol:''},
+  {id:3,tag:'kayit',p:'Dönem sonunda 770 hesabının borç bakiyesi 150.000 TL\'dir. Yansıtma kaydını yapın.',entry:[B(632,150000),A(771,150000)],hint:'Gelir tablosu hesabı borçlanır, yansıtma hesabı alacaklanır.',sol:''},
+  {id:4,tag:'kayit',p:'Ardından 770 ile 771 hesaplarını birbirine kapatın.',entry:[B(771,150000),A(770,150000)],hint:'Yansıtma hesabının alacak bakiyesi ile gider hesabının borç bakiyesi karşılıklı kapanır.',sol:''},
+  {id:5,tag:'hesap',p:'Brüt satışlar 900.000 TL, satıştan iadeler 30.000 TL, satış iskontoları 20.000 TL, satılan ticari mallar maliyeti 500.000 TL. Brüt satış kârı kaç TL\'dir?',ans:350000,abs:1,unit:'TL',hint:'Önce net satışları bulun.',sol:'Net satışlar 900.000 − 30.000 − 20.000 = 850.000; brüt satış kârı 850.000 − 500.000 = <b>350.000 TL</b>.'},
+  {id:6,tag:'kavram',p:'7/A seçeneğinde satış mağazasındaki elektrik gideri hangi hesaba yazılır?',opts:['770 Genel Yönetim Giderleri','760 Pazarlama, Satış ve Dağıtım Giderleri','730 Genel Üretim Giderleri','793 Dışarıdan Sağlanan Fayda ve Hizmetler'],correct:1,hint:'7/A gideri fonksiyonuna göre ayırır.',sol:'Satış fonksiyonuna ait olduğu için <b>760</b>. 793 bir 7/B hesabıdır.'},
+  {id:7,tag:'kavram',p:'642 Faiz Gelirleri gelir tablosunun hangi bölümünde yer alır?',opts:['Brüt satışlar','Diğer faaliyetlerden olağan gelir ve kârlar','Olağan dışı gelir ve kârlar','Finansman giderleri'],correct:1,hint:'64 grubunun adı nedir?',sol:'64 grubu: <b>diğer faaliyetlerden olağan gelir ve kârlar</b>.'},
+  {id:8,tag:'kavram',yl:1,p:'TMS 1\'e göre giderlerini fonksiyon esasına göre sunan bir işletme hangi ek bilgiyi vermek zorundadır?',opts:['Hiçbir ek bilgi gerekmez','Amortisman ve itfa payları ile çalışanlara sağlanan faydalar dahil giderlerin niteliğine ilişkin bilgi','Yalnızca vergi gideri','Satışların coğrafi dağılımı'],correct:1,hint:'Fonksiyon esasında giderlerin türü görünmez.',sol:'Giderlerin <b>niteliğine</b> ilişkin ek bilgi verilir (amortisman, itfa payları, çalışanlara sağlanan faydalar).'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary">
+  <li>6 grubu gelir tablosunun satırlarını izler; 61, 62, 63, 65, 66 ve 68 grupları eksi (−) niteliktedir.</li>
+  <li>7/A giderleri fonksiyona, 7/B çeşide göre izler; dönem sonunda iki yol da aynı 63 ve 66 tutarlarına ulaşır.</li>
+  <li>7/A'da her gider hesabının yansıtma hesabı vardır; 7/B'de bütün çeşitler için 798 kullanılır.</li>
+  <li>Gelir tablosu basamaklıdır: net satış → brüt satış kârı → faaliyet kârı → olağan kâr → dönem kârı.</li></ul>
+  <p class="lmeta">İzlence: Hafta 8 (gelir hesapları), 9 (gider hesapları), 10–11 (7/A ve 7/B) · ÖÇ4, ÖÇ5, ÖÇ6.</p>`}
+]},
+
+kapanis:{title:'Dönem sonu kapanış kayıtları ve mali tablolar',sure:'50 dk',steps:[
+ {k:'a',type:'anlatim',title:'Dönem sonu işlemlerinin sırası',html:()=>`
+  <ol><li><b>Envanter ve değerleme:</b> sayım, satılan malın maliyeti, amortisman, reeskont, şüpheli alacak karşılıkları, kur değerlemesi.</li>
+  <li><b>Dönemsellik kayıtları:</b> gelecek dönemlere ait giderler (180, 280) ve gelirler (380, 480); gider ve gelir tahakkukları (381, 181).</li>
+  <li><b>Yansıtma kayıtları:</b> 7 grubu hesaplar 6 grubuna aktarılır ve kapatılır.</li>
+  <li><b>Gelir tablosu hesaplarının kapatılması:</b> gelirler 690'ın alacağına, gider ve indirimler 690'ın borcuna aktarılır.</li>
+  <li><b>Vergi karşılığı:</b> 691 borç, 370 alacak. Yıl içinde ödenen geçici vergiler (193) bilançoda gösterim için 371'e aktarılır.</li>
+  <li><b>Net kârın bulunması:</b> 690 ve 691 bakiyeleri 692'ye aktarılır; 692'nin bakiyesi dönem net kârı olarak 590'a (zarar ise 591'e) aktarılır.</li>
+  <li><b>Kesin mizan, bilanço ve gelir tablosu</b> hazırlanır; bilanço hesapları <b>kapanış kaydıyla</b> kapatılır. Yeni yılın ilk günü <b>açılış kaydı</b> yapılır ve 590 genel kurul kararıyla dağıtılana kadar 570'e devredilir.</li></ol>
+  <div class="note">Kurumlar vergisi oranı örneklerde %25 alınmıştır. Gerçek uygulamada vergi matrahı, ticari kâra kanunen kabul edilmeyen giderler eklenip istisnalar düşülerek bulunur; oran da sektöre ve döneme göre değişebilir.</div>
+  <div class="note yl yl-only"><b>TMS 12 Gelir Vergileri</b>, ticari kâr ile vergi matrahı arasındaki <b>geçici farklar</b> için ertelenmiş vergi ayrılmasını ister. Örneğin VUK'ta azalan bakiyeler, TFRS tablolarında doğrusal amortisman kullanılıyorsa aradaki fark ileride tersine döner ve ertelenmiş vergi yükümlülüğü doğurur. Gelir tablosundaki vergi gideri = cari vergi + ertelenmiş vergi.</div>`},
+ {k:'o',type:'ornek',title:'Defne Ticaret\'in 2026 kapanışı',html:()=>{const R=ORN_KAP;return `
+  <p><b>Soru.</b> 2026 kesin mizanında gelir hesapları: 600 Yurt İçi Satışlar 1.500.000, 642 Faiz Gelirleri 25.000, 679 Diğer Olağan Dışı Gelir ve Kârlar 15.000. Gider ve indirim hesapları: 610 40.000, 621 820.000, 631 180.000, 632 150.000, 660 60.000, 689 5.000. Yıl içinde 50.000 TL geçici vergi ödenmiş. Kurumlar vergisi %25. Kapanış kayıtlarını yapın.</p>
+  <p>Gelirler ${nf(R.G)} TL, giderler ${nf(R.H)} TL → <b>dönem kârı ${nf(R.K)} TL</b>. Vergi karşılığı ${nf(R.K)} × %25 = <b>${nf(R.V)} TL</b>. Dönem net kârı <b>${nf(R.NK)} TL</b>.</p>
+  ${jt(R.s.map(x=>x[1]))}
+  <p>Beyanname döneminde ödenecek vergi: ${nf(R.V)} − ${nf(R.M)} = ${nf(R.V-R.M)} TL.</p>`;}},
+ {k:'k1',type:'kesif',core:true,title:'Kapanış adım adım',mount:K_kapanis},
+ {k:'k2',type:'kesif',core:true,title:'Mizandan bilanço ve gelir tablosuna',mount:K_sinif},
+ {k:'t',type:'turetim',title:'Gelir tablosu hesapları neden kapatılır?',html:()=>`
+  <p>Gelir ve gider hesapları yalnızca bir dönemin akışını ölçen <b>geçici hesaplardır</b>; her yıl sıfırdan başlamalıdır. Kapanışta bütün bakiyeleri tek bir hesapta (690) toplanır. 690'ın alacak bakiyesi dönem kârını gösterir:</p>
+  <div class="eq">690 bakiyesi = Σ gelirler − Σ (gider ve indirimler) = Dönem kârı</div>
+  <p>Vergi karşılığı ayrı bir hesapta (691) izlendiği için gelir tablosunda "vergi öncesi kâr" ve "net kâr" ayrı satırlarda görünür. 692 bu ikisini birleştirir ve net kârı bilançoya, <b>590 Dönem Net Kârı</b>'na taşır. Böylece Muhasebe I'deki denklem kapanır: dönem kârı özkaynakları artırır.</p>
+  <p>Bilanço hesapları ise <b>kalıcı hesaplardır</b>; bakiyeleri yeni yıla devreder. Kapanış kaydı defterleri yıl sonunda kapatmak, açılış kaydı aynı bakiyeleri yeni yıla taşımak için yapılır.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'kayit',p:'Dönem sonunda 600 Yurt İçi Satışlar hesabının 1.200.000 TL ve 642 Faiz Gelirleri hesabının 30.000 TL alacak bakiyesi vardır. Bu hesapları kapatın.',entry:[B(600,1200000),B(642,30000),A(690,1230000)],hint:'Alacak bakiyeli hesap, borçlandırılarak kapatılır.',sol:''},
+  {id:2,tag:'hesap',p:'Dönem kârı 400.000 TL, kurumlar vergisi oranı %25 ise vergi karşılığı kaç TL\'dir? (Matrah = ticari kâr)',ans:100000,abs:1,unit:'TL',hint:'Kâr × oran.',sol:'400.000 × 0,25 = <b>100.000 TL</b>.'},
+  {id:3,tag:'kayit',p:'Önceki sorudaki vergi karşılığını kaydedin.',entry:[B(691,100000),A(370,100000)],hint:'Gelir tablosundaki vergi hesabı (691) borç, bilançodaki yükümlülük hesabı alacak.',sol:''},
+  {id:4,tag:'kayit',p:'692 hesabında kalan 300.000 TL dönem net kârını ilgili özkaynak hesabına aktarın.',entry:[B(692,300000),A(590,300000)],hint:'Net kâr bilançoda 59 grubunda yer alır.',sol:''},
+  {id:5,tag:'kayit',p:'Yönetim ofisinin 20.000 TL tutarındaki Aralık kirası henüz ödenmedi (7/A). Dönem sonu kaydını yapın.',entry:[B(770,20000),A(381,20000)],hint:'Bu döneme ait ama ödenmemiş bir gider.',sol:''},
+  {id:6,tag:'kayit',p:'1 Ekim\'de 12 aylık iş yeri sigortası için 24.000 TL peşin ödenmiş ve tamamı 180 hesabına alınmıştı. 31 Aralık\'ta bu döneme düşen kısmı yönetim giderine aktarın.',entry:[B(770,6000),A(180,6000)],hint:'Ekim–Aralık: 3 ay.',sol:'24.000 × 3/12 = 6.000 TL bu yılın gideridir; kalan 18.000 TL 180\'de kalır.'},
+  {id:7,tag:'kavram',p:'Kapanış kaydında hangi hesaplar <b>alacaklandırılır</b>?',opts:['Alacak bakiyeli hesaplar','Borç bakiyeli hesaplar','Yalnızca gelir hesapları','Yalnızca özkaynak hesapları'],correct:1,hint:'Bir hesabı kapatmak için bakiyesinin karşı tarafına yazılır.',sol:'<b>Borç bakiyeli</b> hesaplar (aktifler ve düzenleyici pasifler) alacaklandırılarak kapatılır.'},
+  {id:8,tag:'kavram',yl:1,p:'VUK\'ta azalan bakiyeler, TFRS tablolarında doğrusal amortisman kullanan bir işletmede ilk yıllarda ne oluşur?',opts:['Ertelenmiş vergi varlığı','Ertelenmiş vergi yükümlülüğü','Kalıcı fark; ertelenmiş vergi doğmaz','Cari vergi iadesi'],correct:1,hint:'Vergi matrahı ilk yıllarda ticari kârdan düşük; fark ileride tersine dönecek.',sol:'Vergi önce düşük ödenir, ileride yüksek ödenecektir → <b>ertelenmiş vergi yükümlülüğü</b>.'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary">
+  <li>Dönem sonu sırası: envanter ve değerleme → dönemsellik → yansıtma → 690 → vergi → 692 → 590 → tablolar → kapanış.</li>
+  <li>690'ın bakiyesi dönem kârıdır; vergi 691'de izlenir, net kâr 692 aracılığıyla 590'a aktarılır.</li>
+  <li>Gelir tablosu hesapları geçici, bilanço hesapları kalıcıdır; kapanış ve açılış kayıtları dönemleri birbirine bağlar.</li>
+  <li>Bilançoda düzenleyici hesaplar bağlı oldukları bölümde eksi tutarla gösterilir.</li></ul>
+  <p class="lmeta">İzlence: Hafta 12 (kapanış kayıtları), 13 (bilanço ve gelir tablosu) · ÖÇ5–ÖÇ8.</p>`}
+]}
+};
+
+const CATALOG=[
+ {u:'A. Yabancı kaynaklar ve özkaynaklar',items:[
+  {id:'tekrar',h:'1',oc:'—',t:'Muhasebe I kayıt kurallarının tekrarı (Muhasebe I Simülatörü\'nün 2. ve 5. dersleri)'},
+  {id:'mali',h:'2–3',oc:'ÖÇ1',t:'Mali borçlar: banka kredileri ve faiz tahakkuku'},
+  {id:'ticari',h:'4–6',oc:'ÖÇ2',t:'Ticari borçlar, borç senetleri reeskontu ve alınan avanslar'},
+  {id:'ozkaynak',h:'7',oc:'ÖÇ3',t:'Özkaynak hesapları (sermaye, yedekler, geçmiş yıl kâr ve zararları)'}]},
+ {u:'B. Gelir, gider ve maliyet',items:[
+  {id:'gelirgider',h:'8–11',oc:'ÖÇ4–ÖÇ6',t:'Gelir ve gider hesapları; 7/A ve 7/B seçenekleri'},
+  {id:'donemsellik',h:'12',oc:'ÖÇ5, ÖÇ6',gap:1,gapt:'ÖÇ5 ve ÖÇ6 dönem sonu kayıtlarını içeriyor; dönemsellik (180, 181, 380, 381) için ayrı hafta yok',t:'Dönemsellik: gelecek dönemlere ait gelir ve giderler, tahakkuklar'}]},
+ {u:'C. Dönem sonu ve finansal tablolar',items:[
+  {id:'kapanis',h:'12–13',oc:'ÖÇ5–ÖÇ8',t:'Dönem sonu kapanış kayıtları ve mali tablolar'},
+  {id:'monografi',h:'14',oc:'ÖÇ7, ÖÇ8',t:'Muhasebe monografisi: bir yılın bütün kayıtları'}]}
+];
+
+/* ============================================================
+   Muhasebe II — ek dersler (sürüm 1.0, 28.11.2026)
+   Kayıt kurallarının tekrarı · Özkaynaklar · Dönemsellik · Monografi
+   ============================================================ */
+CONFIG.version='1.0, 28.11.2026';
+
+/* Bilanço ve gelir tablosunu bakiyelerden kurar (TDHP sınıf ve grup sırasıyla) */
+function tablolar(m){
+  const codes=Object.keys(m).filter(c=>Math.abs(net(m,c))>0.005).sort();
+  const sec=(pred,sign)=>{let s='',tot=0,lastG='';codes.filter(pred).forEach(c=>{const v=sign*net(m,c),g=c.slice(0,2);if(g!==lastG){s+=`<tr class="sub"><td colspan="2">${GRP[g]||CLS[c[0]]}</td></tr>`;lastG=g;}s+=`<tr><td>${an(c)}</td><td>${nf(v,v%1?2:0)}</td></tr>`;tot+=v;});return {s,tot};};
+  const A1=sec(c=>c[0]==='1',1),A2=sec(c=>c[0]==='2',1),P3=sec(c=>c[0]==='3',-1),P4=sec(c=>c[0]==='4',-1),P5=sec(c=>c[0]==='5',-1);
+  const hd=(t,x)=>x.s?`<tr><td colspan="2"><b>${t}</b></td></tr>${x.s}<tr><td><b>${t} toplamı</b></td><td><b>${nf(x.tot,2)}</b></td></tr>`:'';
+  const A=A1.tot+A2.tot,P=P3.tot+P4.tot+P5.tot;
+  return {A,P,html:`<div class="fs"><table class="tbl"><thead><tr><th>AKTİF</th><th>TL</th></tr></thead><tbody>${hd('Dönen varlıklar',A1)}${hd('Duran varlıklar',A2)}<tr class="tot"><td>Aktif toplamı</td><td>${nf(A,2)}</td></tr></tbody></table>
+   <table class="tbl"><thead><tr><th>PASİF</th><th>TL</th></tr></thead><tbody>${hd('Kısa vadeli yabancı kaynaklar',P3)}${hd('Uzun vadeli yabancı kaynaklar',P4)}${hd('Özkaynaklar',P5)}<tr class="tot"><td>Pasif toplamı</td><td>${nf(P,2)}</td></tr></tbody></table></div>`};
+}
+
+/* ---------- DERS 1 — Muhasebe I kayıt kurallarının tekrarı ---------- */
+const BAKIYE_HES=['100','103','120','129','153','191','257','300','320','322','391','500','501','580','600','610','621','647','770','771'];
+function K_bakiye(root,api){
+  const L=kl(root,'Muhasebe II\'nin konuları kaynak, gelir ve gider hesaplarıdır. Başlamadan önce yirmi hesabın <b>normal bakiye yönünü</b> seçin. Adında "(−)" geçen düzenleyici hesaplara ve "yansıtma" hesaplarına dikkat edin.');
+  const ck=checklist(L.task,[{id:'a',t:'Yirmi hesabın hepsini doğru işaretleyin.'}],api);
+  const box=el('div','');L.ctl.appendChild(box);const sec={};
+  box.innerHTML=BAKIYE_HES.map(c=>`<div class="cls-row" data-c="${c}"><span>${an(c)}</span><select class="sel" aria-label="${c}"><option value="">Seçin…</option><option value="B">Borç bakiyesi</option><option value="A">Alacak bakiyesi</option></select></div>`).join('');
+  const ro=readouts(L.ro,[['n','Doğru'],['h','Son seçim']]);
+  box.querySelectorAll('select').forEach(s=>s.addEventListener('change',()=>{const c=s.closest('.cls-row').dataset.c;sec[c]=s.value||null;let ok=0;
+    box.querySelectorAll('.cls-row').forEach(r=>{const d=r.dataset.c,v=sec[d];r.classList.toggle('ok',!!v&&v===TDHP[d].b);r.classList.toggle('bad',!!v&&v!==TDHP[d].b);if(v===TDHP[d].b)ok++;});
+    ro.set('n',`${ok} / ${BAKIYE_HES.length}`);const k=c[0],tur=(k==='1'||k==='2')?'aktif':(k==='3'||k==='4'||k==='5')?'pasif':(k==='6'?'gelir tablosu':'maliyet');
+    ro.set('h',sec[c]===TDHP[c].b?`<span class="flag good">✓ ${c}</span>`:`<span class="flag bad">${c}: ${tur} hesabı${/\(−\)/.test(TDHP[c].n)?', düzenleyici':''}${/Yansıtma/.test(TDHP[c].n)?', yansıtma':''}</span>`);
+    if(ok===BAKIYE_HES.length)ck.mark('a');}));
+  ro.set('n','0 / '+BAKIYE_HES.length);ro.set('h','—');
+}
+
+/* ---------- DERS 4 — Özkaynaklar ---------- */
+const OZK_AC=J('1.1.2027 açılış: özkaynak kalemleri (karşı taraf: net varlıklar, 102 ile temsil edildi)',[B(102,1430000),A(500,1000000),A(520,50000),A(540,80000),A(570,0.01),A(590,300000)].filter(x=>x[1]+x[2]>0.5));
+const TX_OZK=[
+ {t:'Mart 2027: Genel kurul 2026 kârının (590: 300.000 TL) 15.000 TL\'sini yasal yedeğe, 100.000 TL\'sini ortaklara ayırdı; kalanı geçmiş yıllar kârında bıraktı.',e:J('2026 kârının dağıtımı',[B(590,300000),A(540,15000),A(331,100000),A(570,185000)]),ask:{q:'Dağıtılmayan kâr nereye gider?',opts:['570 Geçmiş Yıllar Kârları','542 Olağanüstü Yedekler','500 Sermaye'],correct:0}},
+ {t:'Nisan 2027: Geçmiş yıllar kârından 150.000 TL ile sermaye artırıldı (bedelsiz).',e:J('İç kaynaklardan sermaye artırımı',[B(570,150000),A(500,150000)]),ask:{q:'Özkaynak toplamı?',opts:['Artar','Azalır','Değişmez'],correct:2}},
+ {t:'Haziran 2027: 200.000 TL nakdi sermaye artırımı taahhüt edildi; yarısı ödendi.',e:J('Bedelli artırım: taahhüt ve kısmi ödeme',[B(501,100000),B(102,100000),A(500,200000)]),ask:{q:'Ödenmeyen kısım?',opts:['501 Ödenmemiş Sermaye','131 Ortaklardan Alacaklar','331 Ortaklara Borçlar'],correct:0}},
+ {t:'31.12.2027: Yıl 120.000 TL dönem net zararıyla kapandı (692 hesabından).',e:J('Dönem net zararı',[B(591,120000),A(692,120000)]),ask:{q:'Zarar hangi hesapta izlenir?',opts:['590','591 Dönem Net Zararı (−)','580'],correct:1}},
+ {t:'1.1.2028: 2027 zararı geçmiş yıllar zararına aktarıldı.',e:J('Zararın devri',[B(580,120000),A(591,120000)]),ask:{q:'Hangi hesap borçlanır?',opts:['580 Geçmiş Yıllar Zararları (−)','591','570'],correct:0}}
+];
+EX('ozkaynak',[OZK_AC].concat(TX_OZK.map(x=>x.e)));
+function K_ozk(root,api){
+  const L=kl(root,'Özkaynak kalemlerinin iki yıl boyunca nasıl değiştiğini izleyin. Sütun, özkaynağın bileşimini; tablo, her işlemden sonraki bakiyeleri gösterir. Düzenleyici kalemler (501, 580, 591) özkaynağı azaltır.');
+  const ck=checklist(L.task,[{id:'a',t:'Beş işlemin hepsini kaydedin.'},{id:'b',t:'En az <b>dört</b> tahmini doğru yapın.'}],api);
+  legend(L.leg,[['box f1','Sermaye (500 − 501)'],['box f4','Sermaye ve kâr yedekleri (520, 540)'],['box f3','Geçmiş yıl ve dönem kârları (570, 590)'],['box fg','Zararlar (580, 591) — düşülür']]);
+  const ro=readouts(L.ro,[['t','Özkaynak toplamı'],['s','Ödenmiş sermaye']]);
+  function draw(ents,i){
+    const all=[OZK_AC].concat(ents),m=balances(all),g=c=>-net(m,c);
+    const ser=g('500')+g('501'),yed=g('520')+g('540'),kar=g('570')+g('590'),zar=-(g('580')+g('591'));
+    stackChart(L.ch,[{name:'Özkaynak bileşimi',items:[['Sermaye',ser,'f1'],['Yedekler',yed,'f4'],['Kârlar',kar,'f3']]},{name:'Düşülen zararlar',items:[['Zarar',zar,'fg']]}],{minMax:1600000,aria:'Özkaynak bileşimi',h:280});
+    ro.set('t',tl(ser+yed+kar-zar));ro.set('s',tl(ser));
+    L.x.innerHTML=`<table class="tbl"><thead><tr><th>Hesap</th><th>Bakiye</th></tr></thead><tbody>${['500','501','520','540','570','580','590','591'].map(c=>`<tr><td>${an(c)}</td><td>${nf(g(c))}</td></tr>`).join('')}</tbody></table>`+(ents.length?jt(ents):'');
+  }
+  txList(L.ctl,TX_OZK,(ents,i,ok,res)=>{draw(ents,i);if(ents.length===TX_OZK.length){ck.mark('a');if(res.filter(Boolean).length>=4)ck.mark('b');}});
+  draw([],-1);
+}
+
+/* ---------- DERS 6 — Dönemsellik ---------- */
+const DTUR={pg:['Peşin ödenen gider','180','280'],pt:['Peşin tahsil edilen gelir','380','480'],tg:['Tahakkuk eden gider (sonra ödenecek)','381','481'],tt:['Tahakkuk eden gelir (sonra tahsil edilecek)','181','—']};
+function donemPay(T,bas,sure){ /* bas: 2026'nın ayı (1–12), sure: ay; yıllara düşen tutarlar */
+  const ay=T/sure,y=[0,0,0,0];for(let k=0;k<sure;k++){const yi=Math.floor((bas-1+k)/12);if(yi<4)y[yi]+=ay;}return y;
+}
+function K_donem(root,api){
+  const L=kl(root,'Bir sözleşmenin bedeli tek seferde ödeniyor ya da tahsil ediliyor ama hizmet birden çok aya yayılıyor. Dönemsellik gereği tutar <b>ait olduğu yıllara</b> dağıtılır; 31.12.2026 bilançosunda kalan tutar, gelecek 12 ay içine düşüyorsa 18/38, daha sonrasına düşüyorsa 28/48 grubunda gösterilir.');
+  const ck=checklist(L.task,[{id:'a',t:'Dört işlem türünün hepsini deneyin.'},{id:'b',t:'Kalan tutarın bir kısmının <b>uzun vadeye</b> (280 ya da 480) düştüğü bir durum oluşturun.'}],api);
+  let tur='pg';const seen=new Set(['pg']);
+  seg(L.ctl,'İşlem',Object.entries(DTUR).map(([k,v])=>[k,v[0]]),'pg',v=>{tur=v;seen.add(v);if(seen.size===4)ck.mark('a');draw(1);});
+  const T=sl(L.ctl,{label:'Sözleşme tutarı',min:12000,max:720000,step:12000,value:120000,fmt:v=>tl(v)});
+  const bas=sl(L.ctl,{label:'Başlangıç (2026)',min:1,max:12,step:1,value:10,fmt:v=>'1 '+['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'][v-1]});
+  const su=sl(L.ctl,{label:'Süre',min:1,max:36,step:1,value:12,fmt:v=>v+' ay'});
+  legend(L.leg,[['box f1','O yılın gelir ya da gideri']]);
+  const ro=readouts(L.ro,[['b','2026 payı'],['k','31.12.2026: kısa vadeli'],['u','31.12.2026: uzun vadeli']]);
+  function draw(u){
+    let su_=su.v;if(tur==='tt'||tur==='tg'){/* tahakkuk türlerinde ödeme vade sonunda; 2026'ya düşen kısım tahakkuk eder */}
+    const y=donemPay(T.v,bas.v,su_),k=y[1],uz=y[2]+y[3],[ad,kh,uh]=DTUR[tur];
+    groupChart(L.ch,['2026','2027','2028','2029'],[{n:'Yıla düşen tutar',cls:'f1',v:y}],{aria:'Tutarın yıllara dağılımı',h:260});
+    ro.set('b',tl(y[0]));
+    const gel=tur==='pt'||tur==='tt',hes=gel?'649':'770',e=[];
+    if(tur==='pg'){e.push(J('Peşin ödeme',[B(180,k),...(uz>0.5?[B(280,uz)]:[]),B(770,y[0]),A(102,T.v)].filter(x=>x[1]+x[2]>0.5)));ro.set('k',tl(k)+' (180)');ro.set('u',uz>0.5?tl(uz)+' (280)':'—');}
+    else if(tur==='pt'){e.push(J('Peşin tahsilat',[B(102,T.v),A(649,y[0]),A(380,k),...(uz>0.5?[A(480,uz)]:[])].filter(x=>x[2]>0.5||x[1]>0.5)));ro.set('k',tl(k)+' (380)');ro.set('u',uz>0.5?tl(uz)+' (480)':'—');}
+    else if(tur==='tg'){if(y[0]>0.5)e.push(J('31.12.2026: 2026 payının tahakkuku',[B(770,y[0]),A(su_>12&&bas.v-1+su_>24?481:381,y[0])]));ro.set('k',y[0]>0.5?tl(y[0])+' (381)':'—');ro.set('u','—');}
+    else{if(y[0]>0.5)e.push(J('31.12.2026: 2026 payının tahakkuku',[B(181,y[0]),A(649,y[0])]));ro.set('k',y[0]>0.5?tl(y[0])+' (181)':'—');ro.set('u','—');}
+    L.x.innerHTML=(e.length?'<h3>Kayıt'+(tur==='pg'||tur==='pt'?' (ödeme anında doğrudan dağıtılmış)':'')+'</h3>'+jt(e,{num:false}):'<p class="lmeta">Sözleşme 2026\'da başlamıyor; 2026\'ya düşen tutar yok.</p>')+
+      `<p class="lmeta">${tur==='pg'||tur==='pt'?'Uygulamada ödeme anında tamamı 180/380\'e alınıp ay sonlarında gider ya da gelire aktarılabilir; sonuç aynıdır. Her yılbaşında 280/480\'in 12 ay içine düşen kısmı 180/380\'e aktarılır.':'Tahakkuk eden kalemler ödeme ya da tahsil gününde kapatılır; o güne kadar sonraki yılın payı da aynı şekilde tahakkuk ettirilir.'}</p>`;
+    if(u&&uz>0.5&&(tur==='pg'||tur==='pt'))ck.mark('b');
+  }
+  [T,bas,su].forEach(x=>x.on(()=>draw(1)));draw(0);
+}
+
+/* ---------- DERS 8 — Monografi ---------- */
+const MONO_AC=J('1.1.2027 açılış kaydı (Muhasebe I\'deki ilk yılın bilançosu; o yılın kârı 570\'e aktarılmış)',[B(102,560000),B(120,120000),B(153,140000),B(255,200000),A(257,40000),A(320,150000),A(500,600000),A(570,230000)]);
+const MONO_RS=r2(100000*.4*45/365),MONO_K=r2(1300000+MONO_RS-1216000),MONO_V=r2(MONO_K*.25);
+const TX_MONO=[
+ {t:'1 Temmuz: Bankadan 12 ay vadeli 300.000 TL kredi kullanıldı (%40, faiz vadede).',e:J('Kredi',[B(102,300000),A(300,300000)]),ask:{q:'Hangi hesap alacaklanır?',opts:['300 Banka Kredileri','400 Banka Kredileri','102 Bankalar'],correct:0}},
+ {t:'Yıl içinde 800.000 TL + %20 KDV mal veresiye alındı.',e:J('Alışlar',[B(153,800000),B(191,160000),A(320,960000)]),ask:{q:'KDV hangi hesaba?',opts:['153','191','391'],correct:1}},
+ {t:'Yıl içinde 1.300.000 TL + %20 KDV satış yapıldı; 1.200.000 TL bankaya tahsil edildi, kalanı alacak.',e:J('Satışlar',[B(102,1200000),B(120,360000),A(600,1300000),A(391,260000)]),ask:{q:'Alacak kalan tutar?',opts:['100.000','360.000','260.000'],correct:1}},
+ {t:'Alıcılardan 400.000 TL tahsil edildi.',e:J('Tahsilat',[B(102,400000),A(120,400000)]),ask:{q:'120\'nin yıl sonu bakiyesi?',opts:['80.000','360.000','120.000'],correct:0}},
+ {t:'Satıcılara 900.000 TL ödendi.',e:J('Satıcılara ödeme',[B(320,900000),A(102,900000)]),ask:{q:'İşlem türü?',opts:['Varlık ↑ · Kaynak ↑','Varlık ↓ · Kaynak ↓','Kaynak ↑ · Kaynak ↓'],correct:1}},
+ {t:'15 Kasım: Satıcıya 15.2.2028 vadeli 100.000 TL\'lik senet verildi.',e:J('Borç senedi',[B(320,100000),A(321,100000)]),ask:{q:'Hangi hesap alacaklanır?',opts:['320','321','103'],correct:1}},
+ {t:'Yıl içinde yönetim giderleri 240.000 TL (60.000 TL\'si %20 KDV\'li kira) ve satış giderleri 120.000 TL bankadan ödendi.',e:J('Faaliyet giderleri (7/A)',[B(770,240000),B(760,120000),B(191,12000),A(102,372000)]),ask:{q:'Satış giderleri hangi hesaba?',opts:['770','760','631'],correct:1}},
+ {t:'KDV mahsubu yapıldı ve ödenecek KDV ödendi (yıllık toplu gösterim).',e:J('KDV mahsubu ve ödemesi',[B(391,260000),A(191,172000),A(102,88000)]),ask:{q:'Ödenen KDV?',opts:['88.000','260.000','172.000'],correct:0}},
+ {t:'1 Ekim: 12 aylık işyeri sigortası 24.000 TL peşin ödendi.',e:J('Peşin sigorta',[B(180,24000),A(102,24000)]),ask:{q:'Hangi hesap borçlanır?',opts:['770','180','280'],correct:1}},
+ {t:'31 Aralık: Sayımda 190.000 TL\'lik mal kaldı; satılan malın maliyeti kaydedildi.',e:J('SMM',[B(621,750000),A(153,750000)]),ask:{q:'SMM?',opts:['750.000','800.000','610.000'],correct:0}},
+ {t:'31 Aralık: Demirbaş amortismanı (normal, 5 yıl).',e:J('Amortisman',[B(770,40000),A(257,40000)]),ask:{q:'Birikmiş amortisman yıl sonu?',opts:['40.000','80.000','200.000'],correct:1}},
+ {t:'31 Aralık: Sigortanın Ekim–Aralık payı gidere aktarıldı.',e:J('Dönemsellik: sigorta',[B(770,6000),A(180,6000)]),ask:{q:'Aktarılan tutar?',opts:['6.000','18.000','24.000'],correct:0}},
+ {t:'31 Aralık: Kredinin 6 aylık faizi tahakkuk ettirildi.',e:J('Faiz tahakkuku',[B(780,60000),A(381,60000)]),ask:{q:'Tutar?',opts:['60.000','120.000','30.000'],correct:0}},
+ {t:`31 Aralık: Borç senedi için %40 ile dış iskonto reeskontu (45 gün): ${nf(MONO_RS,2)} TL.`,e:J('Borç senedi reeskontu',[B(322,MONO_RS),A(647,MONO_RS)]),ask:{q:'Hangi hesap alacaklanır?',opts:['657','647','321'],correct:1}},
+ {t:'Yansıtma kayıtları: 770, 760 ve 780 gelir tablosu hesaplarına aktarıldı.',e:J('Yansıtma',[B(632,286000),B(631,120000),B(660,60000),A(771,286000),A(761,120000),A(781,60000)]),ask:{q:'780 hangi hesaba yansır?',opts:['660','661','632'],correct:0}},
+ {t:'Yansıtma hesapları ile gider hesapları birbirine kapatıldı.',e:J('7 grubunun kapatılması',[B(771,286000),B(761,120000),B(781,60000),A(770,286000),A(760,120000),A(780,60000)]),ask:{q:'Sonuçta 7 grubu?',opts:['Sıfırlanır','Borç bakiyesi kalır','Alacak bakiyesi kalır'],correct:0}},
+ {t:'Gelir tablosu hesapları 690\'a devredildi.',e:J('690\'a devir',[B(600,1300000),B(647,MONO_RS),A(621,750000),A(631,120000),A(632,286000),A(660,60000),A(690,MONO_K)]),ask:{q:'690 alacak bakiyesi?',opts:['Dönem kârı','Dönem zararı','Vergi'],correct:0}},
+ {t:`Kurumlar vergisi karşılığı (%25): ${nf(MONO_V,2)} TL.`,e:J('Vergi karşılığı',[B(691,MONO_V),A(370,MONO_V)]),ask:{q:'Hangi hesap alacaklanır?',opts:['360','370','691'],correct:1}},
+ {t:'690 ve 691 692\'ye, net kâr 590\'a aktarıldı.',e:J('Net kâr',[B(690,MONO_K),A(691,MONO_V),A(590,r2(MONO_K-MONO_V))]),ask:{q:'Net kâr hangi hesapta?',opts:['570','590','692'],correct:1}}
+];
+EX('monografi',[MONO_AC].concat(TX_MONO.map(x=>x.e)));
+function K_mono(root,api){
+  const L=kl(root,'Defne Ticaret\'in ikinci yılı: açılış bilançosundan başlayarak yıl içi işlemleri, dönem sonu envanter ve dönemsellik kayıtlarını, yansıtmaları ve kapanışı sırayla yapın. Her kayıttan sonra mizan ve bilanço güncellenir; gelir ve gider hesapları kapatılana kadar bilançodaki iki toplam, dönem sonucu kadar farklı görünür. (692 hesabı son adımda gösterim kolaylığı için atlanmıştır.)');
+  const ck=checklist(L.task,[{id:'a',t:'On dokuz kaydın hepsini yapın ve bilançonun denk olduğunu görün.'},{id:'b',t:'En az <b>on beş</b> tahmini doğru yapın.'}],api);
+  const ro=readouts(L.ro,[['A','Aktif toplamı'],['P','Pasif toplamı'],['k','Dönem net kârı (590)']]);
+  function draw(ents,i){
+    const all=[MONO_AC].concat(ents),m=balances(all),t=tablolar(m);
+    L.ch.innerHTML=t.html;ro.set('A',tl(t.A,2));ro.set('P',tl(t.P,2));ro.set('k',tl(-net(m,'590'),2));
+    L.x.innerHTML=`<details class="dt"><summary>Mizan</summary><div class="dtw">${mizan(all).html}</div></details>`+(ents.length?'<h3>Son kayıt</h3>'+jt([ents[ents.length-1]],{start:ents.length+1}):'<h3>Açılış</h3>'+jt([MONO_AC]));
+  }
+  txList(L.ctl,TX_MONO,(ents,i,ok,res)=>{draw(ents,i);if(ents.length===TX_MONO.length){ck.mark('a');if(res.filter(Boolean).length>=15)ck.mark('b');}});
+  draw([],-1);
+}
+
+/* ============================================================
+   Ek ders tanımları
+   ============================================================ */
+Object.assign(LESSONS,{
+tekrar:{title:'Muhasebe I kayıt kurallarının tekrarı',sure:'25 dk',steps:[
+ {k:'a',type:'anlatim',title:'Muhasebe I\'den Muhasebe II\'ye',html:()=>`
+  <p>Muhasebe I'de varlık hesaplarını (1 ve 2. sınıflar) ve temel kayıt düzenini işlediniz. Muhasebe II kaynak hesapları (3, 4, 5), gelir tablosu hesapları (6) ve maliyet hesapları (7) ile dönem sonu kapanışını kapsar.</p>
+  <div class="eq">Varlıklar + Giderler = Yabancı kaynaklar + Özkaynaklar + Gelirler</div>
+  <p>Sol taraftakiler borçta, sağ taraftakiler alacakta artar. Düzenleyici (−) hesaplar bağlı oldukları hesabın tersine çalışır. Yansıtma hesapları (711, 721 … 781, 798) bağlı oldukları gider hesabını dönem sonunda gelir tablosuna taşımak için kullanılır ve alacak bakiyesi verir.</p>
+  <p>Muhasebe I Simülatörü'nün 2. ve 5. dersleri bu konuları etkileşimli olarak işler.</p>`},
+ {k:'o',type:'ornek',title:'Bir işlem, dört soru',html:()=>`
+  <p><b>İşlem.</b> 50.000 TL + %20 KDV mal veresiye alındı.</p>
+  <ol><li>Hangi hesaplar etkilenir? 153, 191, 320.</li><li>Her biri artıyor mu, azalıyor mu? Üçü de artıyor.</li><li>Hangi tarafa? 153 ve 191 aktif: borç; 320 pasif: alacak.</li><li>Denklik: 50.000 + 10.000 = 60.000.</li></ol>
+  ${jt(EX('tekrar-ornek',[J('Kredili mal alışı',[B(153,50000),B(191,10000),A(320,60000)])]),{num:false})}`},
+ {k:'k1',type:'kesif',core:true,title:'Hangi hesap hangi bakiyeyi verir?',mount:K_bakiye},
+ {k:'t',type:'turetim',title:'Dört soruluk kayıt yöntemi',html:()=>`
+  <p>Her işlemde aynı dört soruyu sorun: (1) Hangi hesaplar etkileniyor? (2) Her biri artıyor mu, azalıyor mu? (3) Hesabın türüne göre artış hangi tarafa yazılır? (4) Borç ve alacak toplamları eşit mi? Muhasebe II'deki daha karmaşık kayıtlar (reeskont, tahakkuk, kapanış) da bu dört sorunun tekrarından oluşur.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'kayit',p:'Satıcıya olan 30.000 TL borç bankadan ödendi.',entry:[B(320,30000),A(102,30000)],hint:'Borç azalır, banka azalır.',sol:''},
+  {id:2,tag:'kayit',p:'70.000 TL + %20 KDV mal satıldı; bedel tahsil edilmedi.',entry:[B(120,84000),A(600,70000),A(391,14000)],hint:'Satış KDV\'si hesaplanan KDV\'dir.',sol:''},
+  {id:3,tag:'kavram',p:'771 Genel Yönetim Giderleri Yansıtma hesabı hangi bakiyeyi verir?',opts:['Borç','Alacak','Bakiye vermez, hemen kapanır'],correct:1,hint:'770 borç bakiyesi verir; yansıtması tersidir.',sol:'<b>Alacak</b> bakiyesi; dönem sonunda 770 ile kapatılır.'},
+  {id:4,tag:'kavram',p:'Aşağıdakilerden hangisi pasif düzenleyici (borç bakiyeli) bir hesaptır?',opts:['257 Birikmiş Amortismanlar','501 Ödenmemiş Sermaye','129 Şüpheli Ticari Alacaklar Karşılığı','103 Verilen Çekler'],correct:1,hint:'Özkaynak sınıfında yer alır.',sol:'<b>501</b> özkaynağı düzenler ve borç bakiyesi verir. Diğerleri aktif düzenleyicidir (alacak bakiyeli).'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>Varlık ve gider hesapları borçta, kaynak ve gelir hesapları alacakta artar.</li><li>Düzenleyici ve yansıtma hesapları bağlı oldukları hesabın tersine çalışır.</li><li>Her kayıtta dört soru: hangi hesap, artış mı azalış mı, hangi taraf, denk mi?</li></ul>
+  <p class="lmeta">İzlence: Hafta 1 (Muhasebe I kayıt kurallarının tekrarı).</p>`}
+]},
+
+ozkaynak:{title:'Özkaynak hesapları',sure:'35 dk',steps:[
+ {k:'a',type:'anlatim',title:'5 sınıfı: özkaynaklar',html:()=>`
+  <table class="tbl sym"><thead><tr><th>Grup</th><th>Hesaplar</th></tr></thead><tbody>
+   <tr><td>50 Ödenmiş sermaye</td><td>500 Sermaye, 501 Ödenmemiş Sermaye (−), 502–503 Sermaye düzeltmesi olumlu / olumsuz farkları</td></tr>
+   <tr><td>52 Sermaye yedekleri</td><td>520 Hisse Senedi İhraç Primleri, 521 İptal Kârları, 522 MDV Yeniden Değerleme Artışları, 529</td></tr>
+   <tr><td>54 Kâr yedekleri</td><td>540 Yasal, 541 Statü, 542 Olağanüstü yedekler, 548 Diğer, 549 Özel fonlar</td></tr>
+   <tr><td>57 · 58</td><td>570 Geçmiş Yıllar Kârları · 580 Geçmiş Yıllar Zararları (−)</td></tr>
+   <tr><td>59 Dönem net kârı (zararı)</td><td>590 Dönem Net Kârı · 591 Dönem Net Zararı (−)</td></tr></tbody></table>
+  <p><b>Sermaye yedekleri</b> ortaklarla yapılan işlemlerden (ör. pay primleri) ya da yeniden değerlemelerden, <b>kâr yedekleri</b> ise dağıtılmayan kârlardan oluşur. Yeni yılın başında 590 ve 591 bakiyeleri sırasıyla 570 ve 580'e aktarılır; kâr, genel kurul kararıyla dağıtılır.</p>
+  <div class="note tr">Vergi Usul Kanunu'na göre enflasyon düzeltmesi yapıldığında özkaynak kalemlerinin düzeltme farkları 502/503 ve ilgili alt hesaplarda izlenir. Düzeltmenin hangi dönemlerde uygulanacağı kanunla belirlenir ve son yıllarda birkaç kez değişmiştir; güncel durumu kontrol edin.</div>
+  <div class="note yl yl-only"><b>TMS 1</b> özkaynak değişim tablosu ister: her kalem için dönem başı bakiye, dönem kârı veya zararı, diğer kapsamlı gelir, ortaklarla işlemler (sermaye artırımı, kâr payı) ve dönem sonu bakiye. Keşifteki tablo bunun basit bir biçimidir.</div>`},
+ {k:'o',type:'ornek',title:'Kârın yolculuğu: 590 → 570 → 500',html:()=>`
+  <p>2026 kârı 300.000 TL. Genel kurul 15.000 TL yasal yedek ayırıp 100.000 TL kâr payı dağıtıyor; kalan 185.000 TL 570'te kalıyor. Bir ay sonra 570'ten 150.000 TL ile sermaye artırılıyor.</p>${jt(TX_OZK.slice(0,2).map(x=>x.e))}
+  <p>Özkaynak toplamı ilk kayıtta 100.000 TL azalır (ortaklara borç doğar); ikinci kayıtta değişmez.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Özkaynağın iki yılı',mount:K_ozk},
+ {k:'t',type:'turetim',title:'Hangi işlem özkaynak toplamını değiştirir?',html:()=>`
+  <p>Özkaynak = Varlıklar − Yabancı kaynaklar olduğu için yalnızca <b>net varlığı değiştiren</b> işlemler toplamı değiştirir: dönem kârı veya zararı, ortakların koyduğu yeni sermaye, ortaklara kâr payı ya da sermaye iadesi. Bedelsiz artırım, yedek ayırma, 590'ın 570'e devri gibi işlemler yalnızca özkaynak kalemleri arasında yer değiştirmedir.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'kayit',p:'Yeni yılın ilk günü 590\'daki 250.000 TL dönem net kârı geçmiş yıllar kârına aktarıldı.',entry:[B(590,250000),A(570,250000)],hint:'590 kapanır.',sol:''},
+  {id:2,tag:'kayit',p:'Yeni yılın ilk günü 591\'deki 80.000 TL dönem net zararı geçmiş yıllar zararına aktarıldı.',entry:[B(580,80000),A(591,80000)],hint:'591 borç bakiyelidir; alacaklandırılarak kapanır.',sol:''},
+  {id:3,tag:'kayit',p:'Olağanüstü yedeklerden 100.000 TL ile sermaye artırıldı.',entry:[B(542,100000),A(500,100000)],hint:'İç kaynaktan artırım.',sol:''},
+  {id:4,tag:'kavram',p:'Aşağıdaki işlemlerden hangisi özkaynak <b>toplamını</b> değiştirmez?',opts:['Dönem net kârı','Ortaklara nakit kâr payı dağıtımı','Geçmiş yıllar kârından bedelsiz sermaye artırımı','Nakdi sermaye artırımının ödenmesi'],correct:2,hint:'Net varlık değişiyor mu?',sol:'<b>Bedelsiz artırım</b> yalnızca özkaynak içinde yer değiştirmedir.'},
+  {id:5,tag:'hesap',p:'500 Sermaye 1.000.000, 501 Ödenmemiş Sermaye 200.000, 540 80.000, 570 150.000, 580 60.000 TL. Özkaynak toplamı kaç TL\'dir?',ans:970000,abs:1,unit:'TL',hint:'Düzenleyici hesapları düşün.',sol:'1.000.000 − 200.000 + 80.000 + 150.000 − 60.000 = <b>970.000 TL</b>.'},
+  {id:6,tag:'kavram',yl:1,p:'TMS 1\'e göre ortaklara dağıtılan kâr payı hangi tabloda gösterilir?',opts:['Kâr veya zarar tablosunda gider olarak','Özkaynak değişim tablosunda ortaklarla işlemler arasında','Yalnızca dipnotta','Nakit akış tablosunda yalnızca'],correct:1,hint:'Kâr payı gider değildir.',sol:'<b>Özkaynak değişim tablosunda</b> (ödenen kısım ayrıca nakit akış tablosunda).'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>Özkaynak: ödenmiş sermaye, sermaye yedekleri, kâr yedekleri, geçmiş yıl kâr ve zararları, dönem net kârı veya zararı.</li><li>590/591 yeni yılın başında 570/580'e aktarılır; dağıtım genel kurul kararıyla yapılır.</li><li>Yalnızca net varlığı değiştiren işlemler özkaynak toplamını değiştirir.</li></ul>
+  <p class="lmeta">İzlence: Hafta 7 (özkaynak hesapları) · ÖÇ3.</p>`}
+]},
+
+donemsellik:{title:'Dönemsellik: gelecek dönemlere ait gelir ve giderler, tahakkuklar',sure:'35 dk',steps:[
+ {k:'a',type:'anlatim',title:'18, 28, 38 ve 48 grupları',html:()=>`
+  <table class="tbl sym"><thead><tr><th>Durum</th><th>12 ay içinde</th><th>12 aydan sonra</th></tr></thead><tbody>
+   <tr><td>Peşin ödenen gider</td><td>180 Gelecek Aylara Ait Giderler</td><td>280 Gelecek Yıllara Ait Giderler</td></tr>
+   <tr><td>Henüz tahsil edilmemiş gelir</td><td>181 Gelir Tahakkukları</td><td>281 Gelir Tahakkukları</td></tr>
+   <tr><td>Peşin tahsil edilen gelir</td><td>380 Gelecek Aylara Ait Gelirler</td><td>480 Gelecek Yıllara Ait Gelirler</td></tr>
+   <tr><td>Henüz ödenmemiş gider</td><td>381 Gider Tahakkukları</td><td>481 Gider Tahakkukları</td></tr></tbody></table>
+  <p>Bu hesaplar, nakit hareketi ile gelir ve giderin ait olduğu dönem arasındaki farkı köprüler. Dönem sonunda her sözleşme için şu soru sorulur: <b>Bu yıla ait tutar ne kadar, bu yıl ne kadar ödendi ya da tahsil edildi?</b> Fark yukarıdaki hesaplardan birine gider.</p>
+  <div class="note yl yl-only"><b>TFRS 15</b>'te peşin tahsil edilen bedel <b>sözleşme yükümlülüğü</b>, edimi yerine getirildiği hâlde faturalanmamış bedel <b>sözleşme varlığı</b>dır. <b>TFRS 16</b>'ya göre kiracılar çoğu kira sözleşmesinde kullanım hakkı varlığı ve kira yükümlülüğü kaydeder; peşin kira ödemesi 180/280 yerine kullanım hakkı varlığının maliyetine girer.</div>`},
+ {k:'o',type:'ornek',title:'İki yıllık reklam sözleşmesi',html:()=>`
+  <p>1 Ekim 2026'da 24 aylık reklam hizmeti için 240.000 TL peşin ödendi. 2026'ya 3 ay (30.000 TL), 2027'ye 12 ay (120.000 TL), 2028'e 9 ay (90.000 TL) düşer. 31.12.2026'da 120.000 TL 180'de, 90.000 TL 280'de gösterilir.</p>
+  ${jt(EX('donem-ornek',[J('1.10.2026: peşin ödeme',[B(180,240000),A(102,240000)]),J('31.12.2026: 2026 payı ve uzun vadeli kısmın sınıflanması',[B(760,30000),B(280,90000),A(180,120000)])]))}
+  <p>1.1.2027'de değil, 31.12.2027'de 2028 payının 12 ay içine girmesiyle 280'deki 90.000 TL 180'e aktarılır.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Tutar hangi yıllara dağılır?',mount:K_donem},
+ {k:'t',type:'turetim',title:'Dört hesap çiftinin simetrisi',html:()=>`
+  <p>Dört durum iki eksende ayrılır: <b>gelir mi gider mi</b> ve <b>nakit önce mi sonra mı</b>. Nakit önce geldiyse (peşin) işletmenin bir hakkı (180/280) ya da borcu (380/480) doğar; nakit sonra gelecekse bir alacağı (181) ya da borcu (381) doğar. Hepsinde ortak kural: gelir ve gider yalnızca ait olduğu döneme yazılır.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'hesap',p:'1 Kasım\'da 12 aylık kira için 60.000 TL peşin ödendi. 31 Aralık\'ta 180\'de kalan tutar kaç TL\'dir?',ans:50000,abs:1,unit:'TL',hint:'2 ay bu yıla aittir.',sol:'60.000 × 10/12 = <b>50.000 TL</b>.'},
+  {id:2,tag:'kayit',p:'Bankadaki vadeli mevduatın Aralık\'a ait 12.000 TL faizi Ocak\'ta tahsil edilecek. 31 Aralık kaydı?',entry:[B(181,12000),A(642,12000)],hint:'Kazanılmış ama tahsil edilmemiş gelir.',sol:''},
+  {id:3,tag:'kayit',p:'1 Aralık\'ta bir kiracıdan 3 aylık kira olarak 30.000 TL peşin tahsil edildi ve tamamı 380\'e alındı. 31 Aralık\'ta Aralık payını gelire aktarın (649).',entry:[B(380,10000),A(649,10000)],hint:'Bir ay geçti.',sol:''},
+  {id:4,tag:'kayit',p:'1 Temmuz 2026\'da 36 aylık bakım sözleşmesi için 360.000 TL peşin ödendi (7/A, yönetim). Tek madde ile: 2026 payını gider yazın, 12 ay içindeki kısmı 180\'e, kalanı 280\'e alın.',entry:[B(770,60000),B(180,120000),B(280,180000),A(102,360000)],hint:'Aylık 10.000 TL; 2026\'ya 6 ay.',sol:'2026: 60.000; 2027: 120.000 (180); 2028–2029: 180.000 (280).'},
+  {id:5,tag:'kavram',yl:1,p:'TFRS 15\'e göre müşteriden peşin tahsil edilen ama henüz hizmeti verilmemiş bedel nedir?',opts:['Hasılat','Sözleşme yükümlülüğü','Sözleşme varlığı','Özkaynak'],correct:1,hint:'İşletmenin edimi henüz yerine getirilmedi.',sol:'<b>Sözleşme yükümlülüğü</b>.'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>Peşin ödenen gider 180/280, peşin tahsil edilen gelir 380/480.</li><li>Tahakkuk eden gelir 181, tahakkuk eden gider 381.</li><li>12 ay içine düşen kısım kısa vadeli, sonrası uzun vadeli gruplarda gösterilir.</li></ul>
+  <p class="lmeta">İzlence: ÖÇ5 ve ÖÇ6 (dönem içi ve dönem sonu gelir–gider kayıtları); haftalık planda ayrı başlık yok. Önerilen yer: 12. hafta.</p>`}
+]},
+
+monografi:{title:'Muhasebe monografisi: bir yılın bütün kayıtları',sure:'60 dk',steps:[
+ {k:'a',type:'anlatim',title:'Monografi nedir?',html:()=>`
+  <p><b>Monografi</b>, bir işletmenin bir dönemdeki bütün muhasebe işlemlerinin açılıştan kapanışa kadar sırayla kaydedilmesidir: açılış kaydı → dönem içi işlemler → envanter ve değerleme → dönemsellik → yansıtma → gelir tablosu hesaplarının kapatılması → vergi → net kâr → kesin mizan ve tablolar → kapanış kaydı.</p>
+  <p>Bu dersteki monografi, Muhasebe I Simülatörü'nün son dersinde kurulan Defne Ticaret'in <b>ikinci yılıdır</b>. Açılış bilançosu o dersin sonucudur (ilk yılın kârı 570'e aktarılmış, vergi göz ardı edilmiş). Kâr dağıtımı yapılmadığı varsayılmıştır.</p>`},
+ {k:'o',type:'ornek',title:'Açılış kaydı',html:()=>`${jt([MONO_AC],{num:false})}<p>Açılış kaydında borç bakiyeli hesaplar borçlandırılır, alacak bakiyeli hesaplar alacaklandırılır; böylece geçen yılın kapanış bilançosu yeni yılın defterlerine aynen taşınır.</p>`},
+ {k:'k1',type:'kesif',core:true,title:'Defne Ticaret\'in 2027 yılı',mount:K_mono},
+ {k:'t',type:'turetim',title:'Monografiden çıkan dersler',html:()=>`
+  <p>Monografide kapanıştan önce bilanço ancak gelir ve gider hesapları da hesaba katılırsa denk çıkar; kapanıştan sonra ise yalnızca 1–5. sınıflar kalır ve dönem net kârı 590'da görünür. Dönem sonu kayıtlarının her biri (SMM, amortisman, dönemsellik, tahakkuk, reeskont) kârı değiştirir ama nakdi değiştirmez; bu yüzden yıl sonu banka bakiyesi kârla aynı hızda artmaz.</p>`},
+ {k:'q',type:'alistirma',title:'Alıştırmalar',qs:[
+  {id:1,tag:'hesap',p:'Monografide dönem kârı (vergi öncesi) kaç TL\'dir? (2 ondalık)',ans:MONO_K,abs:0.05,unit:'TL',hint:'Gelirler (600 ve 647) − giderler (621, 631, 632, 660).',sol:`1.300.000 + ${nf(MONO_RS,2)} − 1.216.000 = <b>${nf(MONO_K,2)} TL</b>.`},
+  {id:2,tag:'hesap',p:'Yıl sonu banka bakiyesi kaç TL\'dir?',ans:1076000,abs:1,unit:'TL',hint:'Açılış 560.000; giriş ve çıkışları toplayın.',sol:'560.000 + 300.000 + 1.200.000 + 400.000 − 900.000 − 372.000 − 88.000 − 24.000 = <b>1.076.000 TL</b>.'},
+  {id:3,tag:'kavram',p:'Kapanış kaydı yapıldıktan sonra hangi hesapların bakiyesi kalır?',opts:['Yalnızca gelir tablosu hesaplarının','Hiçbir hesabın','Yalnızca 1–5. sınıf hesapların','Yalnızca 7. sınıf hesapların'],correct:1,hint:'Kapanış kaydı bilanço hesaplarını da kapatır.',sol:'Kapanış kaydından sonra <b>bütün hesaplar</b> sıfırlanır; bakiyeler yeni yılın açılış kaydıyla geri gelir.'},
+  {id:4,tag:'kavram',p:'Monografide hangi kayıt kârı değiştirdiği hâlde nakdi değiştirmez?',opts:['Satıcılara ödeme','Amortisman','Kredi kullanımı','Alıcılardan tahsilat'],correct:1,hint:'Nakit çıkışı olmayan gider.',sol:'<b>Amortisman</b> (aynı şekilde SMM, faiz tahakkuku, reeskont).'}
+ ]},
+ {k:'s',type:'ozet',core:true,title:'Özet',html:()=>`<ul class="summary"><li>Monografi açılıştan kapanışa bir yılın bütün kayıtlarıdır.</li><li>Dönem sonu kayıtları kârı değiştirir, nakdi değiştirmez.</li><li>Kapanış sonrası net kâr 590'da, yükümlülükler (370, 381) bilançoda yer alır.</li></ul>
+  <p class="lmeta">İzlence: Hafta 14 (muhasebe monografisi çözümleri) · ÖÇ7, ÖÇ8.</p>`}
+]}
+});
+
+BASLAT();
+</script>
+</body>
+</html>

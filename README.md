@@ -27,6 +27,8 @@ Sade HTML + CSS. Derleme aracı yok; dosyayı düzenleyip kaydetmek yeterli.
 
 **Ders materyali:** `dersler.html` içinde ilgili kartın "Materyaller yakında." satırını bir bağlantıyla değiştirin. Dosyaları örneğin `dersler/finans1/` klasörüne koyun.
 
+**Ders simülatörleri:** `dersler/simulatorler/` klasöründeki beş HTML dosyası (muhasebe1, muhasebe2, sirketler-muhasebesi, finans1, finans2) **elle düzenlenmez**. Kaynakları `PROJELERİM\14_Muhasebe_Simulatorleri\kaynak\` (ortak motor ve muhasebe içerikleri) ile `PROJELERİM\12_Finans_Simulatoru\kaynak\` (finans içerikleri) klasörlerindedir. Değişiklikten sonra `python ..\14_Muhasebe_Simulatorleri\kaynak\derle.py` çalıştırın; derleyici dosyaları hem proje klasörlerine hem buraya yazar. Sınamak için: `powershell -ExecutionPolicy Bypass -File ..\14_Muhasebe_Simulatorleri\kaynak\sina.ps1`.
+
 ## Önizleme
 
 `index.html` dosyasına çift tıklayın.
